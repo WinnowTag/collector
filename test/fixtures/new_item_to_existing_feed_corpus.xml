@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feeds>
+	<feed>
+	  <created-on></created-on>
+	  <title>Ruby Language</title>
+	  <last-http-headers></last-http-headers>
+	  <updated-on></updated-on>
+	  <feed-items>
+	    <feed-item>
+	      <xml-data></xml-data>
+	      <created-on></created-on>
+	      <sort-title></sort-title>
+	      <unique-id>new</unique-id>
+	      <time type="datetime">2006-10-26T13:53:08Z</time>
+	      <time-source>feed_item_time</time-source>
+		  <link>http://new</link>
+	    </feed-item>	    
+	  <url>http://ruby-lang.org/en/index.rdf</url>
+	  <link></link>
+	  <last-xml-data></last-xml-data>
+	  <active type="boolean">true</active>
+	</feed>
+</feeds>

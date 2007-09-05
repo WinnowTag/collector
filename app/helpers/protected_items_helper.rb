@@ -1,0 +1,2 @@
+module ProtectedItemsHelper
+end

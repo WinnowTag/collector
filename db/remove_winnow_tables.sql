@@ -1,0 +1,15 @@
+drop table if exists schema_info;
+drop table if exists bayes_classifiers;
+drop table if exists bulk_taggings;
+drop table if exists classifier_datas;
+drop table if exists classifier_executions;
+drop table if exists classifier_jobs;
+drop table if exists rename_taggings;
+drop table if exists roles;
+drop table if exists roles_users;
+drop table if exists sessions;
+drop table if exists tag_groups;
+drop table if exists tag_publications;
+drop table if exists taggings;
+drop table if exists tags;
+drop table if exists users;

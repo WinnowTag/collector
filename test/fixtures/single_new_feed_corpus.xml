@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feeds>
+	<feed>
+	  <created-on></created-on>
+	  <title>Ajaxian</title>
+	  <last-http-headers></last-http-headers>
+	  <updated-on></updated-on>
+	  <feed-items>
+	    <feed-item>
+		  <link>http://ajaxian.com/ajax_is_cool</link>
+	      <xml-data>&lt;item&gt;&lt;title&gt;A Couple Quick Ajax Experience Notes&lt;/title&gt;&lt;/item&gt;</xml-data>
+	      <created-on></created-on>
+	      <sort-title>ajax is cool</sort-title>
+	      <unique-id>ajaxiscool</unique-id>
+	      <time type="datetime">2006-10-27T13:53:08Z</time>
+	      <time-source>feed_item_time</time-source>
+	    </feed-item>	    
+	  </feed-items>
+	  <url>http://www.ajaxian.com/atom.xml</url>
+	  <link></link>
+	  <last-xml-data>XMLXMLXML</last-xml-data>
+	  <active type="boolean">true</active>
+	</feed>	
+</feeds>

@@ -1,0 +1,27 @@
+<div class="control_bar">
+	<%= link_to image_tag('back.png') + 'Return to list', {:action => ''} %>
+	<%= link_to image_tag('cog.png') + 'Collect', collection_jobs_path(:feed_id => @feed.id), :method => :post %>
+</div>
+
+<table id="<%= "feed_#{@feed.id}" %>" class="property_table <%= "inactive_feed" unless @feed.active? %>">
+	<tr>
+		<th>Last Retrieved</th>
+		<td class="date"><%= format_date(@feed.updated_on) %></td>
+	</tr>
+	<tr>
+		<th>Number of Feed Items</th>
+		<td class="number"><%= @feed.feed_items.size %></td>
+	</tr>
+	<tr>
+		<th>Active</th>
+		<td><%= activate_feed_control @feed%></td>
+	</tr>
+</table>
+
+<h2>Scheduled Collection Jobs</h2>
+<p>These are collection jobs requested by users. They happen in addition to the regular collection cycle.</p>
+<%= render :partial => 'collection_jobs/collection_jobs', :locals => {:collection_jobs => @feed.collection_jobs } %>
+
+<h2>Collection Errors</h2>
+<p>These are errors from the automated collection process.</p>
+<%= render :partial => 'collection_errors/collection_errors', :locals => {:collection_errors => @feed.collection_errors} %>

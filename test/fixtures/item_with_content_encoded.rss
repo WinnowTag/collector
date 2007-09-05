@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="http://feeds.feedburner.com/~d/styles/rss2full.xsl" type="text/xsl" media="screen"?><?xml-stylesheet href="http://feeds.feedburner.com/~d/styles/itemcontent.css" type="text/css" media="screen"?><!-- generator="wordpress/1.5.2" --><rss xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:wfw="http://wellformedweb.org/CommentAPI/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:feedburner="http://rssnamespace.org/feedburner/ext/1.0" version="2.0">
+
+<channel>
+	<title>Ajaxian</title>
+	<link>http://ajaxian.com</link>
+	<description>Cleaning up the web with Ajax</description>
+	<pubDate>Wed, 11 Oct 2006 17:56:25 +0000</pubDate>
+	<generator>http://wordpress.org/?v=1.5.2</generator>
+	<language>en</language>
+
+		<atom10:link xmlns:atom10="http://www.w3.org/2005/Atom" rel="self" href="http://ajaxian.com/index.xml" type="application/rss+xml" /><feedburner:browserFriendly>This is an XML content feed. It is intended to be viewed in a newsreader or syndicated to another site, subject to copyright and fair use.</feedburner:browserFriendly><item>
+		<title>Office 2.0: Google and Zoho Announcements</title>
+		<link>http://ajaxian.com/archives/office-20-google-and-zoho-announcements</link>
+		<comments>http://ajaxian.com/archives/office-20-google-and-zoho-announcements#comments</comments>
+		<pubDate>Wed, 11 Oct 2006 13:26:27 +0000</pubDate>
+		<dc:creator>Dion Almaer</dc:creator>
+		
+	<category>Front Page</category>
+	<category>Showcase</category>
+		<guid>http://ajaxian.com/archives/office-20-google-and-zoho-announcements</guid>
+		<description><![CDATA[	The web &#8220;Office&#8221; applications are here. At the Office 2.0 conference we saw two announcements in the office arena:
+	Google Docs and Spreadsheets
+	Catchy name aside, Google Docs now combines Writely and Spreadsheets in one. With it you can:
+	
+	Use our online editor to format documents, spell-check and more.
+	Upload Word documents, OpenOffice, RTF, HTML or text.
+	Download documents to [...]]]></description>
+			<content:encoded><![CDATA[	<p>The web &#8220;Office&#8221; applications are here. At the Office 2.0 conference we saw two announcements in the office arena:</p>
+	<p><b>Google Docs and Spreadsheets</b></p>
+	<p>Catchy name aside, <a href="http://docs.google.com/">Google Docs</a> now combines Writely and Spreadsheets in one. With it you can:</p>
+	<ul>
+	<li>Use our online editor to format documents, spell-check and more.</li>
+	<li>Upload Word documents, OpenOffice, RTF, HTML or text.</li>
+	<li>Download documents to your desktop as Word, PDF and more.</li>
+	<li>View your documents&#8217; revision history and roll back to any version.</li>
+	<li>Invite others to share your documents by e-mail address.</li>
+	<li>Edit documents online with whomever you choose.</li>
+	<li>Publish documents online to the world, or to just who you choose.</li>
+	<li>Post your documents to your blog.</li>
+	</ul>
+	<p>Here we see the Google suite slowly getting together.</p>
+	<p><a href="http://docs.google.com/"><img src="http://www.google.com/google-d-s/images/new_doclist.gif" width="400" height="320" /></a></p>
+	<p><b>Zoho Virtual Office</b></p>
+	<p>Zoho has had a ton of services in the past. Now they have announced <a href="http://zohox.com/">ZohoX</a>, their virtual office suite, that brings them all together. The apps include Email, Calendars, Documents, Tasks, Notes, Contacts,Groups and a lot more.</p>
+	<p><a href="http://content.zdnet.com/2346-11423_22-33889-1.html"><img src="http://ajaxian.com/wp-content/images/zohooffice.png" alt="Zoho Office" border="0" width="580" height="313"/></a></p>
+	<p>Have you played with these?  What do you like or not like?
+</p>
+
+<div class="feedflare"><a href="http://feeds.feedburner.com/~f/ajaxian?a=9mxuWjDZ"><img src="http://feeds.feedburner.com/~f/ajaxian?i=9mxuWjDZ" border="0"></img></a> <a href="http://feeds.feedburner.com/~f/ajaxian?a=60RWIoNi"><img src="http://feeds.feedburner.com/~f/ajaxian?i=60RWIoNi" border="0"></img></a> <a href="http://feeds.feedburner.com/~f/ajaxian?a=GwkFQGnE"><img src="http://feeds.feedburner.com/~f/ajaxian?i=GwkFQGnE" border="0"></img></a> <a href="http://feeds.feedburner.com/~f/ajaxian?a=6dzbVcTC"><img src="http://feeds.feedburner.com/~f/ajaxian?i=6dzbVcTC" border="0"></img></a></div>]]></content:encoded>
+			<wfw:commentRSS>http://ajaxian.com/archives/office-20-google-and-zoho-announcements/feed/</wfw:commentRSS>
+	</item>
+	</channel>
+</rss>

@@ -1,0 +1,15 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+passed:
+  id: 1
+  created_on: <%= Time.now.ago(1.hours).to_formatted_s(:db) %>
+  updated_on: <%= Time.now.ago(30.minutes).to_formatted_s(:db) %>
+  completed_on: <%= Time.now.ago(30.minutes).to_formatted_s(:db) %>
+  item_count: 10
+failed:
+  id: 2
+  created_on: <%= Time.now.ago(1.hours).to_formatted_s(:db) %>
+  updated_on: <%= Time.now.ago(30.minutes).to_formatted_s(:db) %>
+  completed_on: <%= Time.now.ago(30.minutes).to_formatted_s(:db) %>
+  item_count: 5
+  fatal_error_type: ActiveRecord::ActiveRecordError
+  fatal_error_message: ActiveRecord Error

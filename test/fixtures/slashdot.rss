@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://purl.org/rss/1.0/" xmlns:slash="http://purl.org/rss/1.0/modules/slash/" xmlns:taxo="http://purl.org/rss/1.0/modules/taxonomy/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:syn="http://purl.org/rss/1.0/modules/syndication/" xmlns:admin="http://webns.net/mvcb/" xmlns:feedburner="http://rssnamespace.org/feedburner/ext/1.0">
+	<channel rdf:about="http://slashdot.org/">
+		<title>Slashdot</title>
+		<link>http://slashdot.org/</link>
+		<description>News for nerds, stuff that matters</description>
+		<dc:language>en-us</dc:language>
+		<dc:rights>Copyright 1997-2006, OSTG - Open Source Technology Group, Inc.  All Rights Reserved.</dc:rights>
+		<dc:date>2006-08-09T23:41:12+00:00</dc:date>
+		<dc:publisher>OSTG</dc:publisher>
+		<dc:creator>pater@slashdot.org</dc:creator>
+		<dc:subject>Technology</dc:subject>
+		<syn:updatePeriod>hourly</syn:updatePeriod>
+		<syn:updateFrequency>1</syn:updateFrequency>
+		<syn:updateBase>1970-01-01T00:00+00:00</syn:updateBase>
+		<items>
+			<rdf:Seq>
+				<rdf:li rdf:resource="http://apple.slashdot.org/article.pl?sid=06/08/09/2044238&amp;from=rss"/>
+				<rdf:li rdf:resource="http://it.slashdot.org/article.pl?sid=06/08/09/2121206&amp;from=rss"/>
+				<rdf:li rdf:resource="http://developers.slashdot.org/article.pl?sid=06/08/09/2134254&amp;from=rss"/>
+				<rdf:li rdf:resource="http://science.slashdot.org/article.pl?sid=06/08/09/2037209&amp;from=rss"/>
+				<rdf:li rdf:resource="http://slashdot.org/article.pl?sid=06/08/09/1928232&amp;from=rss"/>
+				<rdf:li rdf:resource="http://hardware.slashdot.org/article.pl?sid=06/08/09/1848250&amp;from=rss"/>
+				<rdf:li rdf:resource="http://books.slashdot.org/article.pl?sid=06/08/09/1546243&amp;from=rss"/>
+				<rdf:li rdf:resource="http://hardware.slashdot.org/article.pl?sid=06/08/09/1727236&amp;from=rss"/>
+				<rdf:li rdf:resource="http://hardware.slashdot.org/article.pl?sid=06/08/09/1545200&amp;from=rss"/>
+				<rdf:li rdf:resource="http://it.slashdot.org/article.pl?sid=06/08/09/1523207&amp;from=rss"/>
+				<rdf:li rdf:resource="http://developers.slashdot.org/article.pl?sid=06/08/09/158210&amp;from=rss"/>
+				<rdf:li rdf:resource="http://slashdot.org/article.pl?sid=06/08/09/1447239&amp;from=rss"/>
+				<rdf:li rdf:resource="http://games.slashdot.org/article.pl?sid=06/08/09/135213&amp;from=rss"/>
+				<rdf:li rdf:resource="http://hardware.slashdot.org/article.pl?sid=06/08/09/1245238&amp;from=rss"/>
+				<rdf:li rdf:resource="http://games.slashdot.org/article.pl?sid=06/08/09/062209&amp;from=rss"/>
+			</rdf:Seq>
+		</items>
+		<image rdf:resource="http://images.slashdot.org/topics/topicslashdot.gif"/>
+		<textinput rdf:resource="http://slashdot.org/search.pl"/>
+	</channel>
+	<image rdf:about="http://images.slashdot.org/topics/topicslashdot.gif">
+		<title>Slashdot</title>
+		<url>http://images.slashdot.org/topics/topicslashdot.gif</url>
+		<link>http://slashdot.org/</link>
+	</image>
+	<item rdf:about="http://apple.slashdot.org/article.pl?sid=06/08/09/2044238&amp;from=rss">
+		<title>Apple's Growing Pains</title>
+		<link>http://rss.slashdot.org/~r/Slashdot/slashdot/~3/10641681/article.pl</link>
+		<description>Tyler Too writes "Is Apple having an unusually large number of quality control problems since its switch to Intel? Ars Technica runs down the litany of problems MacBook and MacBook Pro users have experienced since their launch. From the article: 'Is Apple's quality control slipping through the cracks with this Intel transition? Given the volume of available evidence that has appeared in such a short timeframe, it's simply impossible to say that Apple isn't having problems.'"
+&lt;p&gt;&lt;a href="http://rss.slashdot.org/~a/Slashdot/slashdot?a=rzBVRe"&gt;&lt;img src="http://rss.slashdot.org/~a/Slashdot/slashdot?i=rzBVRe" border="0"&gt;&lt;/img&gt;&lt;/a&gt;&lt;/p&gt;&lt;img src="http://rss.slashdot.org/~r/Slashdot/slashdot/~4/10641681"/&gt;</description>
+		<dc:creator>ScuttleMonkey</dc:creator>
+		<dc:date>2006-08-09T23:31:00+00:00</dc:date>
+		<dc:subject>apple</dc:subject>
+		<slash:department>because-pcs-are-perfect</slash:department>
+		<slash:section>apple</slash:section>
+		<slash:comments>7</slash:comments>
+		<slash:hit_parade>7,7,4,4,1,0,0</slash:hit_parade>
+		<feedburner:origLink>http://apple.slashdot.org/article.pl?sid=06/08/09/2044238&amp;from=rss</feedburner:origLink>
+	</item>
+	<item rdf:about="http://it.slashdot.org/article.pl?sid=06/08/09/2121206&amp;from=rss">
+		<title>A Different Kind of WGA 'Problem'</title>
+		<link>http://rss.slashdot.org/~r/Slashdot/slashdot/~3/10630185/article.pl</link>
+		<description>Ed Bott recently attempted to scout out the problems reported in so many horror stories floating around the net relating to Microsoft's WGA. He did experience problems, however, not the ones that you might expect. He intentionally installed a pirated copy of Windows XP to see how the process worked but was unable to get WGA to recognize his computer as pirated. From the article: "I'm reluctantly running a pirated version of Windows and can't get caught no matter how hard I try. But these same people want us to believe that the WGA software they've developed is nearly foolproof. They claim that all but "a fraction of a percent" of those 60 million people who've been denied access to Microsoft updates and downloads are guilty, guilty, guilty. Right."
+&lt;p&gt;&lt;a href="http://rss.slashdot.org/~a/Slashdot/slashdot?a=reggaE"&gt;&lt;img src="http://rss.slashdot.org/~a/Slashdot/slashdot?i=reggaE" border="0"&gt;&lt;/img&gt;&lt;/a&gt;&lt;/p&gt;&lt;img src="http://rss.slashdot.org/~r/Slashdot/slashdot/~4/10630185"/&gt;</description>
+		<dc:creator>ScuttleMonkey</dc:creator>
+		<dc:date>2006-08-09T22:46:00+00:00</dc:date>
+		<dc:subject>microsoft</dc:subject>
+		<slash:department>foolproof-just-found-a-better-fool</slash:department>
+		<slash:section>it</slash:section>
+		<slash:comments>63</slash:comments>
+		<slash:hit_parade>63,61,50,32,15,9,4</slash:hit_parade>
+		<feedburner:origLink>http://it.slashdot.org/article.pl?sid=06/08/09/2121206&amp;from=rss</feedburner:origLink>
+	</item>
+	<item rdf:about="http://developers.slashdot.org/article.pl?sid=06/08/09/2134254&amp;from=rss">
+		<title>Intel Open Sources Graphics Drivers</title>
+		<link>http://rss.slashdot.org/~r/Slashdot/slashdot/~3/10619782/article.pl</link>
+		<description>PeterBrett writes "Intel's Keith Packard announced earlier today that Intel was open sourcing graphics drivers for their new 965 Express Chipset family graphics controllers. From the announcement: 'Designed to support advanced rendering features in modern graphics APIs, this chipset family includes support for programmable vertex, geometry, and fragment shaders. By open sourcing the drivers for this new technology, Intel enables the open source community to experiment, develop, and contribute to the continuing advancement of open source 3D graphics.' The new drivers, available from the Linux Graphics Drivers from Intel website, are licensed under the GPL for Linux kernel drivers, and MIT license for XOrg 2D &amp;amp; 3D rendering subsystems."
+&lt;p&gt;&lt;a href="http://rss.slashdot.org/~a/Slashdot/slashdot?a=JaGVaF"&gt;&lt;img src="http://rss.slashdot.org/~a/Slashdot/slashdot?i=JaGVaF" border="0"&gt;&lt;/img&gt;&lt;/a&gt;&lt;/p&gt;&lt;img src="http://rss.slashdot.org/~r/Slashdot/slashdot/~4/10619782"/&gt;</description>
+		<dc:creator>ScuttleMonkey</dc:creator>
+		<dc:date>2006-08-09T22:02:00+00:00</dc:date>
+		<dc:subject>intel</dc:subject>
+		<slash:department>running-scared-from-amd-ati</slash:department>
+		<slash:section>developers</slash:section>
+		<slash:comments>100</slash:comments>
+		<slash:hit_parade>100,98,84,60,18,13,8</slash:hit_parade>
+		<feedburner:origLink>http://developers.slashdot.org/article.pl?sid=06/08/09/2134254&amp;from=rss</feedburner:origLink>
+	</item>
+	<item rdf:about="http://science.slashdot.org/article.pl?sid=06/08/09/2037209&amp;from=rss">
+		<title>Breakthrough
+Gives 3-D Vision of Dawn of Life</title>
+		<link>http://rss.slashdot.org/~r/Slashdot/slashdot/~3/10591120/article.pl</link>
+		<description>butterwise writes
+"MSNBC reports that a new scanning technique could revolutionize paleontology. The new technique is allowing
+researchers a virtual dissection of half-billion-year-old fossilized embryos." From the article: "The Chinese,
+Swedish, Swiss and British researchers on Donoghue's team used a 1,640-foot-wide (500-meter-wide) particle
+accelerator in Switzerland to scan the minute fossils, and then fed the information into a computer that generated
+complete 3-D images of the internal structures in fine detail." &lt;p&gt;&lt;a
+href="http://rss.slashdot.org/~a/Slashdot/slashdot?a=CTPVey"&gt;&lt;img
+src="http://rss.slashdot.org/~a/Slashdot/slashdot?i=CTPVey" border="0"&gt;&lt;/img&gt;&lt;/a&gt;&lt;/p&gt;&lt;img
+src="http://rss.slashdot.org/~r/Slashdot/slashdot/~4/10591120"/&gt;</description>
+		<dc:creator>ScuttleMonkey</dc:creator>
+		<dc:date>2006-08-09T21:18:00+00:00</dc:date>
+		<dc:subject>science</dc:subject>
+		<slash:department>like-looking-at-really-old-black-and-whites</slash:department>
+		<slash:section>science</slash:section>
+		<slash:comments>40</slash:comments>ß
+		<slash:hit_parade>40,38,31,24,10,5,3</slash:hit_parade>
+		<feedburner:origLink>http://science.slashdot.org/article.pl?sid=06/08/09/2037209&amp;from=rss</feedburner:origLink>
+	</item>
+</rdf:RDF>

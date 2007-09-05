@@ -1,0 +1,18 @@
+<p>
+  <b>Name:</b>
+  <%=h @protector.name %>
+</p>
+
+<p>
+  <b>Create on:</b>
+  <%=h @protector.created_on %>
+</p>
+
+<p>
+  <b>Updated on:</b>
+  <%=h @protector.updated_on %>
+</p>
+
+
+<%= link_to 'Edit', edit_protector_path(@protector) %> |
+<%= link_to 'Back', protectors_path %>

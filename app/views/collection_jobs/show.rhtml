@@ -1,0 +1,36 @@
+<p>
+  <b>Feed:</b>
+  <%=h @collection_job.feed_id %>
+</p>
+
+<p>
+  <b>Created by:</b>
+  <%=h @collection_job.created_by %>
+</p>
+
+<p>
+  <b>Created at:</b>
+  <%=h @collection_job.created_at %>
+</p>
+
+<p>
+  <b>Updated at:</b>
+  <%=h @collection_job.updated_at %>
+</p>
+
+<p>
+  <b>Started at:</b>
+  <%=h @collection_job.started_at %>
+</p>
+
+<p>
+  <b>Completed at:</b>
+  <%=h @collection_job.completed_at %>
+</p>
+
+<p>
+  <b>Lock version:</b>
+  <%=h @collection_job.lock_version %>
+</p>
+
+<%= link_to 'Back', collection_jobs_path %>

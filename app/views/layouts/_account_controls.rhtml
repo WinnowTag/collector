@@ -1,0 +1,13 @@
+<div id="login_box">
+<% if current_user.nil? %>
+  	<a href="/account/login">login</a> 
+	<% unless AccountController.signup_disabled %>
+		|<a href="/account/signup">create account</a> 
+	<% end %>
+<% else %>
+  	<strong><%= current_user.firstname + ' ' +  current_user.lastname if current_user.firstname%></strong>
+  	<a href="/account/logout">logout</a> |
+  	<%= link_to 'my info', :controller => 'account', :action => 'edit', :id => current_user.login %>
+<% end %>
+| <%= link_to 'HELP', {:controller => 'about', :action => 'help'}, :popup => ['help', 'width=500,height=400'] %>
+</div>

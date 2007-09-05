@@ -1,0 +1,159 @@
+html {
+	height: 100%;
+}
+
+body {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	background-color: white;
+}
+
+h1, h2, h3, p {
+  margin-left:  10px;
+  margin-right: 10px;
+}
+
+pre {
+  margin-left: 25px;
+  margin-right: 25px;
+}
+
+h2 {
+  font-size: 16px;
+}
+
+#login_box {
+	background-color: #D0EEFF;
+	padding: 5px 9px 9px 9px;
+	float: right;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+}
+
+#page_title {
+	background-color: #D0EEFF;
+	padding: 5px 9px 9px 9px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 24px;
+	text-transform: capitalize;
+}
+
+#error_message {
+	background-color: #D32;
+	color: white;
+	padding: 3px;
+	font-size: 90%;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+#flash {
+	min-height: 2.5em;
+	margin: 5px;	
+}
+
+a#close_flash {
+  position: absolute;
+  right: 0px;
+  top: 7px;
+}
+
+img.flash_icon {
+  margin-right: 5px;
+  vertical-align: bottom;
+}
+
+#notice, #warning, #error {
+	padding: 5px;
+	position: relative;
+}
+
+#notice {
+  background-color: #F0FFE0;
+  border: 1px solid #A0DC11;
+}
+
+#warning {
+  background-color: #FBF6D3;
+  border: 1px solid #D28D37;
+} 
+
+#error {
+  background-color: #FDDFD7;
+  border: 1px solid #FF260B;
+}
+
+a { color: #2c50e8; text-decoration: none; }
+a:hover {text-decoration: underline;}
+.control_bar a:hover {text-decoration: none; background-color: #9aafe5; color: #fff;}
+a:visited { color: #2c50e8; }
+a.disabled {color: #888; cursor: default;}
+a:hover.disabled {color: #888; background-color: transparent; text-decoration: none;}
+a img, img.blank {border: 0; vertical-align: bottom; margin-left: 3px; margin-right: 5px;}
+.feed_icon {margin-right: 5px;}
+
+.control_bar a {
+	padding: 3px 3px;
+	border: 1px solid #9aafe5;
+}
+
+.control_bar {
+  margin: 15px 10px;
+}
+
+.pagination {
+  margin-top: 15px;
+}
+
+.pagination a, .pagination span {
+  padding: 1px 2px;
+}
+
+span.current_page {
+  border: 1px solid #9aafe5;
+  background-color: #9aafe5;
+  color: white;
+}
+
+/* remove form padding */
+form {
+	margin: 0px;
+}
+
+
+input.readonly {
+	border-top:  1px solid black;
+	border-left:  1px;
+	border-right:  0px;
+	border-bottom:  0px;
+}
+
+fieldset {
+	margin-top: 10px;
+	width:  700px;
+	border: none;
+	border-top: 1px solid #999;
+}
+
+fieldset legend {
+	font-weight: bold;
+}
+
+fieldset p {
+	clear:  both;
+}
+
+fieldset label {
+	float: left;
+	text-align:  right;
+	margin-right: 10px;
+	width: 100px;
+	text-transform: capitalize;
+}
+
+tr.collection_job.failed td {
+  background-color: pink;  
+}

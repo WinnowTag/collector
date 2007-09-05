@@ -1,0 +1,35 @@
+
+<table class="property_table">
+	<tr>
+		<th>Started</th>
+		<td><%= collection_summary.created_on.to_formatted_s(:long) %></td>
+	</tr>
+	<tr>
+		<th>Completed</th>
+		<td><%= collection_summary.completed_on.to_formatted_s(:long) if collection_summary.completed_on %></td>
+	</tr>
+	<tr>
+		<th>Duration</th>
+		<td><%= duration(collection_summary) %></td>
+	</tr>
+	<tr>
+		<th>New Items</th>
+		<td><%= collection_summary.item_count %></td>
+	</tr>
+</table>
+
+<% if collection_summary.failed? -%>
+<h3>Fatal Error</h3>
+<p>A fatal error of type: "<%=h collection_summary.fatal_error_type %>" occurred.
+   This caused the collection to abort.</p>
+<h4>Details</h4>
+<pre><%=h collection_summary.fatal_error_message %></pre>
+<% end -%>
+
+
+<% unless collection_summary.collection_errors.empty? %>
+<h3>Collection Errors</h3>
+
+<%= render :partial => 'collection_errors/collection_errors_with_feeds', 
+	   :locals => { :collection_errors => collection_summary.collection_errors } %>
+<% end -%>

@@ -1,0 +1,47 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+job_in_progress:
+  id: 1
+  feed_id: 1
+  created_by: 
+  created_at: <%= Time.now.ago(1.hours).to_formatted_s(:db) %>
+  updated_at: 
+  started_at: <%= Time.now.ago(30.minutes).to_formatted_s(:db) %>
+  completed_at: 
+  lock_version: 1
+job_completed:
+  id: 2
+  feed_id: 2
+  created_by: 
+  created_at: <%= Time.now.ago(2.hours).to_formatted_s(:db) %> 
+  updated_at: 
+  started_at: <%= Time.now.ago(1.hours).to_formatted_s(:db) %>
+  completed_at: <%= Time.now.ago(30.minutes).to_formatted_s(:db) %>
+  lock_version: 1
+first_in_queue:
+  id: 3
+  feed_id: 1
+  created_by: 
+  created_at: <%= Time.now.ago(1.hours).to_formatted_s(:db) %> 
+  updated_at: 
+  started_at: 
+  completed_at: 
+  lock_version: 1
+second_in_queue:
+  id: 4
+  feed_id: 2
+  created_by: 
+  created_at: <%= Time.now.ago(30.minutes).to_formatted_s(:db) %> 
+  updated_at: 
+  started_at: 
+  completed_at:
+  lock_version: 1
+job_with_cb:
+  id: 5
+  feed_id: 2
+  callback_url: http://localhost:3000/users/seangeo/collection_job_results
+  created_by: seangeo
+  created_at: <%= Time.now.ago(30.minutes).to_formatted_s(:db) %> 
+  updated_at: <%= Time.now.ago(9.minutes).to_formatted_s(:db) %>  
+  started_at:  <%= Time.now.ago(10.minutes).to_formatted_s(:db) %> 
+  completed_at: <%= Time.now.ago(9.minutes).to_formatted_s(:db) %> 
+  lock_version: 1

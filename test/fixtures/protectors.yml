@@ -1,0 +1,11 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+one:
+  id: 1
+  name: MyString
+  created_on: 2007-08-31 13:02:15
+  updated_on: 2007-08-31 13:02:15
+two:
+  id: 2
+  name: MyString
+  created_on: 2007-08-31 13:02:15
+  updated_on: 2007-08-31 13:02:15

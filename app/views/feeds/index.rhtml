@@ -1,0 +1,31 @@
+<%= render :partial => 'feed_list_header' %>
+
+<table class="data_table">
+  <tr>
+	<th><%= link_to "Title", sort_param('feeds', :alias => 'title') %></th>
+	<th class="number"><%= link_to "Items", sort_param('feeds', :alias => 'item_count')%></th>
+	<th class="number">
+		<%= link_to "Errors", sort_param('feeds', :alias => 'error_count'),
+			:title => "Number of recent errors" %>
+	</th>
+	<th class="date"><%= link_to "Last Updated", sort_param('feeds', :alias => 'updated_on')%></th>
+	<th>&nbsp;</th>
+  </tr>
+  
+<% for feed in @feeds %>
+  <tr id="<%= "feed_#{feed.id}" %>" class="<%= cycle("odd", "even") %>">
+    <td><nobr><%= feed_link(feed) %></nobr></td>
+	<td class="number"><%= feed.feed_items_count %></td>
+	<td class="number"><%= feed.collection_errors_count %></td>
+	<td class="date"><%= format_date(feed.updated_on) %></td>
+    <td class="control_icons" style="width: 14px">
+	<nobr>
+		<%= link_to image_tag('delete.png'), feed_path(feed), 
+				:method => :delete, 
+				:confirm => "Do you really want to delete #{feed.title}?",
+				:title => "Destroy '#{feed.title or feed.url}'" %>
+	</nobr>
+	</td>
+  </tr>
+<% end %>
+</table>

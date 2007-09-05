@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feeds>
+	<feed>
+	  <created-on></created-on>
+	  <title>Ruby Language</title>
+	  <last-http-headers></last-http-headers>
+	  <updated-on></updated-on>
+	  <feed-items>
+	    <feed-item>
+	      <xml-data></xml-data>
+	      <created-on></created-on>
+	      <sort-title></sort-title>
+	      <unique-id>first</unique-id>
+	      <time type="datetime">2006-10-26T13:53:08Z</time>
+	      <time-source>feed_item_time</time-source>
+		  <link>http://first</link>
+	    </feed-item>
+	    <feed-item>
+	      <xml-data></xml-data>
+	      <created-on></created-on>
+	      <sort-title></sort-title>
+	      <unique-id>second</unique-id>
+	      <time type="datetime">2006-10-28T13:53:08Z</time>
+	      <time-source>feed_item_time</time-source>
+		  <link>http://second</link>
+	    </feed-item>
+	    <feed-item>
+	      <xml-data></xml-data>
+	      <created-on></created-on>
+	      <sort-title></sort-title>
+	      <unique-id>third</unique-id>
+	      <time type="datetime">2006-10-28T13:53:08Z</time>
+	      <time-source>feed_item_time</time-source>
+		  <link>http://third</link>
+	    </feed-item>
+	  </feed-items>
+	  <url>http://ruby-lang.org/en/index.rdf</url>
+	  <link></link>
+	  <last-xml-data></last-xml-data>
+	  <active type="boolean">true</active>
+	</feed>
+	<feed>
+	  <created-on></created-on>
+	  <title>Ruby Documentation</title>
+	  <last-http-headers></last-http-headers>
+	  <updated-on></updated-on>
+	  <feed-items>
+	    <feed-item>
+	      <xml-data></xml-data>
+	      <created-on></created-on>
+	      <sort-title></sort-title>
+	      <unique-id>forth</unique-id>
+	      <time type="datetime">2006-10-28T13:53:08Z</time>
+	      <time-source>feed_collection_time</time-source>
+		  <link>http://forth</link>
+	    </feed-item>
+	  </feed-items>
+	  <url>http://ruby-doc.org/en/index.rdf</url>
+	  <link></link>
+	  <last-xml-data></last-xml-data>
+	  <active type="boolean">true</active>
+	</feed>
+</feeds>
