@@ -9,8 +9,8 @@ class FeedItemCorpusExporterWorker < BackgrounDRb::Worker::RailsBase
   
   def do_work(args)
     args = {
-      :start_date => Time.now.last_month.to_date,
-      :end_date => Time.now.to_date,
+      :start_date => Time.now.utc.last_month.to_date,
+      :end_date => Time.now.utc.to_date,
       :min_content_length => 1,
       :item_target => 5000,
       :steepness => 50,

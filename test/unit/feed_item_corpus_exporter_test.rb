@@ -85,8 +85,8 @@ class FeedItemCorpusExporterTest < Test::Unit::TestCase
   end
   
   def test_partial_export
-    start_date = Time.now.yesterday
-    end_date = Time.now
+    start_date = Time.now.utc.yesterday
+    end_date = Time.now.utc
     exporter = FeedItemCorpusExporterWorker.new
     results = {}
     exporter.stubs(:results).returns(results)
