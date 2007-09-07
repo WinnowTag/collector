@@ -174,6 +174,9 @@ module FeedTools
                 autodiscovered_url, [self.href])
             rescue Exception
             end
+            if self.href == autodiscovered_url
+              raise FeedAccessError, "Auto-discovered URL points to self"
+            end
             self.feed_data = nil
             self.href = autodiscovered_url
             if FeedTools.feed_cache.nil?
