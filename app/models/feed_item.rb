@@ -183,8 +183,10 @@ class FeedItem < ActiveRecord::Base
   # The FeedItem is not saved in the database. It is not associated with a Feed,
   # it is up to the caller to do that.
   #
-  def self.build_from_feed_item(feed_item, tokenizer = FeedItemTokenizer.new)    
+  def self.build_from_feed_item(feed_item, tokenizer = FeedItemTokenizer.new)
+    return nil if feed_item.time && feed_item.time < Time.now.ago(30.days)    
     unique_id = self.make_unique_id(feed_item)
+    return nil if FeedItemsArchive.item_exists?(feed_item.link, unique_id)
     new_feed_item = FeedItem.find(:first, 
                                   :conditions => [
                                     'link = ? or unique_id = ?',

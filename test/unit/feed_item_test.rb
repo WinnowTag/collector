@@ -66,6 +66,7 @@ class FeedItemTest < Test::Unit::TestCase
     test_feed_url = 'file:/' + File.join(File.expand_path(RAILS_ROOT), 'test', 'fixtures', 'slashdot.rss')
     feed = FeedTools::Feed.open(URI.parse(test_feed_url))
     ft_item = feed.items.first
+    ft_item.stubs(:time).returns(Time.now)
     feed_item = FeedItem.build_from_feed_item(ft_item)
     feed_item.save
 
@@ -94,6 +95,7 @@ class FeedItemTest < Test::Unit::TestCase
     test_feed_url = 'file:/' + File.join(File.expand_path(RAILS_ROOT), 'test', 'fixtures', 'slashdot.rss')
     feed = FeedTools::Feed.open(URI.parse(test_feed_url))
     ft_item = feed.items.first
+    ft_item.stubs(:time).returns(Time.now)
     feed_item = FeedItem.build_from_feed_item(ft_item)
     
     assert feed_item.new_record?
@@ -182,6 +184,7 @@ class FeedItemTest < Test::Unit::TestCase
     test_feed_url = 'file:/' + File.join(File.expand_path(RAILS_ROOT), 'test', 'fixtures', 'item_with_content_encoded.rss')
     feed = FeedTools::Feed.open(URI.parse(test_feed_url))
     ft_item = feed.items.first
+    ft_item.stubs(:time).returns(Time.now)
     feed_item = FeedItem.build_from_feed_item(ft_item)
     
     assert_equal ft_item.title, feed_item.content.title
@@ -194,25 +197,43 @@ class FeedItemTest < Test::Unit::TestCase
     assert_equal ft_item.content, feed_item.content.encoded_content
   end
   
-  def test_feed_item_without_title
-    # stub to bypass token filtering in build_from_feed_item
-    FeedItemTokenizer.any_instance.stubs(:tokens_with_counts).returns(stub(:size => 50))
-    test_feed_url = 'file:/' + File.join(File.expand_path(RAILS_ROOT), 'test', 'fixtures', 'feed_without_item_title.rss')
-    feed = FeedTools::Feed.open(URI.parse(test_feed_url))
-    ft_item = feed.items.first
-    feed_item = FeedItem.build_from_feed_item(ft_item)
-    
-    assert_equal 'Short Term Death', feed_item.display_title
-    
-    feed_item = FeedItem.build_from_feed_item(feed.items[1])
-    assert_equal %(What Americans Have Sacrificed In Bush's "War On Terror"), feed_item.display_title
-    
-    feed_item = FeedItem.build_from_feed_item(feed.items[2])
-    assert_equal 'Divided Families', feed_item.display_title
-    
-    feed_item = FeedItem.build_from_feed_item(feed.items[3])
-    assert_equal 'AMERICAN POWER.', feed_item.display_title
-    assert_equal 'american power.', feed_item.sort_title
+  def test_extract_feed_item_title_out_of_heading
+    content = <<-END
+<p><strong>AMERICAN POWER.</strong>  Responding to a relatively unobjectionable <strong>Tom Friedman</strong> <a href="http://select.nytimes.com/2006/10/11/opinion/11friedman.html">column</a> calling for "Russia and China [to] get over their ambivalence about U.S. power", <strong>Matt</strong> <a href="http://www.matthewyglesias.com/archives/2006/10/the_bus/">notes</a> that "ambivalence about U.S. power is a natural thing for Russia and China to feel."</p>
+
+<p>More than that, particularly for China, <em>concern</em> over US power is a natural way to feel.  After all, it wasn't that long ago that some nobody named <strong>Paul Wolfowitz</strong> <a href="http://work.colum.edu/~amiller/wolfowitz1992.htm">drafted</a> a document for then-Defense Secretary <strong>Dick Cheney</strong> arguing that "America’s political and military mission in the post-cold-war era will be to ensure that no rival superpower is allowed to emerge in Western Europe, Asia or the territories of the former Soviet Union."  In other words, US foreign policy should be explicitly aimed at stopping other large countries from becoming competing superpowers.  </p>
+
+<p>Do you think China, with four-and-a-half times our population, thinks America should be the most powerful and dominant country in the world, forevermore?  Or Russia, with their land mass, proud history, and in-living-memory superpower status?  For these countries, and many others, America's power is not obviously benign, and there's every indication it could eventually be turned on them were they to pose even a nonaggressive threat to it.  And that probably leaves them something worse than ambivalent towards our might, attitude, and obvious affection for unipolarity. </p>
+
+<p><em>--<a href="mailto:eklein@prospect.org">Ezra Klein</a></em></p>
+    END
+    item = FeedItem.new
+    item.stubs(:content).returns(stub(:title => nil, :encoded_content => content))
+    assert_equal("AMERICAN POWER.", item.display_title)
+  end
+  
+  def test_extract_feed_item_title_out_of_heading
+    content = <<-END
+<span style="font-weight:bold;">Short Term Death<br>&#xD;
+</span>&#xD;
+<br>&#xD;
+<br>by digby<br>&#xD;
+<br>&#xD;
+<br>Reading <a href="http://www.slate.com/id/2151353/">this article</a> by Jacob Weisberg on the subject of Bush's creation of the Axis of Evil, I realized that one of the most frustrating aspects of right wing hawkish thinking is their belief that it is useless to have any kind of short-term solution to a problem unless it can be guaranteed to result in a long term resolution.  Indeed, they even think of truces and ceasefires as weakness.  Here's Bush a couple of months ago talking abou Lebanon:<br>&#xD;
+<br>&#xD;
+    END
+    item = FeedItem.new
+    item.stubs(:content).returns(stub(:title => nil, :encoded_content => content))
+    assert_equal("Short Term Death", item.display_title)
+  end
+  
+  def test_extract_feed_item_title_out_of_bold_heading
+    content = <<-END
+<b>What Americans Have Sacrificed In Bush's "War On Terror"</b><br /><br />by tristero<br /><br />Many critics of the Bush administration have it wrong. They have repeatedly charged that while Bush has said the country is at war he has refused to call off the tax breaks for the rich or implement any measures that would require the American people to sacrifice. <br />
+    END
+    item = FeedItem.new
+    item.stubs(:content).returns(stub(:title => nil, :encoded_content => content))
+    assert_equal(%Q(What Americans Have Sacrificed In Bush's "War On Terror"), item.display_title)
   end
   
   def test_sort_title_generation
@@ -229,6 +250,7 @@ class FeedItemTest < Test::Unit::TestCase
     test_feed_url = 'file:/' + File.join(File.expand_path(RAILS_ROOT), 'test', 'fixtures', 'slashdot.rss')
     feed = FeedTools::Feed.open(URI.parse(test_feed_url))
     ft_item = feed.items.first
+    ft_item.stubs(:time).returns(Time.now)
     feed_item = FeedItem.build_from_feed_item(ft_item)
     assert feed_item.save
     
@@ -241,6 +263,16 @@ class FeedItemTest < Test::Unit::TestCase
     
     new_item = FeedItem.build_from_feed_item(ft_item)
     assert_nil new_item
+  end
+  
+  def test_items_older_than_30_days_should_be_skipped
+    assert_nil(FeedItem.build_from_feed_item(stub(:time => Time.now.ago(31.days))))
+  end
+  
+  def test_archived_items_should_be_skipped
+    FeedItem.expects(:make_unique_id).returns('unique_id')
+    FeedItemsArchive.expects(:item_exists?).with('http://test', 'unique_id').returns(true)
+    assert_nil(FeedItem.build_from_feed_item(stub(:time => Time.now, :link => 'http://test')))
   end
 end
 

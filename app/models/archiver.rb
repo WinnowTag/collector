@@ -10,7 +10,7 @@
 # Items older than 30 days and not on the protected items
 # list or in the randombackground are moved to the *_archive tables.
 class Archiver
-  class << self
+  class << self    
     def run
       # We can do this is pure SQL mostly, so it is much faster than using ActiveRecord
       ActiveRecord::Base.transaction do
