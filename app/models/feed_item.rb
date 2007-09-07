@@ -184,18 +184,19 @@ class FeedItem < ActiveRecord::Base
   # it is up to the caller to do that.
   #
   def self.build_from_feed_item(feed_item, tokenizer = FeedItemTokenizer.new)    
+    unique_id = self.make_unique_id(feed_item)
     new_feed_item = FeedItem.find(:first, 
                                   :conditions => [
                                     'link = ? or unique_id = ?',
                                     feed_item.link,
-                                    self.make_unique_id(feed_item)
+                                    unique_id
                                   ])
     return nil unless new_feed_item.nil?
     new_feed_item = FeedItem.new(:link => feed_item.link)
     
     new_feed_item.xml_data = feed_item.feed_data
     new_feed_item.xml_data_size = feed_item.feed_data ? feed_item.feed_data.size : 0
-    new_feed_item.unique_id = self.make_unique_id(feed_item)
+    new_feed_item.unique_id = unique_id
     new_feed_item.content_length = feed_item.content.size if feed_item.content
     new_feed_item.time = nil
     
@@ -261,10 +262,9 @@ class FeedItem < ActiveRecord::Base
     end
         
     author = feed_tools_item.author.nil? ? nil : feed_tools_item.author.name
-    self.create_feed_item_content(:title => (feed_tools_item.title || ""), :author => author, 
+    self.build_feed_item_content(:title => (feed_tools_item.title || ""), :author => author, 
                                  :link => feed_tools_item.link, 
                                  :description => feed_tools_item.description,
                                  :encoded_content => feed_tools_item.content)
   end
 end
-

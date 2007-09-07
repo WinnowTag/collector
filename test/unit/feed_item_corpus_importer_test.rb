@@ -5,16 +5,12 @@ require 'backgroundrb/worker_rails'
 require 'workers/feed_item_corpus_importer_worker'
 
 # Stub out worker initialization
-class BackgrounDRb::Worker::Base
+class BackgrounDRb::Worker::RailsBase
   def initialize(args = nil, jobkey = nil); end
 end
 
 class FeedItemCorpusImporterTest < Test::Unit::TestCase
   fixtures :feeds, :feed_items
-  
-  def use_transactional_fixtures?
-    false
-  end
   
   def test_import_of_corpus_with_single_new_feed
     FeedItem.any_instance.expects(:content)

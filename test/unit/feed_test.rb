@@ -14,9 +14,21 @@ class FeedTest < Test::Unit::TestCase
     # stub to bypass token filtering in build_from_feed_item
     FeedItemTokenizer.any_instance.stubs(:tokens_with_counts).returns(stub(:size => 50))
     
-    test_feed_url = 'file:/' + File.join(File.expand_path(RAILS_ROOT), 'test', 'fixtures', 'slashdot.rss')
-    feed = FeedTools::Feed.open(URI.parse(test_feed_url))
-    winnow_feed = Feed.create(:url => test_feed_url)
+    feed = stub(:title => 'A Feed', 
+                :link => 'http://test/site',
+                :feed_data => '<feed><item></item></feed', 
+                :http_headers => {})
+    feed.stubs(:items).returns([
+                        stub(:title => 'An Item',
+                             :link => 'http://test/item1',
+                             :time => Time.now,
+                             :author => stub(:name => 'Ghost'),
+                             :description => 'description of item',
+                             :content => 'longer content',
+                             :feed_data => '<item></item>')
+                      ])
+    
+    winnow_feed = Feed.create(:url => "http://test")
     added_feed_items = winnow_feed.add_from_feed(feed)
     
     assert_equal feed.title, winnow_feed.title
@@ -37,7 +49,7 @@ class FeedTest < Test::Unit::TestCase
     # Make sure it is also in the DB
     stored_feed_item = FeedItem.find_by_unique_id(first_returned_item.unique_id)
     assert_equal first_feed_item.title, stored_feed_item.content.title
-    assert_equal first_feed_item.time, stored_feed_item.time
+    assert_equal first_feed_item.time.to_i, stored_feed_item.time.to_i
     assert_equal first_feed_item.link, stored_feed_item.content.link
     assert_equal first_feed_item.description, stored_feed_item.content.description
     assert_equal first_feed_item.feed_data, stored_feed_item.xml_data
@@ -77,48 +89,20 @@ class FeedTest < Test::Unit::TestCase
   end
   
   def test_collect_all_logs_fatal_error_in_summary
-    Feed.any_instance.expects(:add_from_feed).raises(ActiveRecord::ActiveRecordError, "Error message")
+    Feed.any_instance.expects(:collect).raises(ActiveRecord::ActiveRecordError, "Error message")
     summary = nil
     assert_nothing_raised(ActiveRecord::ActiveRecordError) { summary = Feed.collect_all }
     assert_equal("ActiveRecord::ActiveRecordError", summary.fatal_error_type)
     assert_equal("Error message", summary.fatal_error_message)
   end
   
-  def test_collect
-    # stub to bypass token filtering in build_from_feed_item
-    FeedItemTokenizer.any_instance.stubs(:tokens_with_counts).returns(stub(:size => 50))
-    
-    original_feed_file = File.join(File.expand_path(RAILS_ROOT), 'test', 'fixtures', 'slashdot.rss')
-    old_feed_file = File.join(File.expand_path(RAILS_ROOT), 'test', 'fixtures', 'slashdot.rss.old')
-    updated_feed_file = File.join(File.expand_path(RAILS_ROOT), 'test', 'fixtures', 'slashdot.rss.updated')
-    test_feed_url = 'file:/' + original_feed_file
-    
-    # First create a seed using our test file, then make sure the initial collect works
+  def test_collect_opens_feed_and_calls_add_from_feed
+    test_feed_url = "http://test"
+    mock_feed = mock
+    FeedTools::Feed.expects(:open).with(test_feed_url).returns(mock_feed)
     feed = Feed.create(:url => test_feed_url)
-    assert_equal 4, feed.collect
-    assert_equal 4, feed.feed_items.size
-    initial_time = feed.updated_on
-    
-    # make sure the counter cache was updated
-    feed.reload
-    assert_equal(4, feed.feed_items_count)
-    
-    # make sure collect over unchanged feed doesn't change items
-    assert_equal 0, feed.collect
-    assert_equal 4, feed.feed_items.size
-    assert initial_time < feed.updated_on
-    
-    # 'update' the feed
-    `mv #{original_feed_file} #{old_feed_file}`
-    `mv #{updated_feed_file} #{original_feed_file}`
-    
-    # collect again and make sure we get the new feeds.
-    assert_equal 4, feed.collect
-    assert_equal 8, feed.feed_items.size
-    
-    # restore feed test files
-    `mv #{original_feed_file} #{updated_feed_file}`
-    `mv #{old_feed_file} #{original_feed_file}`
+    feed.expects(:add_from_feed).with(mock_feed)
+    feed.collect
   end
   
   def test_max_feed_items_overrides_and_randomizes_feed_items

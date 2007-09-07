@@ -13,24 +13,12 @@ class FeedItemContentArchive < ActiveRecord::Base; set_table_name "feed_item_con
 class FeedItemTokensContainerArchive < ActiveRecord::Base; set_table_name "feed_item_tokens_containers_archives"; end
 
 class ArchiverTest < Test::Unit::TestCase
-  # Testing a MyISAM table so we can't use transactional fixtures 
-  # and need to jump through some hoops in setup and teardown
-  self.use_transactional_fixtures = false
   fixtures :feed_items, :feed_item_xml_data, :feed_item_contents, :feed_item_tokens_containers
   
   def setup    
     ProtectedItem.delete_all
   end
-  
-  def teardown
-    Protector.delete_all("name = 'archive test' or name = 'archive test2'")
-    RandomBackground.delete_all
-    FeedItemArchive.delete_all
-    FeedItemXmlDataArchive.delete_all
-    FeedItemTokensContainerArchive.delete_all
-    FeedItemContentArchive.delete_all
-  end
-  
+    
   # Replace this with your real tests.
   def test_archiver_removes_feed_items_older_than_30_days
     older = FeedItem.count(older_than)
