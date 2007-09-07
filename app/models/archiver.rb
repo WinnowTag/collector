@@ -29,7 +29,7 @@ class Archiver
         END
         
 
-        # foreign keys cascade delete to xml and tokens tables
+        # foreign keys cascade delete to content, xml and tokens tables
         ex <<-END
           DELETE FROM feed_items 
             USING feed_items 
@@ -37,21 +37,6 @@ class Archiver
               LEFT OUTER JOIN protected_items pi on feed_items.id = pi.feed_item_id  
             WHERE 
               time < #{conn.quote(cutoff)} and rb.feed_item_id is null and pi.id is null;
-        END
-        
-        # contents table is a MyISAM table so we need to manually delete 
-        # use a join so we can pick up any orphans on the way.
-        # 
-        # Since we are only deleting contents with no matching row in
-        # in the feed_items table we don't need to worry about 
-        # check random background and protected items.
-        #
-        ex <<-END
-          DELETE FROM feed_item_contents 
-            USING feed_item_contents LEFT OUTER JOIN feed_items
-              ON feed_items.id = feed_item_contents.feed_item_id
-            WHERE
-              feed_items.id is null;
         END
       end
     end
