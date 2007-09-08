@@ -7,7 +7,6 @@
 
 require File.dirname(__FILE__) + '/../test_helper'
 
-class FeedItemArchive < ActiveRecord::Base; set_table_name "feed_items_archives"; end
 class FeedItemXmlDataArchive < ActiveRecord::Base; set_table_name "feed_item_xml_data_archives"; end
 class FeedItemContentArchive < ActiveRecord::Base; set_table_name "feed_item_contents_archives"; end
 class FeedItemTokensContainerArchive < ActiveRecord::Base; set_table_name "feed_item_tokens_containers_archives"; end
@@ -26,6 +25,16 @@ class ArchiverTest < Test::Unit::TestCase
       Archiver.run
     end
     assert_equal(FeedItem.count, FeedItem.count(:conditions => ['time > ?', Time.now.utc.ago(30.days)]))
+  end
+  
+  def test_duplicates_are_ignored
+    FeedItem.find(:all, :include => :feed_item_content).each do |fi|
+      fia = FeedItemsArchive.new(fi.attributes)
+      fia.id = fi.id
+      fia.save
+      FeedItemContentArchive.create(fi.content.attributes)
+    end
+    assert_nothing_raised(Exception) { Archiver.run } 
   end
   
   def test_archiver_removes_feed_item_xml_data_for_items_older_than_30_days
@@ -50,7 +59,7 @@ class ArchiverTest < Test::Unit::TestCase
   end
   
   def test_archiver_moves_feed_item_to_archive_table
-    assert_archived(FeedItem, FeedItemArchive)
+    assert_archived(FeedItem, FeedItemsArchive)
   end
   
   def test_archiver_moves_feed_item_xml_to_archive_table
@@ -107,13 +116,13 @@ class ArchiverTest < Test::Unit::TestCase
     fitok_count = FeedItemTokensContainer.count
     
     yield if block_given?
-    Archiver.run
+    assert_nothing_raised(Exception) { Archiver.run }
     
     assert_equal(fi_count,    FeedItem.count,                "FeedItem removed when it shouldn't have been.")
     assert_equal(fic_count,   FeedItemContent.count,         "FeedItem content removed when it should't have been.")
     assert_equal(fixml_count, FeedItemXmlData.count,         "FeedItem xml removed when it should't have been.")
     assert_equal(fitok_count, FeedItemTokensContainer.count, "FeedItem tokens removed when it should't have been.")
-    assert_equal(0, FeedItemArchive.count)
+    assert_equal(0, FeedItemsArchive.count)
     assert_equal(0, FeedItemContentArchive.count)
     assert_equal(0, FeedItemXmlDataArchive.count)
     assert_equal(0, FeedItemTokensContainerArchive.count)

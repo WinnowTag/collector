@@ -15,12 +15,9 @@ class Archiver
       # We can do this is pure SQL mostly, so it is much faster than using ActiveRecord
       ActiveRecord::Base.transaction do
         cutoff = Time.now.utc.ago(30.days)
-        ex(archive_sql(cutoff, 'feed_item_contents'))        
-        ex(archive_sql(cutoff, 'feed_item_xml_data', 'id'))
-        ex(archive_sql(cutoff, 'feed_item_tokens_containers'))
         
         ex <<-END
-          INSERT INTO feed_items_archives 
+          INSERT IGNORE INTO feed_items_archives 
             SELECT feed_items.* FROM feed_items 
               LEFT OUTER JOIN random_backgrounds rb ON feed_items.id = rb.feed_item_id
               LEFT OUTER JOIN protected_items    pi ON feed_items.id = pi.feed_item_id
@@ -28,6 +25,9 @@ class Archiver
               time < #{conn.quote(cutoff)} and rb.feed_item_id is null and pi.id is null;
         END
         
+        ex(archive_sql(cutoff, 'feed_item_contents'))        
+        ex(archive_sql(cutoff, 'feed_item_xml_data', 'id'))
+        ex(archive_sql(cutoff, 'feed_item_tokens_containers'))
 
         # foreign keys cascade delete to content, xml and tokens tables
         ex <<-END
@@ -44,15 +44,11 @@ class Archiver
     private
       def archive_sql(cutoff, table, fk = 'feed_item_id')
         <<-END
-          INSERT INTO #{table}_archives 
+          INSERT IGNORE INTO #{table}_archives 
             SELECT DISTINCT #{table}.* 
               FROM #{table}
                 INNER JOIN 
-                  feed_items ON feed_items.id = #{table}.#{fk}
-                LEFT OUTER JOIN random_backgrounds rb ON feed_items.id = rb.feed_item_id
-                LEFT OUTER JOIN protected_items    pi ON feed_items.id = pi.feed_item_id
-              WHERE 
-                time < #{conn.quote(cutoff)} and rb.feed_item_id is null and pi.id is null;
+                  feed_items_archives ON feed_items_archives.id = #{table}.#{fk};
         END
       end
       
