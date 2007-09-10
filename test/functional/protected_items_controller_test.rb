@@ -74,6 +74,18 @@ class ProtectedItemsControllerTest < Test::Unit::TestCase
     end
   end
   
+  def test_should_create_multiple_protected_items_even_when_some_exist
+    protector = Protector.find(2)
+    assert_difference(ProtectedItem, :count, 2) do
+      post :create, :protector_id => protector.id,
+                    :protected_items => { :protected_item => [
+                                            {:feed_item_id => 2},
+                                            {:feed_item_id => 3},
+                                            {:feed_item_id => 4}
+                                          ] }
+    end
+  end
+  
   def test_should_show_protected_item
     get :show, :id => 1, :protector_id => 1
     assert_response :success
