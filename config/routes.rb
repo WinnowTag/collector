@@ -1,5 +1,5 @@
 ActionController::Routing::Routes.draw do |map|
-              
+  map.resources :archival_histories              
   map.resources :collection_summaries
   map.resources :collection_jobs
   map.resources :feeds, :collection => {

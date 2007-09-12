@@ -8,13 +8,6 @@
 module CollectionSummariesHelper
   include FeedsHelper
   
-  def duration(summary)
-    unless summary.completed_on.nil?
-      seconds = (summary.completed_on - summary.created_on).to_i
-      "#{seconds / 1.hour} hours, #{(seconds % 1.hour) / 1.minute} minutes"
-    end
-  end
-  
   def atom_summary(cs)
     summary = ""
     

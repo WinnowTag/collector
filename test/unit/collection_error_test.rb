@@ -10,7 +10,7 @@ class CollectionErrorTest < Test::Unit::TestCase
   
   def test_creation_with_exception_sets_error_message
     e = Exception.new("error message")
-    assert_equal("error message", CollectionError.create(:exception => e).message)
+    assert_equal("error message", CollectionError.create(:exception => e).error_message)
   end
   
   def test_counter_cache

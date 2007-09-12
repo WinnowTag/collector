@@ -1,0 +1,8 @@
+<div class="control_bar">
+	<div>
+		<%= tab_link(image_tag('feed.png') +  "All Feeds", feeds_path)  %>
+		<%= tab_link(image_tag('feed_error.png') + "Problem Feeds", with_recent_errors_feeds_path) %>
+		<%= tab_link(image_tag('history.png') + "Collection History", collection_summaries_path) %>
+		<%= tab_link(image_tag('history.png') + "Archival History", archival_histories_path) %>
+	</div>
+</div>

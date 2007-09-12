@@ -1,13 +1,13 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
 one:
   id: 1
+  item_count: 1
   error_type: MyString
   error_message: MyText
-  feed_id: 1
-  created_on: <%= Time.now.ago(1.hour).utc.to_formatted_s(:db) %>
+  created_on: 2007-09-12 16:31:15
 two:
   id: 2
+  item_count: 1
   error_type: MyString
   error_message: MyText
-  feed_id: 2
-  created_on: <%= Time.now.ago(7.days).utc.to_formatted_s(:db) %>
+  created_on: 2007-09-12 16:31:15

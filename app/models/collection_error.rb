@@ -6,16 +6,7 @@
 #
 
 class CollectionError < ActiveRecord::Base
-  attr_accessor :exception
+  include ExceptionRecorder
   belongs_to :feed, :counter_cache => true
   belongs_to :collection_summary
-  before_create :set_attributes_from_exception
-  
-  private
-  def set_attributes_from_exception
-    if self.exception
-      self.error_type = self.exception.class.to_s
-      self.message    = self.exception.message
-    end
-  end
 end

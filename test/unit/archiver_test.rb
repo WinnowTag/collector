@@ -18,7 +18,20 @@ class ArchiverTest < Test::Unit::TestCase
     ProtectedItem.delete_all
   end
     
-  # Replace this with your real tests.
+  def test_archiver_creates_archival_history_entry
+    assert_difference(ArchivalHistory, :count, 1) do
+      Archiver.run
+    end
+  end
+
+  def test_archiver_run_returns_archival_history
+    assert_instance_of(ArchivalHistory, Archiver.run)
+  end
+  
+  def test_archiver_records_count_in_archival_history
+    assert_equal(FeedItem.count(older_than), Archiver.run.item_count)
+  end
+  
   def test_archiver_removes_feed_items_older_than_30_days
     older = FeedItem.count(older_than)
     assert_difference(FeedItem, :count, -older) do

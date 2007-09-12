@@ -12,36 +12,49 @@
 class Archiver
   class << self    
     def run
-      # We can do this is pure SQL mostly, so it is much faster than using ActiveRecord
-      ActiveRecord::Base.transaction do
-        cutoff = Time.now.utc.ago(30.days)
-        
-        ex <<-END
-          INSERT IGNORE INTO feed_items_archives 
-            SELECT feed_items.* FROM feed_items 
-              LEFT OUTER JOIN random_backgrounds rb ON feed_items.id = rb.feed_item_id
-              LEFT OUTER JOIN protected_items    pi ON feed_items.id = pi.feed_item_id
-            WHERE 
-              time < #{conn.quote(cutoff)} and rb.feed_item_id is null and pi.id is null;
-        END
-        
-        ex(archive_sql(cutoff, 'feed_item_contents'))        
-        ex(archive_sql(cutoff, 'feed_item_xml_data', 'id'))
-        ex(archive_sql(cutoff, 'feed_item_tokens_containers'))
-
-        # foreign keys cascade delete to content, xml and tokens tables
-        ex <<-END
-          DELETE FROM feed_items 
-            USING feed_items 
-              LEFT OUTER JOIN random_backgrounds rb ON feed_items.id = rb.feed_item_id
-              LEFT OUTER JOIN protected_items pi on feed_items.id = pi.feed_item_id  
-            WHERE 
-              time < #{conn.quote(cutoff)} and rb.feed_item_id is null and pi.id is null;
-        END
+      returning(ArchivalHistory.create) do |archival|      
+        begin
+          archival.item_count = archive()
+        rescue Exception => e
+          archival.e = e
+        ensure
+          archival.completed_on = Time.now.utc
+          archival.save
+        end
       end
     end
   
     private
+      def archive(cutoff = Time.now.utc.ago(30.days))
+        # We can do this is pure SQL mostly, so it is much faster than using ActiveRecord
+        ActiveRecord::Base.transaction do        
+          ex <<-END
+            INSERT IGNORE INTO feed_items_archives 
+              SELECT feed_items.* FROM feed_items 
+                LEFT OUTER JOIN random_backgrounds rb ON feed_items.id = rb.feed_item_id
+                LEFT OUTER JOIN protected_items    pi ON feed_items.id = pi.feed_item_id
+              WHERE 
+                time < #{conn.quote(cutoff)} and rb.feed_item_id is null and pi.id is null;
+          END
+        
+          ex(archive_sql(cutoff, 'feed_item_contents'))        
+          ex(archive_sql(cutoff, 'feed_item_xml_data', 'id'))
+          ex(archive_sql(cutoff, 'feed_item_tokens_containers'))
+
+          # foreign keys cascade delete to content, xml and tokens tables
+          ex <<-END
+            DELETE FROM feed_items 
+              USING feed_items 
+                LEFT OUTER JOIN random_backgrounds rb ON feed_items.id = rb.feed_item_id
+                LEFT OUTER JOIN protected_items pi on feed_items.id = pi.feed_item_id  
+              WHERE 
+                time < #{conn.quote(cutoff)} and rb.feed_item_id is null and pi.id is null;
+          END
+          
+          conn.connection.affected_rows
+        end
+      end
+      
       def archive_sql(cutoff, table, fk = 'feed_item_id')
         <<-END
           INSERT IGNORE INTO #{table}_archives 

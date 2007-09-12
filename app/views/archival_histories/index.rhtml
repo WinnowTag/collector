@@ -1,0 +1,17 @@
+<table class="data_table">
+  <tr>
+    <th>Started At</th>
+    <th>Duration</th>
+    <th>Item count</th>
+    <th>Errors</th>
+  </tr>
+  
+<% for archival_history in @archival_histories %>
+  <tr class="<%= cycle('odd', 'even') %> <%= 'failed' if archival_history.failed? %>">
+    <td><%=format_date archival_history.created_on %></td>
+    <td><%=duration archival_history %></td>
+    <td><%=h archival_history.item_count %></td>
+    <td><%=h "#{archival_history.error_type}: #{archival_history.error_message}" if archival_history.failed? %></td>
+  </tr>
+<% end %>
+</table>

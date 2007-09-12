@@ -1,6 +1,6 @@
   <tr class="<%= cycle("odd", "even") %>">
 	<td><%= short_feed_link(collection_error_with_feed.feed) %></td>
     <td><%=h collection_error_with_feed.error_type %></td>
-    <td><%=h collection_error_with_feed.message %></td>
+    <td><%=h collection_error_with_feed.error_message %></td>
     <td class="date"><%=format_date collection_error_with_feed.created_on %></td>
   </tr>

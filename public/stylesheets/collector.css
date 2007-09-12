@@ -88,16 +88,21 @@ img.flash_icon {
 
 a { color: #2c50e8; text-decoration: none; }
 a:hover {text-decoration: underline;}
-.control_bar a:hover {text-decoration: none; background-color: #9aafe5; color: #fff;}
+.control_bar a:hover {text-decoration: none; background-color: #D0EEFF; }
 a:visited { color: #2c50e8; }
 a.disabled {color: #888; cursor: default;}
 a:hover.disabled {color: #888; background-color: transparent; text-decoration: none;}
-a img, img.blank {border: 0; vertical-align: bottom; margin-left: 3px; margin-right: 5px;}
+a img, img.blank, .control_bar span.current img {border: 0; vertical-align: bottom; margin-left: 3px; margin-right: 5px;}
 .feed_icon {margin-right: 5px;}
 
-.control_bar a {
+.control_bar a, .control_bar span.current {
 	padding: 3px 3px;
 	border: 1px solid #9aafe5;
+}
+
+.control_bar span.current {
+  background-color: #9aafe5;
+  color: white;
 }
 
 .control_bar {

@@ -9,6 +9,19 @@
 # Methods added to this helper will be available to all templates in the application.
 
 module ApplicationHelper  
+  def tab_link(name, url)
+    link_to_unless_current(name, url) do |name|
+      content_tag('span', name, :class => 'current')
+    end
+  end
+  
+  def duration(summary)
+    unless summary.completed_on.nil?
+      seconds = (summary.completed_on - summary.created_on).to_i
+      "#{seconds / 1.hour} hours, #{(seconds % 1.hour) / 1.minute} minutes"
+    end
+  end
+  
   # Permit methods in the ApplicationController to be called from views.
 
   def method_missing(method, *args, &block)
