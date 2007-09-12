@@ -21,11 +21,13 @@ module CollectionSummariesHelper
     else
       summary = image_tag('hourglass.png') + " Collection started at #{format_date(cs.created_on)}"
     end
-    
-    summary += image_tag('notice.png') + ' ' +
+
+    if cs.failed? or cs.completed_on
+      summary += image_tag('notice.png') + ' ' +
                pluralize(cs.item_count, "new item") +
                " collected in #{duration(cs)} with " +
                pluralize(cs.collection_errors.size, "collection error") + ".<br/><br/>\n"
+    end
               
     summary
   end
