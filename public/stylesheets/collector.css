@@ -33,6 +33,18 @@ h2 {
 	font-size: 12px;
 }
 
+#login_form fieldset {
+	background-color: #D0EEFF;
+	border: none;
+	width: 400px;
+	float: right;
+	margin-right: 50px;
+}
+
+#login_form fieldset label {
+	width: 150px;
+}
+
 #page_title {
 	background-color: #D0EEFF;
 	padding: 5px 9px 9px 9px;
