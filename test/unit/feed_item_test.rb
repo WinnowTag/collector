@@ -118,12 +118,12 @@ class FeedItemTest < Test::Unit::TestCase
   
   def test_build_from_feed_item_returns_item_with_at_least_than_50_tokens
     FeedItemTokenizer.any_instance.stubs(:tokens_with_counts).returns(stub(:size => 50))
-    assert_not_nil(FeedItem.build_from_feed_item(stub_everything))
+    assert_not_nil(FeedItem.build_from_feed_item(stub_everything(:id => nil)))
   end
   
   def test_build_from_feed_item_drops_item_with_less_than_50_tokens
     FeedItemTokenizer.any_instance.stubs(:tokens_with_counts).returns(stub(:size => 49))
-    assert_nil(FeedItem.build_from_feed_item(stub_everything))
+    assert_nil(FeedItem.build_from_feed_item(stub_everything(:id => nil)))
   end
   
   def test_time_more_than_a_day_in_the_future_set_to_feed_time
@@ -274,8 +274,16 @@ class FeedItemTest < Test::Unit::TestCase
     FeedItemsArchive.expects(:item_exists?).with('http://test', 'unique_id').returns(true)
     assert_nil(FeedItem.build_from_feed_item(stub(:time => Time.now, :link => 'http://test')))
   end
+  
+  def test_unique_id_uses_feed_defined_id
+    assert_equal('unique_id', FeedItem.make_unique_id(stub(:id => 'unique_id')))
+  end
+  
+  def test_unique_id_generated_from_content_if_not_defined_by_feed
+    assert_equal(Digest::SHA1.hexdigest('titledescription'), FeedItem.make_unique_id(stub(:id => nil, :title => 'title', :description => 'description')))
+  end
 end
 
 class MockFeedItem 
-  attr_accessor :time, :feed, :feed_data, :author, :title, :link, :description, :content
+  attr_accessor :time, :feed, :feed_data, :author, :title, :link, :description, :content, :id
 end

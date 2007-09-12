@@ -25,7 +25,8 @@ class FeedTest < Test::Unit::TestCase
                              :author => stub(:name => 'Ghost'),
                              :description => 'description of item',
                              :content => 'longer content',
-                             :feed_data => '<item></item>')
+                             :feed_data => '<item></item>',
+                             :id => nil)
                       ])
     
     winnow_feed = Feed.create(:url => "http://test")

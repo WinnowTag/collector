@@ -230,27 +230,26 @@ class FeedItem < ActiveRecord::Base
     return new_feed_item
   end
     
-  # Return unique ID of a feed item by digesting title + time + first 100 body + last 100 body
-  # TODO: Eliminate time from digest. Simultaneously a script must be run that redigests the UIDs of all feed items in the database.
-  def self.make_unique_id(f_item)
-    s = String.new
-    s << f_item.title unless f_item.title.nil?
-    if f_item.time.nil?
-      s << Time.at(0).utc.to_s
-    else
-      s << f_item.time.getutc.to_s
+  # Return unique ID of a feed item by digesting title + first 100 body + last 100 body
+  def self.make_unique_id(item)
+    return item.id if item.id
+      
+    unique_id = ""
+    unique_id << item.title if item.title
+
+    if description = item.description
+      if description.length < 200
+        unique_id << description
+      else
+        first_100 = description[0,100]
+        unique_id << first_100 unless first_100.nil?
+        n = [100,description.length].min
+        last_100 = description[-n..-1]
+        unique_id << last_100 unless last_100.nil?
+      end
     end
-    d_str = f_item.description
-    unless d_str.nil?
-      x = d_str[0,100]
-      s << x unless x.nil?
-      n = [100,d_str.length].min
-      x = d_str[-n..-1]
-      s << x unless x.nil?
-    else
-      logger.warn 'DWSDWS "' + f_item.title.to_s + '" is NIL'
-    end
-    Digest::SHA1.hexdigest(s)
+    
+    Digest::SHA1.hexdigest(unique_id)
   end
 
   # generates content from a feed tools feed item
