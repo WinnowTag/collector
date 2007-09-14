@@ -75,6 +75,13 @@ module ApplicationHelper
   end
       
   def format_date(date, when_nil = "Never")
-    date.nil? ? when_nil : date.to_formatted_s(:short)
+    if date.nil?
+      when_nil
+    else
+      if current_user && current_user.tz
+        date = current_user.tz.utc_to_local(date)
+      end
+      date.to_formatted_s(:short)
+    end
   end  
 end

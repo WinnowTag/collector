@@ -6,6 +6,10 @@
 	<%= f.text_field 'firstname' %>
 	<%= f.text_field 'lastname' %>
 	<%= f.text_field 'email' %>
+	<p>
+	    <label for="">Time Zone</label>
+	    <%= time_zone_select 'current_user', 'time_zone', TZInfo::Timezone.all.sort, :model => TZInfo::Timezone %>
+	</p>
 	<p><label>&nbsp;</label><%= submit_tag 'Save' %></p>
 </fieldset>
 <% end%>

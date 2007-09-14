@@ -31,3 +31,4 @@ admin:
   salt: 7e3041ebc2fc05a40c60028e2c4901a81035d3cd
   crypted_password: 9add8c20fe9f470366fc0f9d1228041c25de5c59 # test
   created_at: <%= 5.days.ago.to_s :db %>
+  time_zone: UTC
