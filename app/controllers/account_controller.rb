@@ -22,7 +22,7 @@ class AccountController < ApplicationController
     @title = "My Info"
     if request.post?
       params[:current_user].delete(:login)
-      if current_user.update_attributes!(params[:current_user])
+      if current_user.update_attributes(params[:current_user])
         flash[:notice] = "Information updated"
         redirect_to :back
       end
