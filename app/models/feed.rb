@@ -57,6 +57,17 @@ class Feed < ActiveRecord::Base
     find(:all, opts)
   end
   
+  def self.update_feed_item_counts
+    connection.execute <<-END
+      update feeds
+      set feed_items_count = (
+          select count(id)
+          from feed_items
+          where feed_id = feeds.id
+        );
+    END
+  end
+  
   # Run collection on all active Feeds
   # Currently this results in alphabetical order by feed title.
   # TODO: Check seeds by least recently retrieved order?

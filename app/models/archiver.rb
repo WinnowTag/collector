@@ -15,9 +15,10 @@ class Archiver
       returning(ArchivalHistory.create) do |archival|      
         begin
           archival.item_count = archive()
+          Feed.update_feed_item_counts
         rescue Exception => e
           archival.e = e
-        ensure
+        ensure          
           archival.completed_on = Time.now.utc
           archival.save
         end
@@ -50,8 +51,7 @@ class Archiver
               WHERE 
                 time < #{conn.quote(cutoff)} and rb.feed_item_id is null and pi.id is null;
           END
-          
-          conn.connection.affected_rows
+          conn.connection.affected_rows          
         end
       end
       

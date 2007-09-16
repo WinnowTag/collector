@@ -12,7 +12,7 @@ class FeedItemContentArchive < ActiveRecord::Base; set_table_name "feed_item_con
 class FeedItemTokensContainerArchive < ActiveRecord::Base; set_table_name "feed_item_tokens_containers_archives"; end
 
 class ArchiverTest < Test::Unit::TestCase
-  fixtures :feed_items, :feed_item_xml_data, :feed_item_contents, :feed_item_tokens_containers
+  fixtures :feed_items, :feed_item_xml_data, :feed_item_contents, :feed_item_tokens_containers, :feeds
   
   def setup    
     ProtectedItem.delete_all
@@ -119,6 +119,13 @@ class ArchiverTest < Test::Unit::TestCase
         protector2.protected_items.create(:feed_item => i)
       end
     end
+  end
+  
+  def test_archiver_updates_cached_item_counts
+    initial_item_count = Feed.sum(:feed_items_count)
+    to_archive = FeedItem.count(older_than)
+    Archiver.run
+    assert_equal(initial_item_count - to_archive, Feed.sum(:feed_items_count))
   end
   
   private

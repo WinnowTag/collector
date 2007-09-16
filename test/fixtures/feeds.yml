@@ -23,12 +23,14 @@ dummy_feed:
   active: true
   updated_on: <%= Time.now.to_formatted_s(:db) %>
   collection_errors_count: 1
+  feed_items_count: 3
 another_dummy_feed:
   id: 2
   url: http://ruby-doc.org/en/index.rdf
   title: Ruby Documentation
   sort_title: ruby documentation
   active: true
+  feed_items_count: 1
 inactive_feed:
   id: 3
   url: http://rss.slashdot.org/Slashdot
