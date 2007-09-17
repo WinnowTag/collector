@@ -265,10 +265,6 @@ class FeedItemTest < Test::Unit::TestCase
     assert_nil new_item
   end
   
-  def test_items_older_than_30_days_should_be_skipped
-    assert_nil(FeedItem.build_from_feed_item(stub(:time => Time.now.ago(31.days))))
-  end
-  
   def test_archived_items_should_be_skipped
     FeedItem.expects(:make_unique_id).returns('unique_id')
     FeedItemsArchive.expects(:item_exists?).with('http://test', 'unique_id').returns(true)
