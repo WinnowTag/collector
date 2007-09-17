@@ -20,6 +20,7 @@ dummy_feed:
   url: http://ruby-lang.org/en/index.rdf
   title: Ruby Language
   sort_title: ruby language
+  link: http://ruby-lang.org/
   active: true
   updated_on: <%= Time.now.to_formatted_s(:db) %>
   collection_errors_count: 1

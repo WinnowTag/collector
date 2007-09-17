@@ -53,6 +53,16 @@ class FeedsControllerTest < Test::Unit::TestCase
     assert_equal([Feed.find(1)], assigns(:feeds))
   end
   
+  def test_duplicates_shows_duplicates
+    feed = Feed.find(1)
+    dup = Feed.new(:url => 'http://foo')
+    dup.link = feed.link
+    dup.save!
+    get :duplicates
+    assert_template 'index'
+    assert_equal([feed, dup].sort_by{|a| a.id}, assigns(:feeds).sort_by{|a| a.id})
+  end
+  
   def test_list_provides_text_format
     accept('text/plain')
     get :index
@@ -103,10 +113,11 @@ class FeedsControllerTest < Test::Unit::TestCase
   end
   
   def test_destroy_works_with_post
+    referer('/feeds')
     feed = Feed.create(:url => 'http://rss.slashdot.org/Slashdot/slashdot')
     delete :destroy, :id => feed.id
     assert_response :redirect
-    assert_redirected_to ''
+    assert_redirected_to '/feeds'
     assert_equal 'http://rss.slashdot.org/Slashdot/slashdot has been removed', flash[:notice]
     assert_raise ActiveRecord::RecordNotFound do
       Feed.find(feed.id)

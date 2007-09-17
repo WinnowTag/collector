@@ -173,4 +173,47 @@ class FeedTest < Test::Unit::TestCase
     feed.reload
     assert_equal(cec + 1, feed.collection_errors_count)
   end
+  
+  def test_find_suspected_duplicates_gets_feeds_with_the_same_title
+    feed = Feed.find(1)
+    dup = Feed.new(:url => 'http://foo')
+    dup.title = feed.title
+    dup.save!
+    assert_equal([feed, dup], Feed.find_duplicates(:order => 'id asc'))
+  end
+
+  def test_count_suspected_duplicates_counts_feeds_with_same_title
+    feed = Feed.find(1)
+    dup = Feed.new(:url => 'http://foo')
+    dup.title = feed.title
+    dup.save!
+    assert_equal(2, Feed.count_duplicates)
+  end
+    
+  def test_find_suspected_duplicates_gets_feeds_with_same_link
+    feed = Feed.find(1)
+    dup = Feed.new(:url => 'http://foo')
+    dup.link = feed.link
+    dup.save!
+    assert_equal([feed, dup], Feed.find_duplicates(:order => 'id asc'))
+  end
+  
+  def test_count_suspected_duplicates_counts_feeds_with_same_link
+    feed = Feed.find(1)
+    dup = Feed.new(:url => 'http://foo')
+    dup.link = feed.link
+    dup.save!
+    assert_equal(2, Feed.count_duplicates)
+  end
+  
+  def test_find_suspected_duplicates_returns_one_of_each
+    feed = Feed.find(1)
+    dup = Feed.new(:url => 'http://foo')
+    dup.title = feed.title
+    dup.save!
+    dup2 = Feed.new(:url => 'http://foo2')
+    dup2.title = feed.title
+    dup2.save!
+    assert_equal([feed, dup, dup2], Feed.find_duplicates(:order => 'id asc'))
+  end
 end

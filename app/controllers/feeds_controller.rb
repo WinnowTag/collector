@@ -10,7 +10,7 @@ class FeedsController < ApplicationController
   verify :only => [:collect, :update], :method => :post, :render => SHOULD_BE_POST
   verify :only => [:show, :collect, :update], :params => :id, :redirect_to => {:action => 'index'}
   before_filter :setup_search_term, :only => [:index]
-  before_filter :setup_sortable_headers, :only => [:index, :with_recent_errors]
+  before_filter :setup_sortable_headers, :only => [:index, :with_recent_errors, :duplicates]
   skip_before_filter :login_required#, :only => [:create]
   before_filter :login_required_unless_local#, :only => [:create]
   
@@ -47,6 +47,21 @@ class FeedsController < ApplicationController
         render :action => 'index'
       end
       wants.xml { render :xml => Feed.find_with_recent_errors.to_xml }
+    end
+  end
+  
+  def duplicates
+    respond_to do |wants|
+      wants.html do
+        @title = "Possible Duplicates"
+        @feed_pages = Paginator.new(self, Feed.count_duplicates, 40, params[:page])
+        @feeds = Feed.find_duplicates(:limit  => @feed_pages.items_per_page,
+                                      :offset => @feed_pages.current.offset,
+                                      :order  => sortable_order('feeds', :model => Feed,
+                                                                :field => 'title', :sort_direction => :asc))
+        render :action => 'index'
+      end
+      wants.xml { render :xml => Feed.find_duplicates.to_xml }
     end
   end
   
@@ -154,7 +169,7 @@ class FeedsController < ApplicationController
     flash[:notice] = @feed.url + ' has been removed'
     
     respond_to do |wants|
-      wants.html { redirect_to feeds_url }
+      wants.html { redirect_to :back }
       wants.xml  { render :nothing => true }
     end
   end

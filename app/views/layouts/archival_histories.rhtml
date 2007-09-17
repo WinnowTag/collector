@@ -14,11 +14,11 @@
 <body>
 	<%= render :partial => 'layouts/account_controls' %>
 	<div id="page_title"><%= @title or "needs title"%></div>
+	<%= render :partial => 'shared/header' %>
 	<div id="flash">
 		<div id="error_message" style="display: none;"></div>
 		<%= show_flash %>
 	</div>
-	<%= render :partial => 'shared/header' %>
 	<%= @content_for_layout %>
 </body>
 </html>

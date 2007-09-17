@@ -43,6 +43,20 @@ class Feed < ActiveRecord::Base
   has_many :collection_errors, :dependent => :delete_all, :order => 'created_on desc'
   has_one  :last_error, :order => 'created_on desc'
   
+  def self.count_duplicates
+    count(:joins => 'inner join feeds as f2 on ' +
+                       '(feeds.title = f2.title or feeds.link = f2.link) ' +
+                       'and feeds.id <> f2.id')    
+  end
+  
+  def self.find_duplicates(options = {})
+    find(:all, options.merge(
+                      :select => 'distinct feeds.*',
+                      :joins => 'inner join feeds as f2 on ' +
+                           '(feeds.title = f2.title or feeds.link = f2.link) ' +
+                           'and feeds.id <> f2.id'))
+  end
+  
   def self.count_with_recent_errors
     count(:select    => 'distinct feeds.id',
           :joins     => 'inner join collection_errors as ce on feeds.id = ce.feed_id',

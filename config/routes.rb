@@ -3,8 +3,9 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :collection_summaries
   map.resources :collection_jobs
   map.resources :feeds, :collection => {
-                  :import => :any,
-                  :with_recent_errors => :get
+                  :import             => :any,
+                  :with_recent_errors => :get,
+                  :duplicates         => :get
                 } do |feeds|
     feeds.resources :collection_jobs
     feeds.resources :collection_errors
