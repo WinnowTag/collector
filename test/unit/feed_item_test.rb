@@ -126,6 +126,21 @@ class FeedItemTest < Test::Unit::TestCase
     assert_nil(FeedItem.build_from_feed_item(stub_everything(:id => nil)))
   end
   
+  def test_dropped_item_is_added_to_discarded_items_table
+    assert_difference(DiscardedFeedItem, :count, 1) do
+      FeedItemTokenizer.any_instance.stubs(:tokens_with_counts).returns(stub(:size => 49))
+      item = stub_everything(:id => nil, :title => 'title', :description => 'description', :link => "http://foo")
+      assert_nil(FeedItem.build_from_feed_item(item))
+      assert_not_nil(DiscardedFeedItem.find_by_link("http://foo"))
+    end
+  end
+  
+  def test_build_from_item_drops_discarded_item
+    FeedItemTokenizer.any_instance.stubs(:tokens_with_counts).returns(stub(:size => 50))
+    DiscardedFeedItem.expects(:discarded?).with("http://foo", instance_of(String)).returns(true)
+    assert_nil(FeedItem.build_from_feed_item(stub_everything(:id => nil, :title => 'title', :description => 'description', :link => "http://foo")))
+  end
+  
   def test_time_more_than_a_day_in_the_future_set_to_feed_time
     # stub to bypass token filtering in build_from_feed_item
     FeedItemTokenizer.any_instance.stubs(:tokens_with_counts).returns(stub(:size => 50))

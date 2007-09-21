@@ -184,8 +184,9 @@ class FeedItem < ActiveRecord::Base
   # it is up to the caller to do that.
   #
   def self.build_from_feed_item(feed_item, tokenizer = FeedItemTokenizer.new)
-    unique_id = self.make_unique_id(feed_item)
-    return nil if FeedItemsArchive.item_exists?(feed_item.link, unique_id)
+    unique_id = self.make_unique_id(feed_item)    
+    return nil if FeedItemsArchive.item_exists?(feed_item.link, unique_id) or
+                  DiscardedFeedItem.discarded?(feed_item.link, unique_id)
     new_feed_item = FeedItem.find(:first, 
                                   :conditions => [
                                     'link = ? or unique_id = ?',
@@ -223,6 +224,7 @@ class FeedItem < ActiveRecord::Base
     tokens = tokenizer.tokens_with_counts(new_feed_item)
     if tokens.size < 50
       logger.info("discarded small item: #{tokens.size} tokens in #{new_feed_item.sort_title}")
+      DiscardedFeedItem.create(:link => new_feed_item.link, :unique_id => new_feed_item.unique_id)
       new_feed_item = nil 
     end
     
