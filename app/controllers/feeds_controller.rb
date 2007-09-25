@@ -67,7 +67,7 @@ class FeedsController < ApplicationController
   
   def new
     @title = "winnow feeds: add a feed"
-    @feed = Feed.new
+    @feed = Feed.new(params[:feed])
   end
   
   def create
