@@ -58,7 +58,7 @@ class ProtectedItemsControllerTest < Test::Unit::TestCase
     assert_equal old_count+1, ProtectedItem.count, assigns(:protected_item).inspect
     
     assert_response :created
-    assert_equal protected_item_url(protector, assigns(:protected_item)), @response.headers['Location']
+    assert_equal protector_protected_item_url(protector, assigns(:protected_item)), @response.headers['Location']
   end
 
   def test_should_create_multiple_protected_items

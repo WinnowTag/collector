@@ -127,7 +127,7 @@ class FeedsControllerTest < Test::Unit::TestCase
   def test_get_import_returns_form
     get :import
     assert_response :success
-    assert_select("form[action = '/feeds;import']", 1, @response.body)
+    assert_select("form[action = '/feeds/import']", 1, @response.body)
   end
   
   def test_import_without_urls_fails

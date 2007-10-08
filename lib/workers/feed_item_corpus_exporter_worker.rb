@@ -9,7 +9,7 @@ class FeedItemCorpusExporterWorker < BackgrounDRb::Worker::RailsBase
   
   def do_work(args)
     args = {
-      :start_date => Time.now.utc.last_month.to_date,
+      :start_date => Time.now.utc.ago(32.days).to_date,
       :end_date => Time.now.utc.to_date,
       :min_content_length => 1,
       :item_target => 5000,
@@ -42,7 +42,7 @@ class FeedItemCorpusExporterWorker < BackgrounDRb::Worker::RailsBase
     results[:progress_message] = "Collecting Feed Item Counts..."
     all_feeds = args[:feeds].collect do |feed_id|
                   results[:progress] = results[:progress] + progress_increment
-                  Feed.find(:first, :conditions => 
+                  feed = Feed.find(:first, :conditions => 
                             ['feeds.id = ? and feed_items.time >= ?' +
                                 ' and feed_items.time <= ? and feed_items.content_length >= ?',
                                 # need to advance end date by a day to include all on the date
@@ -53,7 +53,6 @@ class FeedItemCorpusExporterWorker < BackgrounDRb::Worker::RailsBase
                                             'count(feed_items.id) as number_of_items_in_range',
                              :group => 'feeds.id')
                 end.compact
-    
     
     # Use SQRT to crunch down item sizes for each feed size. Collect the sum 
     # of the SQRTs to use in calculating a ratio of the items to use for each feed.

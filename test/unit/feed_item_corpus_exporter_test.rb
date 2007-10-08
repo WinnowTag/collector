@@ -5,7 +5,7 @@ require 'backgroundrb/worker_rails'
 require 'workers/feed_item_corpus_exporter_worker'
 
 # Stub out worker initialization
-class BackgrounDRb::Worker::Base
+class BackgrounDRb::Worker::RailsBase
   def initialize(args = nil, jobkey = nil); end
 end
 
@@ -20,7 +20,7 @@ class FeedItemCorpusExporterTest < Test::Unit::TestCase
     @output = nil
   end
   
-  def test_full_export        
+  def test_full_export
     exporter = FeedItemCorpusExporterWorker.new
     results = {}
     exporter.stubs(:results).returns(results)

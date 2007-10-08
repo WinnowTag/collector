@@ -80,7 +80,7 @@ class ProtectedItemsController < ApplicationController
     @protected_item = @protector.protected_items.build(params[:protected_item])
     respond_to do |format|
       if @protected_item.nil? || @protected_item.save
-        format.xml  { head :created, :location => protected_item_url(@protector, @protected_item) }
+        format.xml  { head :created, :location => protector_protected_item_url(@protector, @protected_item) }
       else
         format.xml  { render :xml => @protected_item.errors.to_xml }
       end
