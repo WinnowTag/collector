@@ -23,12 +23,20 @@
 -- the insert statement with an identical statement for each winnow schema.
 --
 
+DROP TRIGGER IF EXISTS unread_items_inserter;
+
 DELIMITER |
 
 CREATE TRIGGER unread_items_inserter AFTER INSERT ON feed_items
   FOR EACH ROW BEGIN
-    INSERT INTO winnow_dev.unread_items (user_id, feed_item_id, created_on)
-      SELECT id, NEW.id, UTC_TIMESTAMP() FROM users;
+    INSERT IGNORE INTO alpha.unread_items (user_id, feed_item_id, created_on)
+      SELECT id, NEW.id, UTC_TIMESTAMP() FROM alpha.users;
+    INSERT IGNORE INTO trunk.unread_items (user_id, feed_item_id, created_on)
+      SELECT id, NEW.id, UTC_TIMESTAMP() FROM trunk.users;
+    INSERT IGNORE INTO seangeo.unread_items (user_id, feed_item_id, created_on)
+      SELECT id, NEW.id, UTC_TIMESTAMP() FROM seangeo.users;
+    INSERT IGNORE INTO mh.unread_items (user_id, feed_item_id, created_on)
+      SELECT id, NEW.id, UTC_TIMESTAMP() FROM mh.users;
   END;
 |
 
