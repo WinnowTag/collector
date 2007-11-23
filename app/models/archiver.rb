@@ -40,7 +40,7 @@ class Archiver
         
           ex(archive_sql(cutoff, 'feed_item_contents'))        
           ex(archive_sql(cutoff, 'feed_item_xml_data', 'id'))
-          ex(archive_sql(cutoff, 'feed_item_tokens_containers'))
+          ex(archive_sql(cutoff, 'feed_item_tokens'))
 
           # foreign keys cascade delete to content, xml and tokens tables
           ex <<-END

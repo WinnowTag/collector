@@ -51,7 +51,6 @@ load_without_new_constant_marking File.join(RAILS_ROOT, 'vendor', 'plugins', 'wi
 #
 
 class FeedItem < ActiveRecord::Base
-  
   # Updates the position column of all feed items.
   #
   # Position provides a integer ordering based on the time column.
@@ -84,65 +83,7 @@ class FeedItem < ActiveRecord::Base
                 " and fitc.tokenizer_version = #{FeedItemTokenizer::VERSION}",
       :limit => size)
   end
-    
-  # Gets the tokens with frequency counts for the feed_item.
-  # 
-  # This return a hash with token => freqency entries.
-  #
-  # There are a number of different ways to get the tokens for an item:
-  # 
-  # The fastest, providing the token already exists, is to select out the 
-  # tokens field from the feed_item_tokens_containers table as a field of
-  # the feed item. In this case the tokens will be unmarshaled without type
-  # casting.
-  #
-  # You can also include the :latest_tokens association on a query for feed
-  # items which will get the tokens with the highest tokenizer version.  This
-  # method will require Rails to build the association so it is slower than the 
-  # previously described method.
-  #
-  # Finally, the slowest, but also the method that will create the tokens if the
-  # dont exists is to pass version and a block, if there are no tokens matching the 
-  # tokenizer version the block is called and a token container will be created
-  # using the result from the block as the tokens. This is the method used by
-  # FeedItemTokenizer#tokens.
-  #
-  def tokens_with_counts(version = FeedItemTokenizer::VERSION, force = false)
-    if self.new_record? and block_given?
-      tokens = yield(self)
-      token_containers.build(:tokens_with_counts => tokens, :tokenizer_version => version)
-      tokens
-    elsif block_given? and force
-      tokens = yield(self)
-      token_containers.create(:tokens_with_counts => tokens, :tokenizer_version => version)
-      tokens
-    elsif tokens = read_attribute_before_type_cast('tokens_with_counts')
-      Marshal.load(tokens)  
-    elsif self.latest_tokens and self.latest_tokens.tokenizer_version == version
-      self.latest_tokens.tokens_with_counts
-    elsif token_container = self.token_containers.find(:first, :conditions => ['tokenizer_version = ?', version])
-      token_container.tokens_with_counts
-    elsif block_given?
-      tokens = yield(self)
-      token_containers.create(:tokens_with_counts => tokens, :tokenizer_version => version)
-      tokens
-    end
-  end
-  
-  # Gets the tokens without frequency counts.
-  #
-  # This method requires the tokens to have already been extracted and stored in the token_container.
-  # 
-  def tokens(version = FeedItemTokenizer::VERSION)
-    if tokens = read_attribute_before_type_cast('tokens')
-      Marshal.load(tokens)
-    elsif self.latest_tokens and self.latest_tokens.tokenizer_version == version
-      self.latest_tokens.tokens
-    elsif token_container = self.token_containers.find(:first, :conditions => ['tokenizer_version = ?', version])
-      token_container.tokens
-    end
-  end
-  
+
   # Gets a UID suitable for use within the classifier
   def uid 
     "Winnow::FeedItem::#{self.id}"

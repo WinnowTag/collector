@@ -9,56 +9,27 @@ require File.dirname(__FILE__) + '/../test_helper'
 require 'feed_tools'
 
 class FeedItemTest < Test::Unit::TestCase
-  fixtures :feed_items, :feed_item_tokens_containers
+  fixtures :feed_items, :feed_item_tokens
   
-  def test_tokens_calls_create
-    tokens = {'a' => 1, 'b' => 2, 'c' => 3}
-    fi = FeedItem.find(1)
-    fi.token_containers.expects(:create).with(:tokens_with_counts => tokens, :tokenizer_version => 1)
-    fi.tokens_with_counts(1) do |feed_item|
-      assert_equal fi, feed_item
-      tokens
-    end
-  end
-  
-  def test_tokens_calls_build_on_new_record
-    tokens = {'a' => 1, 'b' => 2, 'c' => 3}
-    fi = FeedItem.new
-    fi.token_containers.expects(:build).with(:tokens_with_counts => tokens, :tokenizer_version => 1)
-    fi.tokens_with_counts(1) do |feed_item|
-      assert_equal fi, feed_item
-      tokens
-    end
+  def test_tokens_set_and_get
+    tokens = {1 => 1, 2 => 2, 3 => 3}
+    fi = FeedItem.new :link => 'fakelink'
+    fi.tokens_with_counts = tokens
+    fi.save!
+    assert_equal tokens.keys, fi.tokens
   end
   
   def test_tokens_retrieves_from_db
-    tokens = {'a' => 1, 'b' => 2, 'c' => 3}
+    tokens = {1 => 3, 2 => 2, 3 => 1}
     fi = FeedItem.find(1)
-    fi.tokens_with_counts(1) do |feed_item|
-      tokens
-    end
-    # do it again to make sure they were saved
-    assert_equal tokens, fi.tokens_with_counts(1)
+    assert_equal tokens, fi.tokens_with_counts
   end
   
   def test_tokens_when_no_tokens_exist
-    fi = FeedItem.find(1)
-    assert_nil(fi.tokens(1))
+    fi = FeedItem.find(2)
+    assert_equal({}, fi.tokens_with_counts)
   end
-  
-  def test_tokens_when_tokens_exist_in_db
-    fi = FeedItem.find(1)
-    assert_equal(feed_item_tokens_containers(:tokens_for_first).tokens, fi.tokens(0))
-  end
-  
-  def test_tokens_when_selected_with_item
-    expected = feed_item_tokens_containers(:tokens_for_first).tokens
-    FeedItemTokensContainer.expects(:find).never
-    fi = FeedItem.find(:first, :select => 'feed_items.*, feed_item_tokens_containers.tokens as tokens',
-                              :joins => 'inner join feed_item_tokens_containers on feed_items.id = feed_item_tokens_containers.feed_item_id')
-    assert_equal(expected, fi.tokens(0))
-  end
-  
+    
   # Replace this with your real tests.
   def test_build_from_feed_item
     # stub to bypass token filtering in build_from_feed_item

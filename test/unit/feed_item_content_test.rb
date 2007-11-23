@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + '/../test_helper'
 class FeedItemContentsFullText < ActiveRecord::Base; set_table_name('feed_item_contents_full_text'); end
 
 class FeedItemContentTest < Test::Unit::TestCase
-  fixtures :feed_item_contents
+  fixtures :feed_items, :feed_item_contents
   
   def setup
     FeedItemContentsFullText.delete_all
