@@ -28,7 +28,7 @@ class FeedItemCorpusImporterTest < Test::Unit::TestCase
     imported_feed = Feed.find_by_url('http://www.ajaxian.com/atom.xml')
     assert_not_nil imported_feed
     assert_equal "Ajaxian", imported_feed.title
-    assert_equal 1, imported_feed.feed_items.size
+    assert_equal 1, imported_feed.feed_items.length
     assert_equal 'ajaxiscool', imported_feed.feed_items.first.unique_id
     assert_equal '<item><title>A Couple Quick Ajax Experience Notes</title></item>', imported_feed.feed_items.first.xml_data
     assert_equal 'http://ajaxian.com/ajax_is_cool', imported_feed.feed_items.first.link
