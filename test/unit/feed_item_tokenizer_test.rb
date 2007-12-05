@@ -5,9 +5,8 @@
 # Please contact info@peerworks.org for further information.
 #
 
-require "test_helper"
-require 'feed_item'
-require 'feed_item_tokenizer'
+require File.dirname(__FILE__) + '/../test_helper'
+require 'feed_tools'
 
 class FeedItemTokenizerTest < Test::Unit::TestCase
   include Bayes
