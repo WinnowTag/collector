@@ -53,19 +53,7 @@ load_without_new_constant_marking File.join(RAILS_ROOT, 'vendor', 'plugins', 'wi
 class FeedItem < ActiveRecord::Base
   attr_accessor :tokens_with_counts
   after_save :save_tokens
-  
-  # Updates the position column of all feed items.
-  #
-  # Position provides a integer ordering based on the time column.
-  #
-  def self.update_positions
-    transaction do
-      connection.update("update feed_items set position = NULL;")
-      connection.execute("set @i = 1;")
-      connection.update("update feed_items set position = @i:=@i+1 order by time DESC;")
-    end
-  end
-  
+
   # Finds some random items with their tokens.  
   #
   # Instead of using order by rand(), which is very slow for large tables,

@@ -107,7 +107,6 @@ class Feed < ActiveRecord::Base
       ensure
         summary.completed_on = Time.now.utc
         summary.save
-        FeedItem.update_positions
       end
     end
   end
