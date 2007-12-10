@@ -4,6 +4,6 @@
     <td class="date"><%=format_date collection_job.created_at %></td>
     <td class="date"><%=format_date collection_job.started_at, '-' %></td>
     <td class="date"><%=format_date collection_job.completed_at, '-' %></td>
-    <td class="control_icons"><%= link_to image_tag('trash.gif'), collection_job_path(collection_job.feed, collection_job),
+    <td class="control_icons"><%= link_to image_tag('trash.gif'), feed_collection_job_path(collection_job.feed, collection_job),
  							   :confirm => 'Are you sure?', :method => :delete %></td>
 </tr>

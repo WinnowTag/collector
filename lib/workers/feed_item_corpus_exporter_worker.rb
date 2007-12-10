@@ -5,6 +5,8 @@
 # Please contact info@peerworks.org for further information.
 #
 
+require 'zlib'
+
 class FeedItemCorpusExporterWorker < BackgrounDRb::Worker::RailsBase
   
   def do_work(args)

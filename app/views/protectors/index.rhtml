@@ -14,7 +14,7 @@
     <td class="date"><%=format_date protector.updated_on %></td>
     <td class="number"><%= protector.protected_items.size %></td>
     <td>
-    	<%= link_to image_tag('delete.png'), protector_path(protector), :confirm => 'Are you sure?', :method => :delete %>
+    	<%= link_to(image_tag('delete.png'), protector_path(protector), :confirm => 'Are you sure?', :method => :delete) %>
 	</td>
   </tr>
 <% end %>

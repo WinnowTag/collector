@@ -93,7 +93,7 @@ class FeedsControllerTest < Test::Unit::TestCase
       accept('application/xml')
       post :create, :feed => {:url => 'http://test.feed/'}
       assert feed = Feed.find_by_url('http://test.feed/')
-      assert_equal("application/xml; charset=utf-8", @response.headers['Content-Type'])
+      assert_equal("application/xml", @response.content_type)
       assert_equal(feed_url(feed), @response.headers['Location'])
       assert_response 201
     end
@@ -179,7 +179,7 @@ class FeedsControllerTest < Test::Unit::TestCase
   def test_show_returns_xml
     accept("text/xml")
     get :show, :id => 1
-    assert_match(/application\/xml/, @response.headers['Content-Type'])
+    assert_match(/application\/xml/, @response.content_type)
   end
   
   def test_show_assigns_feed

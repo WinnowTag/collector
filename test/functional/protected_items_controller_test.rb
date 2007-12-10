@@ -26,7 +26,7 @@ class ProtectedItemsControllerTest < Test::Unit::TestCase
                                                     :action => 'index',
                                                     :protector_id => "1")
     assert_recognizes({:controller => 'protected_items', :action => 'delete_all', :protector_id => "1"},
-                      {:path => '/protectors/1/protected_items;delete_all', :method => :delete})
+                      {:path => '/protectors/1/protected_items/delete_all', :method => :delete})
   end
   
   def test_should_get_index

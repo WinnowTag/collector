@@ -36,7 +36,7 @@ class User < ActiveRecord::Base
   SALT = "Things which are unimportant can seem important. Things which are important can seem unimportant." unless const_defined?(:SALT)
   attr_accessor :password
 
-  composed_of :tz, :class_name => TZInfo::Timezone, :mapping => %w(time_zone identifier)
+  composed_of :tz, :class_name => 'TZInfo::Timezone', :mapping => %w(time_zone identifier)
   validates_presence_of     :login, :email, :firstname, :lastname, :time_zone
   validates_presence_of     :password,                   :if => :password_required?
   validates_presence_of     :password_confirmation,      :if => :password_required?
