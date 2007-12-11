@@ -67,7 +67,7 @@ class FeedsController < ApplicationController
   
   def new
     @title = "winnow feeds: add a feed"
-    @feed = Feed.new(params[:feed])
+    @feed = Feed.new(params[:feed])    
   end
   
   def create
@@ -79,6 +79,7 @@ class FeedsController < ApplicationController
           head :created, :location => feed_url(@feed)
         end
       else
+        flash.now[:error] = @feed.errors.on(:url)
         wants.html { render :action => 'new' }
         wants.xml  { render :xml => @feed.errors.to_xml, :status => 422 }
       end

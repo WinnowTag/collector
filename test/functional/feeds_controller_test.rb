@@ -158,7 +158,7 @@ class FeedsControllerTest < Test::Unit::TestCase
     post :import, :feed => {:urls => 'http://rss.slashdot.org/Slashdot/slashdot'}
     assert_response :success
     assert_template 'import'
-    assert_select("#error", "1 feed already exists", @response.body)
+    assert_select("#error", "1 Feed already exists", @response.body)
   end
   
   def test_importing_duplicate_multiple_feeds_fails
@@ -167,7 +167,7 @@ class FeedsControllerTest < Test::Unit::TestCase
     assert_response :success
     assert_template 'import'
     assert_select("#notice", "1 new feed added", @response.body)
-    assert_select("#error", "1 feed already exists", @response.body)
+    assert_select("#error", "1 Feed already exists", @response.body)
     assert_equal 'http://rss.slashdot.org/Slashdot/slashdot', assigns(:urls)
   end
 
