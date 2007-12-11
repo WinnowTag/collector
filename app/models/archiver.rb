@@ -51,7 +51,16 @@ class Archiver
               WHERE 
                 time < #{conn.quote(cutoff)} and rb.feed_item_id is null and pi.id is null;
           END
-          conn.connection.affected_rows          
+          
+          items_removed = conn.connection.affected_rows
+          
+          # Delete archived entries from full text index table - MyISAM so no FKs
+          ex <<-END
+            DELETE FROM feed_item_contents_full_text
+              WHERE id NOT IN (SELECT id FROM feed_items);
+          END
+          
+          items_removed          
         end
       end
       

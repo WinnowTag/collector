@@ -15,7 +15,7 @@ class FeedItemToken < ActiveRecord::Base;
 end
 
 class ArchiverTest < Test::Unit::TestCase
-  fixtures :feed_items, :feed_item_xml_data, :feed_item_contents, :feeds, :feed_item_tokens
+  fixtures :feed_items, :feed_item_xml_data, :feed_item_contents, :feeds, :feed_item_tokens, :feed_item_contents_full_text
   
   def setup    
     ProtectedItem.delete_all
@@ -88,6 +88,12 @@ class ArchiverTest < Test::Unit::TestCase
   
   def test_archiver_moves_feed_item_tokens_to_archive_table
     assert_archived(FeedItemToken, FeedItemTokenArchive, :include => :feed_item)
+  end
+  
+  def test_archive_removes_feed_item_full_text_entries
+    assert_difference(FeedItemContentsFullText, :count, -1) do 
+      Archiver.run
+    end
   end
   
   def test_archiver_skips_background_items
