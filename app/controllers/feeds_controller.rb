@@ -90,7 +90,7 @@ class FeedsController < ApplicationController
     @feed = Feed.find(params[:id])
     respond_to do |wants|
       wants.html do
-        @title = @feed.title
+        @title = (@feed.title or "Uncollected Feed")
         render :action => 'show'
       end
       wants.xml { render :xml => @feed.to_xml }
