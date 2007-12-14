@@ -59,34 +59,7 @@ class FeedItemTest < Test::Unit::TestCase
     dup = FeedItem.build_from_feed_item(ft_item)
     assert_nil dup
   end
-  
-  def test_getting_content_when_content_is_nil_generates_content
-    # stub to bypass token filtering in build_from_feed_item
-    FeedItemTokenizer.any_instance.stubs(:tokens_with_counts).returns(stub(:size => 50))
-    test_feed_url = 'file:/' + File.join(File.expand_path(RAILS_ROOT), 'test', 'fixtures', 'slashdot.rss')
-    feed = FeedTools::Feed.open(URI.parse(test_feed_url))
-    ft_item = feed.items.first
-    ft_item.stubs(:time).returns(Time.now)
-    feed_item = FeedItem.build_from_feed_item(ft_item)
     
-    assert feed_item.new_record?
-    assert_equal ft_item.title, feed_item.content.title
-    assert_equal ft_item.time, feed_item.time
-    assert_equal ft_item.feed_data, feed_item.xml_data
-    assert_equal FeedItem.make_unique_id(ft_item), feed_item.unique_id
-    assert_equal ft_item.link, feed_item.content.link
-    assert_equal ft_item.author.name, feed_item.content.author
-    assert_equal ft_item.description, feed_item.content.description
-    assert_equal ft_item.content, feed_item.content.encoded_content
-    
-    # nil out the content
-    feed_item.feed_item_content = nil
-    assert_equal ft_item.title, feed_item.content.title
-    assert_equal ft_item.link, feed_item.content.link
-    assert_equal ft_item.author.name, feed_item.content.author
-    assert_equal ft_item.description, feed_item.content.description
-  end
-  
   def test_build_from_feed_item_returns_item_with_at_least_than_50_tokens
     FeedItemTokenizer.any_instance.stubs(:tokens_with_counts).returns(stub(:size => 50))
     assert_not_nil(FeedItem.build_from_feed_item(stub_everything(:id => nil)))
@@ -175,15 +148,11 @@ class FeedItemTest < Test::Unit::TestCase
     
     assert_equal ft_item.title, feed_item.content.title
     assert_equal ft_item.description, feed_item.content.description
-    assert_equal ft_item.content, feed_item.content.encoded_content
-    
-    feed_item.feed_item_content = nil
-    assert_equal ft_item.title, feed_item.content.title
-    assert_equal ft_item.description, feed_item.content.description
-    assert_equal ft_item.content, feed_item.content.encoded_content
+    assert_equal ft_item.content, feed_item.content.encoded_content    
   end
   
-  def test_extract_feed_item_title_out_of_heading
+  def test_extract_feed_item_title_out_of_strong_heading
+    FeedItemTokenizer.any_instance.stubs(:tokens_with_counts).returns(stub(:size => 50))
     content = <<-END
 <p><strong>AMERICAN POWER.</strong>  Responding to a relatively unobjectionable <strong>Tom Friedman</strong> <a href="http://select.nytimes.com/2006/10/11/opinion/11friedman.html">column</a> calling for "Russia and China [to] get over their ambivalence about U.S. power", <strong>Matt</strong> <a href="http://www.matthewyglesias.com/archives/2006/10/the_bus/">notes</a> that "ambivalence about U.S. power is a natural thing for Russia and China to feel."</p>
 
@@ -193,12 +162,14 @@ class FeedItemTest < Test::Unit::TestCase
 
 <p><em>--<a href="mailto:eklein@prospect.org">Ezra Klein</a></em></p>
     END
-    item = FeedItem.new
-    item.stubs(:content).returns(stub(:title => nil, :encoded_content => content))
-    assert_equal("AMERICAN POWER.", item.display_title)
+    ftitem = MockFeedItem.new
+    ftitem.content = content
+    item = FeedItem.build_from_feed_item(ftitem)
+    assert_equal("AMERICAN POWER.", item.title)
   end
   
   def test_extract_feed_item_title_out_of_heading
+    FeedItemTokenizer.any_instance.stubs(:tokens_with_counts).returns(stub(:size => 50))
     content = <<-END
 <span style="font-weight:bold;">Short Term Death<br>&#xD;
 </span>&#xD;
@@ -208,18 +179,21 @@ class FeedItemTest < Test::Unit::TestCase
 <br>Reading <a href="http://www.slate.com/id/2151353/">this article</a> by Jacob Weisberg on the subject of Bush's creation of the Axis of Evil, I realized that one of the most frustrating aspects of right wing hawkish thinking is their belief that it is useless to have any kind of short-term solution to a problem unless it can be guaranteed to result in a long term resolution.  Indeed, they even think of truces and ceasefires as weakness.  Here's Bush a couple of months ago talking abou Lebanon:<br>&#xD;
 <br>&#xD;
     END
-    item = FeedItem.new
-    item.stubs(:content).returns(stub(:title => nil, :encoded_content => content))
-    assert_equal("Short Term Death", item.display_title)
+    ftitem = MockFeedItem.new
+    ftitem.content = content
+    item = FeedItem.build_from_feed_item(ftitem)
+    assert_equal("Short Term Death", item.title)
   end
   
   def test_extract_feed_item_title_out_of_bold_heading
+    FeedItemTokenizer.any_instance.stubs(:tokens_with_counts).returns(stub(:size => 50))
     content = <<-END
 <b>What Americans Have Sacrificed In Bush's "War On Terror"</b><br /><br />by tristero<br /><br />Many critics of the Bush administration have it wrong. They have repeatedly charged that while Bush has said the country is at war he has refused to call off the tax breaks for the rich or implement any measures that would require the American people to sacrifice. <br />
     END
-    item = FeedItem.new
-    item.stubs(:content).returns(stub(:title => nil, :encoded_content => content))
-    assert_equal(%Q(What Americans Have Sacrificed In Bush's "War On Terror"), item.display_title)
+    ftitem = MockFeedItem.new
+    ftitem.content = content
+    item = FeedItem.build_from_feed_item(ftitem)
+    assert_equal(%Q(What Americans Have Sacrificed In Bush's "War On Terror"), item.title)
   end
   
   def test_sort_title_generation
@@ -229,7 +203,7 @@ class FeedItemTest < Test::Unit::TestCase
     mock.title = 'THE title Of the FEEDITEM'
     feed_item = FeedItem.build_from_feed_item(mock)
     assert_equal 'title of the feeditem', feed_item.sort_title
-    assert_equal 'THE title Of the FEEDITEM', feed_item.display_title
+    assert_equal 'THE title Of the FEEDITEM', feed_item.title
   end
     
   def test_build_from_feed_item_with_same_link_returns_nil

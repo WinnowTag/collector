@@ -81,31 +81,9 @@ class FeedItem < ActiveRecord::Base
   end
   
   # Gets the content of this feed.
-  # This method will handle generating the feed item content from the xml data
-  # if it doesnt already exist on the feed_item_content association.
   def content(force = false)
-    unless self.feed_item_content
-      self.generate_content_for_feed_item
-    end
     self.feed_item_content(force)
   end
-
-  # Get the display title for this feed item.
-  def display_title
-    if self.content.title and not self.content.title.empty?
-      self.content.title
-    elsif self.content.encoded_content and self.content.encoded_content.match(/^<?p?>?<(strong|h1|h2|h3|h4|b)>([^<]*)<\/\1>/i)
-      $2
-    elsif self.content.encoded_content.is_a? String
-      self.content.encoded_content.split(/\n|<br ?\/?>/).each do |line|
-        potential_title = line.gsub(/<\/?[^>]*>/, "").chomp # strip html
-        break potential_title if potential_title and not potential_title.empty?
-      end.split(/!|\?|\./).first
-    else
-      ""
-    end
-  end
-
   
   # Gets the tokens with frequency counts for the feed_item.
   # 
@@ -163,54 +141,48 @@ private
   # Methods for extracting a FeedItem from FeedTools.
   #-------------------------------------------------------------------------------
 public
+  def self.find_by_link_or_uid(link, uid)
+    FeedItem.find(:first, :conditions => [
+                            'link = ? or unique_id = ?',
+                            link, uid                           
+                          ])
+  end
+  
   # Build a FeedItem from a FeedItem.
   # 
   # The FeedItem is not saved in the database. It is not associated with a Feed,
   # it is up to the caller to do that.
   #
   def self.build_from_feed_item(feed_item, tokenizer = FeedItemTokenizer.new)
-    unique_id = self.make_unique_id(feed_item)    
-    return nil if FeedItemsArchive.item_exists?(feed_item.link, unique_id) or
-                  DiscardedFeedItem.discarded?(feed_item.link, unique_id)
-    new_feed_item = FeedItem.find(:first, 
-                                  :conditions => [
-                                    'link = ? or unique_id = ?',
-                                    feed_item.link,
-                                    unique_id
-                                  ])
-    return nil unless new_feed_item.nil?
-    new_feed_item = FeedItem.new(:link => feed_item.link)
+    new_feed_item = nil
+    unique_id = self.make_unique_id(feed_item)
     
-    new_feed_item.xml_data = feed_item.feed_data
-    new_feed_item.xml_data_size = feed_item.feed_data ? feed_item.feed_data.size : 0
-    new_feed_item.unique_id = unique_id
-    new_feed_item.content_length = feed_item.content.size if feed_item.content
-    new_feed_item.time = nil
+    unless FeedItemsArchive.item_exists?(feed_item.link, unique_id) ||
+           DiscardedFeedItem.discarded?(feed_item.link, unique_id)  ||
+           self.find_by_link_or_uid(feed_item.link, unique_id)
+
+      time, time_source = extract_time(feed_item)
+      feed_item_content = FeedItemContent.generate_content_for_feed_item(feed_item)
+      new_feed_item = FeedItem.new(:link => feed_item.link, 
+                                   :unique_id => unique_id,
+                                   :xml_data => feed_item.feed_data,
+                                   :xml_data_size => feed_item.feed_data ? feed_item.feed_data.size : 0,
+                                   :content_length => feed_item.content ? feed_item.content.size : 0,
+                                   :time => time,
+                                   :time_source => time_source,
+                                   :feed_item_content => feed_item_content,
+                                   :title => feed_item_content.title)
     
-    if feed_item.time and (feed_item.time.getutc < (Time.now.getutc.tomorrow))
-      new_feed_item.time = feed_item.time.utc
-      new_feed_item.time_source = FeedItemTime
-    elsif feed_item.feed and feed_item.feed.published
-      new_feed_item.time = feed_item.feed.published.utc
-      new_feed_item.time_source = FeedPublicationTime
-    elsif feed_item.feed and feed_item.feed.last_retrieved
-      new_feed_item.time = feed_item.feed.last_retrieved.utc
-      new_feed_item.time_source = FeedCollectionTime
-    else
-      new_feed_item.time = Time.now.utc
-      new_feed_item.time_source = FeedCollectionTime
-    end
+      # Strip articles and downcase the sort_title
+      new_feed_item.sort_title = new_feed_item.title.sub(/^(the|an|a) +/i, '').downcase
     
-    new_feed_item.generate_content_for_feed_item(feed_item)    
-    # Strip articles and downcase the sort_title
-    new_feed_item.sort_title = (new_feed_item.display_title or "").sub(/^(the|an|a) +/i, '').downcase
-    
-    # tokenize and discard if less than 50 tokens
-    tokens = tokenizer.tokens_with_counts(new_feed_item)
-    if tokens.size < 50
-      logger.info("discarded small item: #{tokens.size} tokens in #{new_feed_item.sort_title}")
-      DiscardedFeedItem.create(:link => new_feed_item.link, :unique_id => new_feed_item.unique_id)
-      new_feed_item = nil 
+      # tokenize and discard if less than 50 tokens
+      tokens = tokenizer.tokens_with_counts(new_feed_item)
+      if tokens.size < 50
+        logger.info("discarded small item: #{tokens.size} tokens in #{new_feed_item.sort_title}")
+        DiscardedFeedItem.create(:link => new_feed_item.link, :unique_id => new_feed_item.unique_id)
+        new_feed_item = nil 
+      end
     end
     
     return new_feed_item
@@ -237,21 +209,16 @@ public
     
     Digest::SHA1.hexdigest(unique_id)
   end
-
-  # generates content from a feed tools feed item
-  def generate_content_for_feed_item(feed_tools_item = nil)
-    if feed_tools_item.nil?
-      unless self.respond_to? :xml_data
-        self.reload
-      end
-      feed_tools_item = FeedTools::FeedItem.new
-      feed_tools_item.feed_data = self.xml_data
-    end
-        
-    author = feed_tools_item.author.nil? ? nil : feed_tools_item.author.name
-    self.build_feed_item_content(:title => (feed_tools_item.title || ""), :author => author, 
-                                 :link => feed_tools_item.link, 
-                                 :description => feed_tools_item.description,
-                                 :encoded_content => feed_tools_item.content)
+  
+  def self.extract_time(feed_item)
+    if feed_item.time and (feed_item.time.getutc < (Time.now.getutc.tomorrow))
+      [feed_item.time.utc, FeedItemTime]
+    elsif feed_item.feed and feed_item.feed.published
+      [feed_item.feed.published.utc, FeedPublicationTime]
+    elsif feed_item.feed and feed_item.feed.last_retrieved
+      [feed_item.feed.last_retrieved.utc, FeedCollectionTime]
+    else
+      [Time.now.utc, FeedCollectionTime]
+    end    
   end
 end
