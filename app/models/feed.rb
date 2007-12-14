@@ -111,20 +111,44 @@ class Feed < ActiveRecord::Base
     end
   end
   
+  # Same as collect but raises exceptions
+  def collect!
+    logger.info("\ncollecting: #{self.url}")
+    f = FeedTools::Feed.open(self.url)
+    
+    new_feed_items = self.add_from_feed(f)
+
+    # We may have auto-discovered a URL so update the record
+    if f.href != self.url
+      original_url = self.url
+      self.write_attribute(:url, f.href)
+      
+      # check if this results in a duplicate
+      if dup = Feed.find_by_url(self.url)
+        logger.info "#{original_url} (#{self.id}) found to be " +
+                    "a duplicate of #{dup.url} (#{dup.id}) and removed"
+        new_feed_items.each do |fi|
+          fi.feed = dup
+          fi.save
+        end
+        Feed.destroy(self.id)
+        return 0
+      end
+    end      
+    
+    self.save!
+    logger.info "total_item_count in feed: #{f.items.size}\n" +
+                "new_item_count: #{new_feed_items.size}\n" +
+                new_feed_items.map {|fi| "new_item: #{fi.content.title}"}.join("\n")
+    return new_feed_items.size
+  end
+  
   # Run collection on this Feed
   #
-  # Returns the number of new feed items
+  # Returns the number of new feed items or a collection error
   def collect
     begin
-      logger.info("\ncollecting: #{self.url}")
-      f = FeedTools::Feed.open(self.url)
-      
-      new_feed_items = self.add_from_feed(f)
-      self.save!
-      logger.info "total_item_count in feed: #{f.items.size}\n" +
-                  "new_item_count: #{new_feed_items.size}\n" +
-                  new_feed_items.map {|fi| "new_item: #{fi.content.title}"}.join("\n")
-      return new_feed_items.size
+      self.collect!
     rescue ActiveRecord::ActiveRecordError => are
       self.collection_errors.create(:exception => are)
       raise are # Something seriously wrong so bail out of collection

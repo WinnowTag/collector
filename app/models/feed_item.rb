@@ -134,6 +134,8 @@ private
       if rows.any?
         connection.execute("INSERT INTO feed_item_tokens (feed_item_id, token_id, frequency) VALUES #{rows.join(", ")}")
       end
+      
+      @tokens_with_counts = nil
     end
   end
   

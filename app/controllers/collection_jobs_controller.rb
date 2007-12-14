@@ -42,7 +42,7 @@ class CollectionJobsController < ApplicationController
       if @collection_job.save
         flash[:notice] = "Started collection for '#{@feed.url}', we'll let you know when it's done."
         format.html { redirect_to feed_url(@feed) }
-        format.xml  { head :created, :location => collection_job_url(@feed, @collection_job) }
+        format.xml  { head :created, :location => feed_collection_job_url(@feed, @collection_job) }
       else
         format.html { 
           flash[:error] = "Something went wrong creating a collection job"

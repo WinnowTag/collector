@@ -35,6 +35,15 @@ class CollectionJobsControllerTest < Test::Unit::TestCase
     assert_redirected_to feed_path(:id => 1)
   end
   
+  def test_should_create_collection_job_with_rest
+    accept('text/xml')
+    old_count = CollectionJob.count
+    post :create, :collection_job => { }, :feed_id => 1
+    assert_equal old_count+1, CollectionJob.count
+    
+    assert_response 201
+  end
+  
   def test_current_user_should_be_creator_of_job_if_not_specified
     post :create, :collection_job => {}, :feed_id => 1
     assert_equal(users(:admin).login, assigns(:collection_job).created_by)

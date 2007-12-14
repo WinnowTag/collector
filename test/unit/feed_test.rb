@@ -7,7 +7,7 @@
 require File.dirname(__FILE__) + '/../test_helper'
 
 class FeedTest < Test::Unit::TestCase
-  fixtures :feeds, :feed_items, :collection_errors
+  fixtures :feeds, :feed_items, :collection_errors, :feed_item_tokens
   
   # Replace this with your real tests.
   def test_adding_items
@@ -215,5 +215,21 @@ class FeedTest < Test::Unit::TestCase
     dup2.title = feed.title
     dup2.save!
     assert_equal([feed, dup, dup2], Feed.find_duplicates(:order => 'id asc'))
+  end
+  
+  # TODO eventually stub out HTTP here
+  def test_collecting_html_link_updates_feeds_link_to_autodiscovered_url
+    # This might be a bit fragile, but we need the http headers to trigger autodiscovery.
+    feed = Feed.create(:url => 'http://www.slashdot.org')
+    feed.collect
+    assert_equal 'http://rss.slashdot.org/Slashdot/slashdot', feed.url
+  end
+  
+  def test_autodiscovery_resulting_in_duplicate_removes_feed
+    feed1 = Feed.create(:url => 'http://rss.slashdot.org/Slashdot/slashdot')
+    feed2 = Feed.create(:url => 'http://www.slashdot.org')
+    feed2.collect
+    assert_raise(ActiveRecord::RecordNotFound) {Feed.find(feed2.id)}
+    assert 0 < feed1.feed_items.length, "Feed1's feed_items was empty"
   end
 end
