@@ -225,11 +225,24 @@ class FeedTest < Test::Unit::TestCase
     assert_equal 'http://rss.slashdot.org/Slashdot/slashdot', feed.url
   end
   
-  def test_autodiscovery_resulting_in_duplicate_removes_feed
-    feed1 = Feed.create(:url => 'http://rss.slashdot.org/Slashdot/slashdot')
-    feed2 = Feed.create(:url => 'http://www.slashdot.org')
-    feed2.collect
-    assert_raise(ActiveRecord::RecordNotFound) {Feed.find(feed2.id)}
-    assert 0 < feed1.feed_items.length, "Feed1's feed_items was empty"
+  def test_autodiscovery_resulting_in_duplicate_by_url_removes_feed
+    feed1 = Feed.new(:url => 'http://www.slashdot.org')
+    feed1.link = 'http://slashdot.org/'
+    feed1.save
+    feed2 = Feed.create(:url => 'http://rss.slashdot.org/Slashdot/slashdot')
+    
+    feed1.collect
+    assert_raise(ActiveRecord::RecordNotFound) {Feed.find(feed1.id)}
+    assert 0 < feed2.feed_items.length, "Feed2's feed_items was empty"
+  end  
+  
+  def test_autodiscovery_resulting_in_duplicate_by_link_removes_feed
+    feed2 = Feed.new(:url => 'http://rdf.slashdot.org/Slashdot/slashdot')
+    feed2.link = 'http://slashdot.org/'
+    feed2.save!
+    feed1 = Feed.create(:url => 'http://www.slashdot.org')
+    feed1.collect
+    assert_raise(ActiveRecord::RecordNotFound) {Feed.find(feed1.id)}
+    assert 0 < feed2.feed_items.length, "Feed2's feed_items was empty"
   end
 end

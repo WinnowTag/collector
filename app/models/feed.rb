@@ -111,6 +111,11 @@ class Feed < ActiveRecord::Base
     end
   end
   
+  def find_duplicate
+    Feed.find(:first, :conditions => ['(link = ? or url = ?) and id <> ?',
+                                      self.link, self.url, self.id])
+  end
+  
   # Same as collect but raises exceptions
   def collect!
     logger.info("\ncollecting: #{self.url}")
@@ -124,7 +129,7 @@ class Feed < ActiveRecord::Base
       self.write_attribute(:url, f.href)
       
       # check if this results in a duplicate
-      if dup = Feed.find_by_url(self.url)
+      if dup = self.find_duplicate
         logger.info "#{original_url} (#{self.id}) found to be " +
                     "a duplicate of #{dup.url} (#{dup.id}) and removed"
         new_feed_items.each do |fi|
@@ -133,6 +138,8 @@ class Feed < ActiveRecord::Base
         end
         Feed.destroy(self.id)
         return 0
+      else
+        logger.debug "Not a duplicate"
       end
     end      
     
