@@ -37,7 +37,7 @@ class FeedsControllerTest < Test::Unit::TestCase
   
   def test_index_sets_feeds_instance_variable
     get :index
-    assert_equal(Feed.count, assigns(:feeds).size)
+    assert_equal(Feed.count(:conditions => ['is_duplicate = ?', false]), assigns(:feeds).size)
   end
   
   def test_with_recent_errors_shows_feeds_with_recent_errors
@@ -76,10 +76,14 @@ class FeedsControllerTest < Test::Unit::TestCase
     assert_select('form[action="/feeds"]', 1, @response.body)
   end
     
-  def test_create_with_duplicate_url_fails
+  def test_create_with_duplicate_url_redirects_to_duplicate
     post :create, :feed => {:url => Feed.find(1).url}
-    assert_response :success
-    assert_select("div.fieldWithErrors input#feed_url", 1, @response.body)
+    assert_redirected_to feed_url(Feed.find(1))
+  end
+  
+  def test_create_with_duplicate_placeholder_url_redirects_to_duplicate
+    post :create, :feed => {:url => feeds(:duplicate_feed).url}
+    assert_redirected_to feed_url(feeds(:duplicate_feed).duplicate)
   end
   
   def test_create_with_invalid_url_fails
@@ -87,6 +91,18 @@ class FeedsControllerTest < Test::Unit::TestCase
     assert_response :success
     assert_select("div.fieldWithErrors input#feed_url", 1, @response.body)
   end
+  
+  def test_rest_create_with_duplicate_url_redirects_to_duplicate
+    accept("application/xml")
+    post :create, :feed => {:url => Feed.find(1).url}
+    assert_redirected_to feed_url(Feed.find(1))
+  end
+  
+  def test_rest_create_with_duplicate_placeholder_url_redirects_to_duplicate
+    accept("application/xml")
+    post :create, :feed => {:url => feeds(:duplicate_feed).url}
+    assert_redirected_to feed_url(feeds(:duplicate_feed).duplicate)
+  end  
     
   def test_create_accepting_xml   
     assert_difference(Feed, :count) do
@@ -188,6 +204,12 @@ class FeedsControllerTest < Test::Unit::TestCase
     assert_template 'show'
     assert_not_nil assigns(:feed)
     assert_equal Feed.find(1), assigns(:feed)
+  end
+  
+  def test_show_with_duplicate_place_holder_redirects_to_duplicate
+    feed = feeds(:duplicate_feed)
+    get :show, :id => feed.id
+    assert_redirected_to feed_url(feed.duplicate)    
   end
   
   def test_update_with_get_redirects_to_index

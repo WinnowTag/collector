@@ -63,7 +63,7 @@ class FeedTest < Test::Unit::TestCase
   end
   
   def test_collect_all
-    Feed.any_instance.expects(:collect).times(Feed.count(:conditions => ['active = ?', true]))    
+    Feed.any_instance.expects(:collect).times(Feed.count(:conditions => ['active = ? and is_duplicate = ?', true, false]))    
     Feed.collect_all    
   end
   
@@ -232,7 +232,11 @@ class FeedTest < Test::Unit::TestCase
     feed2 = Feed.create(:url => 'http://rss.slashdot.org/Slashdot/slashdot')
     
     feed1.collect
-    assert_raise(ActiveRecord::RecordNotFound) {Feed.find(feed1.id)}
+    
+    feed1 = Feed.find(feed1.id)
+    assert feed1.is_duplicate?
+    assert_equal feed2, feed1.duplicate
+    assert feed1.feed_items.empty?
     assert 0 < feed2.feed_items.length, "Feed2's feed_items was empty"
   end  
   
@@ -242,7 +246,11 @@ class FeedTest < Test::Unit::TestCase
     feed2.save!
     feed1 = Feed.create(:url => 'http://www.slashdot.org')
     feed1.collect
-    assert_raise(ActiveRecord::RecordNotFound) {Feed.find(feed1.id)}
+    
+    feed1 = Feed.find(feed1.id)
+    assert feed1.is_duplicate?
+    assert_equal feed2, feed1.duplicate
+    assert feed1.feed_items.empty?
     assert 0 < feed2.feed_items.length, "Feed2's feed_items was empty"
   end
 end

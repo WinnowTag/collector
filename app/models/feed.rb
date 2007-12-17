@@ -57,6 +57,10 @@ class Feed < ActiveRecord::Base
                            'and feeds.id <> f2.id'))
   end
   
+  def self.find_by_url_or_link(url)
+    self.find(:first, :conditions => ['url = ? or link = ?', url, url])
+  end
+  
   def self.count_with_recent_errors
     count(:select    => 'distinct feeds.id',
           :joins     => 'inner join collection_errors as ce on feeds.id = ce.feed_id',
@@ -136,10 +140,8 @@ class Feed < ActiveRecord::Base
           fi.feed = dup
           fi.save
         end
-        Feed.destroy(self.id)
-        return 0
-      else
-        logger.debug "Not a duplicate"
+        self.duplicate = dup
+        self.write_attribute(:url, original_url)
       end
     end      
     

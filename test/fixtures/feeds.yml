@@ -38,3 +38,8 @@ inactive_feed:
   title: Slashdot
   sort_title: slashdot
   active: false
+duplicate_feed:
+  id: 4
+  url: http://duplicate
+  duplicate_id: 1
+  is_duplicate: true

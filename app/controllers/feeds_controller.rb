@@ -71,17 +71,25 @@ class FeedsController < ApplicationController
   end
   
   def create
-    @feed = Feed.new(params[:feed])
-    respond_to do |wants|    
-      if @feed.save
-        wants.html { redirect_to feeds_url }
-        wants.xml do
-          head :created, :location => feed_url(@feed)
-        end
+    if @feed = Feed.find_by_url_or_link(params[:feed][:url])
+      if @feed.is_duplicate? && @feed.duplicate
+        redirect_to feed_url(@feed.duplicate)
       else
-        flash.now[:error] = @feed.errors.on(:url)
-        wants.html { render :action => 'new' }
-        wants.xml  { render :xml => @feed.errors.to_xml, :status => 422 }
+        redirect_to feed_url(@feed)
+      end
+    else     
+      @feed = Feed.new(params[:feed])
+      respond_to do |wants|    
+        if @feed.save
+          wants.html { redirect_to feeds_url }
+          wants.xml do
+            head :created, :location => feed_url(@feed)
+          end
+        else
+          flash.now[:error] = @feed.errors.on(:url)
+          wants.html { render :action => 'new' }
+          wants.xml  { render :xml => @feed.errors.to_xml, :status => 422 }
+        end
       end
     end
   end
@@ -89,12 +97,16 @@ class FeedsController < ApplicationController
   # Shows the details for a single feed.
   def show
     @feed = Feed.find(params[:id])
-    respond_to do |wants|
-      wants.html do
-        @title = (@feed.title or "Uncollected Feed")
-        render :action => 'show'
+    if @feed.is_duplicate? and @feed.duplicate
+      redirect_to feed_url(@feed.duplicate)
+    else
+      respond_to do |wants|
+        wants.html do
+          @title = (@feed.title or "Uncollected Feed")
+          render :action => 'show'
+        end
+        wants.xml { render :xml => @feed.to_xml }
       end
-      wants.xml { render :xml => @feed.to_xml }
     end
   end
    
@@ -179,7 +191,9 @@ class FeedsController < ApplicationController
   def setup_search_term
     @search_term = params[:search_term]
     unless @search_term.nil? or @search_term.empty?
-      @conditions = ['title like ? or url like ?', "%#{@search_term}%", "%#{@search_term}%"]
+      @conditions = ['(title like ? or url like ?) and is_duplicate = ?', "%#{@search_term}%", "%#{@search_term}%", false]
+    else
+      @conditions = ['is_duplicate = ?', false]
     end
   end
   
