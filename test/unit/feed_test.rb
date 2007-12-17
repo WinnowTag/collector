@@ -236,8 +236,8 @@ class FeedTest < Test::Unit::TestCase
     feed1 = Feed.find(feed1.id)
     assert feed1.is_duplicate?
     assert_equal feed2, feed1.duplicate
-    assert feed1.feed_items.empty?
     assert 0 < feed2.feed_items.length, "Feed2's feed_items was empty"
+    assert_equal [], feed1.feed_items
   end  
   
   def test_autodiscovery_resulting_in_duplicate_by_link_removes_feed
@@ -250,7 +250,7 @@ class FeedTest < Test::Unit::TestCase
     feed1 = Feed.find(feed1.id)
     assert feed1.is_duplicate?
     assert_equal feed2, feed1.duplicate
-    assert feed1.feed_items.empty?
     assert 0 < feed2.feed_items.length, "Feed2's feed_items was empty"
+    assert [], feed1.feed_items
   end
 end
