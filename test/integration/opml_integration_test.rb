@@ -1,6 +1,6 @@
 require "#{File.dirname(__FILE__)}/../test_helper"
 
-class OpmlTest < ActionController::IntegrationTest
+class OpmlIntegrationTest < ActionController::IntegrationTest
   # fixtures :your, :models
 
   # Replace this with your real tests.
