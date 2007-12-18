@@ -187,6 +187,17 @@ class FeedsControllerTest < Test::Unit::TestCase
     assert_equal 'http://rss.slashdot.org/Slashdot/slashdot', assigns(:urls)
   end
 
+  def test_importing_opml_via_rest
+    assert_difference(Feed, :count, 13) do
+      accept("application/xml")
+      opml_data = File.read(File.join(RAILS_ROOT, "test", "fixtures", "example.opml"))
+    
+      post :import_opml, :opml => Opml.parse(opml_data)
+      assert_response :success
+      assert_select("feed", 13, @response.body)
+    end
+  end
+  
   def test_show_without_id_redirects_to_index
     get :show
     assert_redirected_to feeds_url

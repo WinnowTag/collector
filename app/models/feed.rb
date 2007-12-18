@@ -43,6 +43,25 @@ class Feed < ActiveRecord::Base
   has_many :collection_errors, :dependent => :delete_all, :order => 'created_on desc'
   has_one  :last_error, :order => 'created_on desc'
   
+  def self.find_or_create_by_url(url)
+    returning(find_or_build_by_url(url)) do |feed|
+      feed.save
+    end
+  end
+  
+  def self.find_or_build_by_url(url)
+    if feed = Feed.find_by_url_or_link(url)
+      # TODO Protect against duplicate loops
+      while feed.is_duplicate?
+        feed = feed.duplicate
+      end      
+    else
+      feed = self.new(:url => url)
+    end
+    
+    feed
+  end
+  
   def self.count_duplicates
     count(:joins => 'inner join feeds as f2 on ' +
                        '(feeds.title = f2.title or feeds.link = f2.link) ' +

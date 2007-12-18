@@ -71,16 +71,12 @@ class FeedsController < ApplicationController
   end
   
   def create
-    if @feed = Feed.find_by_url_or_link(params[:feed][:url])
-      if @feed.is_duplicate? && @feed.duplicate
-        redirect_to feed_url(@feed.duplicate)
-      else
-        redirect_to feed_url(@feed)
-      end
-    else     
-      @feed = Feed.new(params[:feed])
-      respond_to do |wants|    
-        if @feed.save
+    @feed = Feed.find_or_build_by_url(params[:feed][:url])
+    unless @feed.new_record?
+      redirect_to feed_url(@feed)
+    else
+      respond_to do |wants|
+        if @feed.new_record? && @feed.save
           wants.html { redirect_to feeds_url }
           wants.xml do
             head :created, :location => feed_url(@feed)
@@ -125,6 +121,25 @@ class FeedsController < ApplicationController
         wants.html { redirect_to feeds_url }
         wants.xml  { render :xml => @feed.errors.to_xml }
         wants.js
+      end
+    end
+  end
+  
+  # Import an OPML document via a REST interface.
+  #
+  # POST /feeds/import_opml
+  #  - with OPML document as body of request.
+  # 
+  def import_opml
+    respond_to do |wants|
+      wants.xml do
+        @feeds = []
+        if params[:opml]
+          @feeds = params[:opml].feeds.map do |f|
+            Feed.find_or_create_by_url(f.xmlUrl)
+          end
+        end
+        render :xml => @feeds.to_xml
       end
     end
   end

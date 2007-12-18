@@ -5,7 +5,8 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :feeds, :collection => {
                   :import             => :any,
                   :with_recent_errors => :get,
-                  :duplicates         => :get
+                  :duplicates         => :get,
+                  :import_opml        => :post
                 } do |feeds|
     feeds.resources :collection_jobs
     feeds.resources :collection_errors
