@@ -138,6 +138,8 @@ class FeedsController < ApplicationController
           @feeds = params[:opml].feeds.map do |f|
             Feed.find_or_create_by_url(f.xmlUrl)
           end
+        else
+          logger.debug("import_opml called without opml file")
         end
         render :xml => @feeds.to_xml
       end

@@ -31,6 +31,10 @@ class Opml
     end
   end
   
+  def inspect
+    "<OPML>"
+  end
+  
   class Feed
     def initialize(element)
       @element = element

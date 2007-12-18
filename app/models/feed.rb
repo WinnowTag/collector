@@ -45,7 +45,7 @@ class Feed < ActiveRecord::Base
   
   def self.find_or_create_by_url(url)
     returning(find_or_build_by_url(url)) do |feed|
-      feed.save
+      feed.save if feed.new_record?
     end
   end
   
