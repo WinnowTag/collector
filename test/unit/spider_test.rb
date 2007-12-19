@@ -9,7 +9,7 @@ require File.dirname(__FILE__) + '/../test_helper'
 
 class SpiderTest < Test::Unit::TestCase
   def setup
-    Spider.default_scraper = mock
+    Spider.default_scraper = stub('default scraper', :name => 'default scraper')
     Spider.scrapers.clear
   end
     
@@ -39,9 +39,30 @@ class SpiderTest < Test::Unit::TestCase
     Spider.scrapers.push(scraper1)
     Spider.scrapers.push(scraper2)
     
-    assert_equal(mock_content, Spider.spider("http://example.com"))
+    result = Spider.spider("http://example.com")
+    assert_instance_of(Spider::Result, result)
+    assert_equal(mock_content, result.content)
+    assert_equal('default scraper', result.scraper_name)
   end
   
+  def test_spider_uses_loaded_scrapers
+    mock_content = mock('content', :size => 10)
+    response = Net::HTTPSuccess.new(nil, nil, nil)
+    Net::HTTP.expects(:get_response).with(URI.parse("http://example.com")).returns(response)
+    
+    scraper1 = mock('scraper1', :name => "scraper1")
+    scraper2 = mock('scraper2')
+    scraper1.expects(:scrape).with("http://example.com", response).returns(mock_content)
+    scraper2.expects(:scrape).with("http://example.com", response).returns(nil).never
+    Spider.scrapers.push(scraper1)
+    Spider.scrapers.push(scraper2)
+    
+    result = Spider.spider("http://example.com")
+    assert_instance_of(Spider::Result, result)
+    assert_equal(mock_content, result.content)
+    assert_equal('scraper1', result.scraper_name)
+  end  
+
   def test_spider_should_follow_redirects    
     redirect = Net::HTTPRedirection.new(nil, nil, nil)
     redirect.expects(:[]).with('Location').returns("http://example.com/actual.html")
@@ -52,6 +73,10 @@ class SpiderTest < Test::Unit::TestCase
     
     mock_content = mock
     Spider.default_scraper.expects(:scrape).with("http://example.com/link.html", actual).returns(mock_content)
-    assert_equal(mock_content, Spider.spider("http://example.com/link.html"))
+
+    result = Spider.spider("http://example.com/link.html")
+    assert_instance_of(Spider::Result, result)
+    assert_equal(mock_content, result.content)
+    assert_equal('default scraper', result.scraper_name)
   end
 end

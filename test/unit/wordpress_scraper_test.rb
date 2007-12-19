@@ -20,7 +20,7 @@ class WordpressScraperTest < Test::Unit::TestCase
     
     scraper = BloggerScraper.new
     Spider.scrapers << scraper
-    assert_equal("<p>This is Wordpress 2.0 content.</p>", Spider.spider("http://blog.example.com/post.html"))
+    assert_equal("<p>This is Wordpress 2.0 content.</p>", Spider.spider("http://blog.example.com/post.html").content)
   end  
   
   def test_spider_with_wordpress_2_2_content
@@ -29,6 +29,6 @@ class WordpressScraperTest < Test::Unit::TestCase
     Net::HTTP.expects(:get_response).returns(response)
     
     scraper = BloggerScraper.new
-    assert_equal("<p>This is Wordpress 2.2 content.</p>", Spider.spider("http://example.com/post.html"))
+    assert_equal("<p>This is Wordpress 2.2 content.</p>", Spider.spider("http://example.com/post.html").content)
   end
 end

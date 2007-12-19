@@ -13,18 +13,10 @@ class FeedItemTokenizerTest < Test::Unit::TestCase
   attr_reader :tokenizer
   
   def setup
-    FeedItem.stubs(:columns).returns([])
     FeedItemTokenizer.minimum_tokens = 0
     @tokenizer = FeedItemTokenizer.new
     @item = FeedItem.new
-    class << @item
-      def tokens_with_counts(version, force = false)
-        return yield(self)
-      end
-    end
-    @item.stubs(:tokens)
     @item.stubs(:id).returns(1)
-    @item.stubs(:attributes).returns({})
   end
   
   def teardown
@@ -87,23 +79,19 @@ class FeedItemTokenizerTest < Test::Unit::TestCase
     expected_tokens = {"html"=>3, "text"=>2, "content"=>1}
     assert_equal expected_tokens, TokenAtomizer.get_atomizer.globalize(tokenizer.tokens_with_counts(@item))
   end
-  
-  def test_token_array_return_when_tokens_called
-    content = stub(:encoded_content => '<p>text text <span>html html html</span> content</p>', :title => nil, :author => nil)
-    @item.stubs(:content).returns(content)
     
-    expected_tokens = {"html"=>3, "text"=>2, "content"=>1}
-    assert_equal expected_tokens.keys.sort, TokenAtomizer.get_atomizer.globalize(tokenizer.tokens(@item)).sort
-  end
-  
   def test_less_than_minimum_tokens_triggers_spidering
     FeedItemTokenizer.minimum_tokens = 5
     content = stub(:encoded_content => "text text", :title => nil, :author => nil)
     @item.stubs(:content).returns(content)
-    @item.stubs(:link).returns("http://example.com/atricle.html")
-    spidered_content = "this is the longer version of the text from the source"
+    @item.stubs(:link).returns("http://example.blogspot.com/article.html")
     
-    Spider.expects(:spider).returns(spidered_content)
+    spidered_content = "this is the longer version of the text from the source"
+    response = Net::HTTPSuccess.new(nil, nil, nil)
+    spidered_html = "<div class=\"post-body\">#{spidered_content}</div>"
+    response.stubs(:body).returns(spidered_html)
+    Net::HTTP.expects(:get_response).returns(response)
+        
     expected_tokens = spidered_content.split.inject(Hash.new(0)) do |h, w|
       h[w] = h[w] + 1
       h
@@ -111,5 +99,6 @@ class FeedItemTokenizerTest < Test::Unit::TestCase
     
     assert_equal(expected_tokens, TokenAtomizer.get_atomizer.globalize(tokenizer.tokens_with_counts(@item)))
     assert @item.tokens_were_spidered?
+    assert_equal("Blogger", @item.scraper_name)
   end
 end

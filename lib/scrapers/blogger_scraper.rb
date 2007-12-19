@@ -14,4 +14,8 @@ class BloggerScraper
       end
     end
   end
+  
+  def name
+    "Blogger"
+  end
 end

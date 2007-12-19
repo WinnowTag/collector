@@ -19,15 +19,7 @@ class FeedItemTokenizer < Bayes::HtmlTokenizer
   def initialize
     super(false)
   end
-    
-  # Gets the tokens for a FeedItem.
-  #
-  # If the tokens don't exist already they are created.
-  #
-  def tokens(feed_item)
-    (feed_item.tokens or tokens_with_counts(feed_item).keys)
-  end
-  
+      
   # Gets the tokens and token counts for a feed item.
   #
   # If the tokens don't exist they are created.
@@ -45,9 +37,10 @@ class FeedItemTokenizer < Bayes::HtmlTokenizer
     
       if tokens.size < FeedItemTokenizer.minimum_tokens && feed_item.link
         ActiveRecord::Base.logger.info "Only got #{tokens.size} tokens for content of #{feed_item.link}"
-        if spidered_content = Spider.spider(feed_item.link)
-          tokens = super(spidered_content)
+        if spider_result = Spider.spider(feed_item.link)
+          tokens = super(spider_result.content)
           feed_item.tokens_were_spidered = true
+          feed_item.scraper_name = spider_result.scraper_name
         end
       end
       

@@ -19,4 +19,8 @@ class WordpressScraper
       end
     end
   end
+  
+  def name
+    "WordPress 2.0 - 2.2"
+  end
 end

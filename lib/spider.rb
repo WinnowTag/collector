@@ -6,6 +6,13 @@
 #
 
 class Spider
+  class Result
+    attr_accessor :content, :scraper_name
+    def initialize(content, scraper_name)
+      @content, @scraper_name = content, scraper_name
+    end
+  end
+  
   @@default_scraper = BaseScraper.new
   cattr_accessor :default_scraper
   @@scrapers = []
@@ -37,34 +44,44 @@ class Spider
     # Spiders the content from the given url
     def spider(url)      
       spidered_content = nil
+      logger.info "Attempting to spider #{url}..."
       response = fetch(url)
-      logger.info "Attempting to spider #{url}: status = #{response.code}, length = #{response.content_length}"
       
       case response
       when Net::HTTPResponse
+        logger.info "  => got 200, content_length = #{response.content_length} ..."
+        
+        scraper = nil
         content = nil
-        scrapers.each do |s| 
-          if content = s.scrape(url, response)
-            logger.info "Spidered content was scraped by '#{s}', length = #{content.size} "
+        scrapers.each do |scraper| 
+          if content = scraper.scrape(url, response)
+            logger.info "  => spidered content was scraped by '#{scraper}', length = #{content.size}."
             break
           end
         end 
         
-        content or default_scraper.scrape(url, response)        
+        if content.nil?
+          logger.info "  => no scraper for #{url}."
+          content = default_scraper.scrape(url, response)
+          scraper = default_scraper
+        end
+        
+        Result.new(content, scraper.name)
+      else
+        logger.info "  => could not get #{url}. (#{response.code}) #{response.message}"
       end
     end
     
     private
-    def fetch(url, redirection_limit = 5)
-      if redirection_limit < 1
-        logger.warn "#{url} redirected more than 5 times"
-        return nil
-      end
-      
-      response = Net::HTTP.get_response(URI.parse(url))
-      
-      case response
-      when Net::HTTPRedirection then fetch(response['Location'], redirection_limit - 1)
+    def fetch(url, redirection_limit = 5)      
+      case response = Net::HTTP.get_response(URI.parse(url))
+      when Net::HTTPRedirection 
+        if redirection_limit < 1
+          logger.warn "  => #{url} redirected more than 5 times"
+          response
+        else
+          fetch(response['Location'], redirection_limit - 1)
+        end
       when Net::HTTPSuccess then response        
       end        
     end

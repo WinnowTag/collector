@@ -25,6 +25,6 @@ class BloggerScraperTest < Test::Unit::TestCase
     response.expects(:body).returns(File.read(File.join(RAILS_ROOT, 'test', 'fixtures', 'blogger_example.html')))
     Net::HTTP.expects(:get_response).returns(response)
     
-    assert_equal("<p>This is blogger post content.</p>", Spider.spider("http://xxyz.blogspot.com/1999/01/pioneering_post.html"))
+    assert_equal("<p>This is blogger post content.</p>", Spider.spider("http://xxyz.blogspot.com/1999/01/pioneering_post.html").content)
   end  
 end
