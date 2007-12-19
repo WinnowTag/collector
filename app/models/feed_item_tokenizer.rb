@@ -13,7 +13,8 @@ require 'hpricot'
 # specific tokens, integrate it with the token storage and a caching capability.
 #
 class FeedItemTokenizer < Bayes::HtmlTokenizer
-  VERSION = 3
+  @@minimum_tokens = 50
+  cattr_accessor :minimum_tokens
   
   def initialize
     super(false)
@@ -42,6 +43,13 @@ class FeedItemTokenizer < Bayes::HtmlTokenizer
     feed_item.tokens_with_counts = if feed_item.content.encoded_content
       tokens = super(feed_item.content.encoded_content)
     
+      if tokens.size < FeedItemTokenizer.minimum_tokens && feed_item.link
+        if spidered_content = Spider.spider(feed_item.link)
+          tokens = super(spidered_content)
+          feed_item.tokens_were_spidered = true
+        end
+      end
+      
       if feed_item.content.title         
         feed_item.content.title.downcase.gsub(/[^a-z0-9]/, ' ').split.each do |title_token|
           tokens[title_token] += 1
@@ -53,7 +61,7 @@ class FeedItemTokenizer < Bayes::HtmlTokenizer
       tokenize_uri(feed_item.attributes['link']).each do |link_token|
         tokens[link_token] += 1
       end
-      
+            
       # localize the tokens
       Bayes::TokenAtomizer.get_atomizer.localize(tokens)
     else

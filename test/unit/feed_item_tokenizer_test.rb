@@ -14,6 +14,7 @@ class FeedItemTokenizerTest < Test::Unit::TestCase
   
   def setup
     FeedItem.stubs(:columns).returns([])
+    FeedItemTokenizer.minimum_tokens = 0
     @tokenizer = FeedItemTokenizer.new
     @item = FeedItem.new
     class << @item
@@ -93,5 +94,22 @@ class FeedItemTokenizerTest < Test::Unit::TestCase
     
     expected_tokens = {"html"=>3, "text"=>2, "content"=>1}
     assert_equal expected_tokens.keys.sort, TokenAtomizer.get_atomizer.globalize(tokenizer.tokens(@item)).sort
+  end
+  
+  def test_less_than_minimum_tokens_triggers_spidering
+    FeedItemTokenizer.minimum_tokens = 5
+    content = stub(:encoded_content => "text text", :title => nil, :author => nil)
+    @item.stubs(:content).returns(content)
+    @item.stubs(:link).returns("http://example.com/atricle.html")
+    spidered_content = "this is the longer version of the text from the source"
+    
+    Spider.expects(:spider).returns(spidered_content)
+    expected_tokens = spidered_content.split.inject(Hash.new(0)) do |h, w|
+      h[w] = h[w] + 1
+      h
+    end
+    
+    assert_equal(expected_tokens, TokenAtomizer.get_atomizer.globalize(tokenizer.tokens_with_counts(@item)))
+    assert @item.tokens_were_spidered?
   end
 end
