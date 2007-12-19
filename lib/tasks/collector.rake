@@ -52,8 +52,8 @@ task :cruise do
     Rake::Task[task].prerequisites.delete('db:test:prepare')
   end
   
-  Rake::Task['db:test:prepare'].invoke
   Rake::Task['db:migrate'].invoke
+  Rake::Task['db:test:prepare'].invoke
   Rake::Task['test'].invoke
   Rake::Task['test:rcov'].invoke
 end
