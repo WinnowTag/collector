@@ -8,10 +8,11 @@
 require File.dirname(__FILE__) + '/../test_helper'
 
 class SpiderTest < Test::Unit::TestCase
-  def test_has_base_scraper_by_default
-    assert_instance_of(BaseScraper, Spider.default_scraper)
+  def setup
+    Spider.default_scraper = mock
+    Spider.scrapers.clear
   end
-  
+    
   def test_loads_scrapers_from_source_files
     Spider.scrapers.clear
     Spider.load_scrapers(File.join(RAILS_ROOT, 'test', 'mocks', 'test'))
@@ -39,5 +40,18 @@ class SpiderTest < Test::Unit::TestCase
     Spider.scrapers.push(scraper2)
     
     assert_equal(mock_content, Spider.spider("http://example.com"))
+  end
+  
+  def test_spider_should_follow_redirects    
+    redirect = Net::HTTPRedirection.new(nil, nil, nil)
+    redirect.expects(:[]).with('Location').returns("http://example.com/actual.html")
+    actual = Net::HTTPSuccess.new(nil, nil, nil)
+    
+    Net::HTTP.expects(:get_response).with(URI.parse("http://example.com/link.html")).returns(redirect)
+    Net::HTTP.expects(:get_response).with(URI.parse("http://example.com/actual.html")).returns(actual)
+    
+    mock_content = mock
+    Spider.default_scraper.expects(:scrape).with("http://example.com/link.html", actual).returns(mock_content)
+    assert_equal(mock_content, Spider.spider("http://example.com/link.html"))
   end
 end

@@ -10,6 +10,8 @@ class Spider
   cattr_accessor :default_scraper
   @@scrapers = []
   cattr_reader :scrapers
+  @@logger = ActiveRecord::Base.logger
+  cattr_accessor :logger
   
   class << self
     # Loads all the scrapers in a given directory.
@@ -33,19 +35,38 @@ class Spider
     end
     
     # Spiders the content from the given url
-    def spider(url)
+    def spider(url)      
       spidered_content = nil
-      response = Net::HTTP.get_response(URI.parse(url))
+      response = fetch(url)
+      logger.info "Attempting to spider #{url}: status = #{response.code}, length = #{response.content_length}"
       
       case response
       when Net::HTTPResponse
         content = nil
         scrapers.each do |s| 
-          (content = s.scrape(url, response)) and break
+          if content = s.scrape(url, response)
+            logger.info "Spidered content was scraped by '#{s}', length = #{content.size} "
+            break
+          end
         end 
         
         content or default_scraper.scrape(url, response)        
       end
+    end
+    
+    private
+    def fetch(url, redirection_limit = 5)
+      if redirection_limit < 1
+        logger.warn "#{url} redirected more than 5 times"
+        return nil
+      end
+      
+      response = Net::HTTP.get_response(URI.parse(url))
+      
+      case response
+      when Net::HTTPRedirection then fetch(response['Location'], redirection_limit - 1)
+      when Net::HTTPSuccess then response        
+      end        
     end
   end
 end

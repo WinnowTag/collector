@@ -1,5 +1,5 @@
 require 'query_trace'
 
 class ::ActiveRecord::ConnectionAdapters::AbstractAdapter
-  include QueryTrace
+  #include QueryTrace
 end

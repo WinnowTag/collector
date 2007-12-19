@@ -1,0 +1,1 @@
+Spider.load_scrapers(File.join(RAILS_ROOT, 'lib', 'scrapers'))

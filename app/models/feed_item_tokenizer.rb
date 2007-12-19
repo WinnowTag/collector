@@ -13,7 +13,7 @@ require 'hpricot'
 # specific tokens, integrate it with the token storage and a caching capability.
 #
 class FeedItemTokenizer < Bayes::HtmlTokenizer
-  @@minimum_tokens = 50
+  @@minimum_tokens = 60
   cattr_accessor :minimum_tokens
   
   def initialize
@@ -44,6 +44,7 @@ class FeedItemTokenizer < Bayes::HtmlTokenizer
       tokens = super(feed_item.content.encoded_content)
     
       if tokens.size < FeedItemTokenizer.minimum_tokens && feed_item.link
+        ActiveRecord::Base.logger.info "Only got #{tokens.size} tokens for content of #{feed_item.link}"
         if spidered_content = Spider.spider(feed_item.link)
           tokens = super(spidered_content)
           feed_item.tokens_were_spidered = true
