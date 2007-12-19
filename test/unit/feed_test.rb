@@ -219,14 +219,16 @@ class FeedTest < Test::Unit::TestCase
   
   # TODO eventually stub out HTTP here
   def test_collecting_html_link_updates_feeds_link_to_autodiscovered_url
+    mock_response('http://www.slashdot.org/', 'http://rss.slashdot.org/Slashdot/slashdot')
     # This might be a bit fragile, but we need the http headers to trigger autodiscovery.
-    feed = Feed.create(:url => 'http://www.slashdot.org')
+    feed = Feed.create(:url => 'http://www.slashdot.org/')
     feed.collect
     assert_equal 'http://rss.slashdot.org/Slashdot/slashdot', feed.url
   end
   
   def test_autodiscovery_resulting_in_duplicate_by_url_removes_feed
-    feed1 = Feed.new(:url => 'http://www.slashdot.org')
+    mock_response('http://www.slashdot.org/', 'http://rss.slashdot.org/Slashdot/slashdot')
+    feed1 = Feed.new(:url => 'http://www.slashdot.org/')
     feed1.link = 'http://slashdot.org/'
     feed1.save
     feed2 = Feed.create(:url => 'http://rss.slashdot.org/Slashdot/slashdot')
@@ -241,10 +243,11 @@ class FeedTest < Test::Unit::TestCase
   end  
   
   def test_autodiscovery_resulting_in_duplicate_by_link_removes_feed
+    mock_response('http://www.slashdot.org/', 'http://rss.slashdot.org/Slashdot/slashdot')
     feed2 = Feed.new(:url => 'http://rdf.slashdot.org/Slashdot/slashdot')
     feed2.link = 'http://slashdot.org/'
     feed2.save!
-    feed1 = Feed.create(:url => 'http://www.slashdot.org')
+    feed1 = Feed.create(:url => 'http://www.slashdot.org/')
     feed1.collect
     
     feed1 = Feed.find(feed1.id)
@@ -252,5 +255,18 @@ class FeedTest < Test::Unit::TestCase
     assert_equal feed2, feed1.duplicate
     assert 0 < feed2.feed_items.length, "Feed2's feed_items was empty"
     assert [], feed1.feed_items
+  end
+  
+  def mock_response(url, feed_url)
+    html_response = Net::HTTPSuccess.new(nil, nil, nil)
+    html_response.expects(:each_header).yields("Content-Type", "text/html")
+    html_response.expects(:body).returns(File.read(File.join(RAILS_ROOT, 'test', 'fixtures', 'slashdot.html')))
+    
+    feed_response = Net::HTTPSuccess.new(nil, nil, nil)
+    feed_response.expects(:each_header)
+    feed_response.expects(:body).returns(File.read(File.join(RAILS_ROOT, 'test', 'fixtures', 'slashdot.rss')))
+    
+    FeedTools::RetrievalHelper.expects(:http_get).with(url, anything).returns(html_response)
+    FeedTools::RetrievalHelper.expects(:http_get).with(feed_url, anything).returns(feed_response)
   end
 end
