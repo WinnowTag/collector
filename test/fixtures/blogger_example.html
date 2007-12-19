@@ -1,0 +1,1501 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr'>
+
+<head>
+    
+  <meta content='text/html; charset=UTF-8' http-equiv='Content-Type'/>
+  <meta content='true' name='MSSmartTagsPreventParsing'/>
+  <meta content='blogger' name='generator'/>
+  <link rel="alternate" type="application/atom+xml" title="Clever Title Pending - Atom" href="http://seangeo.blogspot.com/feeds/posts/default" />
+<link rel="alternate" type="application/rss+xml" title="Clever Title Pending - RSS" href="http://seangeo.blogspot.com/feeds/posts/default?alt=rss" />
+<link rel="service.post" type="application/atom+xml" title="Clever Title Pending - Atom" href="http://www.blogger.com/feeds/22641314/posts/default" />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.blogger.com/rsd.g?blogID=22641314" />
+<link rel="alternate" type="application/atom+xml" title="Clever Title Pending - Atom" href="http://seangeo.blogspot.com/feeds/8827410976060723073/comments/default" />
+
+  
+  
+
+  <title>Clever Title Pending: Building Erlang with Rake</title>
+  <style id='page-skin-1' type='text/css'><!--
+/*
+-----------------------------------------------
+Blogger Template Style
+Name:     Rounders 3
+Designer: Douglas Bowman
+URL:      www.stopdesign.com
+Date:     27 Feb 2004
+Updated by: Blogger Team
+----------------------------------------------- */
+
+/* Variable definitions
+  ====================
+   <Variable name="mainBgColor" description="Main Background Color"
+             type="color" default="#eec">
+   <Variable name="mainTextColor" description="Text Color" type="color"
+             default="#333">
+   <Variable name="postTitleColor" description="Post Title Color" type="color"
+             default="#333">
+   <Variable name="dateHeaderColor" description="Date Header Color"
+             type="color" default="#586">
+   <Variable name="borderColor" description="Post Border Color" type="color"
+             default="#bbb">
+
+
+   <Variable name="mainLinkColor" description="Link Color" type="color"
+             default="#456">
+   <Variable name="mainVisitedLinkColor" description="Visited Link Color"
+             type="color" default="#234">
+
+   <Variable name="titleBgColor" description="Page Header Background Color"
+             type="color" default="#357">
+   <Variable name="titleTextColor" description="Blog Title Color"
+             type="color" default="#fff">
+
+   <Variable name="topSidebarHeaderColor"
+             description="Top Sidebar Title Color"
+             type="color" default="#fff">
+   <Variable name="topSidebarBgColor"
+             description="Top Sidebar Background Color"
+             type="color" default="#586">
+   <Variable name="topSidebarTextColor" description="Top Sidebar Text Color"
+             type="color" default="#fff">
+   <Variable name="topSidebarLinkColor" description="Top Sidebar Link Color"
+             type="color" default="#fff">
+   <Variable name="topSidebarVisitedLinkColor"
+             description="Top Sidebar Visited Link Color"
+             type="color" default="#fff">
+   <Variable name="bottomSidebarHeaderColor"
+             description="Bottom Sidebar Title Color"
+             type="color" default="#abc">
+
+   <Variable name="bottomSidebarLinkColor"
+             description="Bottom Sidebar Link Color"
+             type="color" default="#99ddbb">
+   <Variable name="bottomSidebarVisitedLinkColor"
+             description="Bottom Sidebar Visited Link Color"
+             type="color" default="#ffffff">
+   <Variable name="bodyFont" description="Text Font" type="font"
+             default="normal normal 100% 'Trebuchet MS',Verdana,Arial,Sans-serif">
+   <Variable name="pageTitleFont" description="Blog Title Font" type="font"
+             default="normal bold 200% 'Trebuchet MS',Verdana,Arial,Sans-serif">
+   <Variable name="descriptionFont" description="Blog Description Font" type="font"
+             default="normal normal 100% 'Trebuchet MS',Verdana,Arial,Sans-serif">
+   <Variable name="headerFont" description="Sidebar Title Font" type="font"
+             default="normal bold 100% 'Trebuchet MS',Verdana,Arial,Sans-serif">
+   <Variable name="postTitleFont" description="Post Title Font" type="font"
+             default="normal bold 135% 'Trebuchet MS',Verdana,Arial,Sans-serif">
+*/
+
+body {
+  background:#123;
+  margin:0;
+  text-align:center;
+  line-height: 1.5em;
+  font: x-small Trebuchet MS, Verdana, Arial, Sans-serif;
+  color:#333333;
+  font-size/* */:/**/small;
+  font-size: /**/small;
+  }
+
+
+/* Page Structure
+----------------------------------------------- */
+/* The images which help create rounded corners depend on the 
+   following widths and measurements. If you want to change 
+   these measurements, the images will also need to change.
+   */
+#outer-wrapper {
+  width:900px;
+  margin:0 auto;
+  text-align:left;
+  font: normal normal 100% 'Trebuchet MS',Verdana,Arial,Sans-serif;
+  }
+#main-wrap1 {
+  width:645px;
+  float:left;
+  background:#eeeecc  no-repeat left bottom;
+  margin:15px 0 0;
+  padding:0 0 10px;
+  color:#333333;
+  font-size:97%;
+  line-height:1.5em;
+  word-wrap: break-word; /* fix for long text breaking sidebar float in IE */
+  overflow: hidden;     /* fix for long non-text content breaking IE sidebar float */
+  }
+#main-wrap2 {
+  float:left;
+  width:100%;
+  background: no-repeat left top;
+  padding:10px 0 0;
+  }
+#main {
+  background:url("http://www.blogblog.com/rounders3/rails_main.gif") repeat-y;
+  padding:0;
+  }
+#sidebar-wrap {
+  width:240px;
+  float:right;
+  margin:15px 0 0;
+  font-size:97%;
+  line-height:1.5em;
+  word-wrap: break-word; /* fix for long text breaking sidebar float in IE */
+  overflow: hidden;     /* fix for long non-text content breaking IE sidebar float */
+  }
+
+.main .widget { 
+  margin-top: 4px;
+  width: 468px;
+  padding: 0 13px;
+}
+
+.main .Blog {
+  margin: 0;
+  padding: 0;
+  width: 644px;
+}
+
+/* Links
+----------------------------------------------- */
+a:link {
+  color: #445566;
+  }
+a:visited {
+  color: #223344;
+  }
+a:hover {
+  color: #223344;
+  }
+a img {
+  border-width:0;
+  }
+
+
+/* Blog Header
+----------------------------------------------- */
+#header-wrapper {
+  background:#335577 url("http://www.blogblog.com/rounders3/corners_cap_top.gif") no-repeat left top;
+  margin:22px 0 0 0;
+  padding:8px 0 0 0;
+  color:#ffffff;
+  }
+#header {
+  background:url("http://www.blogblog.com/rounders3/corners_cap_bot.gif") no-repeat left bottom;
+  padding:0 15px 8px;
+  }
+#header h1 {
+  margin:0;
+  padding:10px 30px 5px;
+  line-height:1.2em;
+  font: normal bold 200% 'Trebuchet MS',Verdana,Arial,Sans-serif;
+  }
+#header a,
+#header a:visited {
+  text-decoration:none;
+  color: #ffffff;
+  }
+#header .description {
+  margin:0;
+  padding:5px 30px 10px;
+  line-height:1.5em;
+  font: normal normal 100% 'Trebuchet MS',Verdana,Arial,Sans-serif;
+}
+
+
+/* Posts
+----------------------------------------------- */
+h2.date-header {
+  margin:0 28px 0 43px;
+  font-size:85%;
+  line-height:2em;
+  text-transform:uppercase;
+  letter-spacing:.2em;
+  color:#558866;
+  }
+.post {
+  margin:.3em 0 25px;
+  padding:0 13px;
+  border:1px dotted #bbbbbb;
+  border-width:1px 0;
+  }
+.post h3 {
+  margin:0;
+  line-height:1.5em;
+  background:url("http://www.blogblog.com/rounders3/icon_arrow.gif") no-repeat 10px .5em;
+  display:block;
+  border:1px dotted #bbbbbb;
+  border-width:0 1px 1px;
+  padding:2px 14px 2px 29px;
+  color: #333333;
+  font: normal bold 135% 'Trebuchet MS',Verdana,Arial,Sans-serif;
+  }
+.post h3 a, .post h3 a:visited {
+  text-decoration:none;
+  color: #333333;
+  }
+a.title-link:hover {
+  background-color: #bbbbbb;
+  color: #333333;
+  }
+.post-body {
+  border:1px dotted #bbbbbb;
+  border-width:0 1px 1px;
+  border-bottom-color:#eeeecc;
+  padding:10px 14px 1px 29px;
+  }
+html>body .post-body {
+  border-bottom-width:0;
+  }
+.post p {
+  margin:0 0 .75em;
+  }
+.post-footer {
+  background: #ffffff;
+  margin:0;
+  padding:2px 14px 2px 29px;
+  border:1px dotted #bbbbbb;
+  border-width:1px;
+  font-size:100%;
+  line-height:1.5em;
+  color: #666666;
+}
+.post-footer p { 
+  margin: 0;
+}
+html>body .post-footer {
+  border-bottom-color:transparent;
+  }
+
+.uncustomized-post-template .post-footer {
+  text-align: right;
+}
+
+.uncustomized-post-template .post-author,
+.uncustomized-post-template .post-timestamp {
+  display: block;
+  float: left;
+  text-align:left;
+  margin-right: 4px;
+}
+
+.post-footer a { 
+  color: #456;
+ }
+.post-footer a:hover { 
+  color: #234;
+ }
+a.comment-link {
+  /* IE5.0/Win doesn't apply padding to inline elements,
+     so we hide these two declarations from it */
+  background/* */:/**/url("http://www.blogblog.com/rounders/icon_comment.gif") no-repeat 0 45%;
+  padding-left:14px;
+  }
+html>body a.comment-link {
+  /* Respecified, for IE5/Mac's benefit */
+  background:url("http://www.blogblog.com/rounders3/icon_comment.gif") no-repeat 0 45%;
+  padding-left:14px;
+  }
+.post img {
+  margin:0 0 5px 0;
+  padding:4px;
+  border:1px solid #bbbbbb;
+  }
+blockquote {
+  margin:.75em 0;
+  border:1px dotted #bbbbbb;
+  border-width:1px 0;
+  padding:5px 15px;
+  color: #558866;
+  }
+.post blockquote p {
+  margin:.5em 0;
+  }
+
+#blog-pager-newer-link {
+  float: left;
+  margin-left: 13px;
+ }
+ 
+#blog-pager-older-link {
+  float: right;
+  margin-right: 13px;
+ }
+
+#blog-pager {   
+  text-align: center; 
+ }
+
+.feed-links { 
+  clear: both;
+  line-height: 2.5em;
+  margin-left: 13px;
+}
+
+/* Comments
+----------------------------------------------- */
+#comments {
+  margin:-25px 13px 0;
+  border:1px dotted #bbbbbb;
+  border-width:0 1px 1px;
+  padding:20px 0 15px 0;
+  }
+#comments h4 {
+  margin:0 0 10px;
+  padding:0 14px 2px 29px;
+  border-bottom:1px dotted #bbbbbb;
+  font-size:120%;
+  line-height:1.4em;
+  color:#333333;
+  }
+#comments-block {
+  margin:0 15px 0 9px;
+  }
+.comment-author {
+  background:url("http://www.blogblog.com/rounders3/icon_comment.gif") no-repeat 2px .3em;
+  margin:.5em 0;
+  padding:0 0 0 20px;
+  font-weight:bold;
+  }
+.comment-body {
+  margin:0 0 1.25em;
+  padding:0 0 0 20px;
+  }
+.comment-body p {
+  margin:0 0 .5em;
+  }
+.comment-footer {
+  margin:0 0 .5em;
+  padding:0 0 .75em 20px;
+  }
+.comment-footer a:link {
+  color: #333;
+  }
+.deleted-comment {
+  font-style:italic;
+  color:gray;
+  }
+
+
+/* Profile
+----------------------------------------------- */
+.profile-img { 
+  float: left;
+  margin: 5px 5px 5px 0;
+  border: 4px solid #ffffff;
+}
+
+.profile-datablock {
+  margin:0 15px .5em 0;
+  padding-top:8px;
+}
+
+.profile-link { 
+  background:url("http://www.blogblog.com/rounders3/icon_profile.gif") no-repeat 0 .1em;
+  padding-left:15px;
+  font-weight:bold;
+}
+
+.profile-textblock {
+  clear: both;
+  margin: 0;
+}
+
+.sidebar .clear, .main .widget .clear { 
+  clear: both;
+}
+
+#sidebartop-wrap {
+  background:#558866 url("http://www.blogblog.com/rounders3/corners_prof_bot.gif") no-repeat left bottom;
+  margin:0px 0px 15px;
+  padding:0px 0px 10px;
+  color:#ffffff;
+  }
+
+#sidebartop-wrap2 { 
+ background:url("http://www.blogblog.com/rounders3/corners_prof_top.gif") no-repeat left top;
+  padding: 10px 0 0;
+  margin:0;
+  border-width:0;
+ }
+
+#sidebartop h2 {
+  line-height:1.5em;
+  color:#ffffff;
+  border-bottom: 1px dotted #ffffff;
+  font: normal bold 100% 'Trebuchet MS',Verdana,Arial,Sans-serif;
+  margin-bottom: 0.5em;
+}
+
+#sidebartop a { 
+ color: #ffffff;
+}
+
+#sidebartop a:hover { 
+ color: #ffffff;
+}
+#sidebartop a:visited { 
+ color: #ffffff;
+}
+
+#sidebar a { 
+  color: #99ddbb;
+}
+#sidebar a:hover,
+#sidebar a:visited { 
+  color: #ffffff;
+}
+
+/* Sidebar Boxes
+----------------------------------------------- */
+
+.sidebar .widget { 
+  margin:.5em 13px 1.25em;
+  padding:0 0px;
+ }
+
+.widget-content { 
+  margin-top: 0.5em;
+ }
+
+#sidebarbottom-wrap1 {
+  background:#335577 url("http://www.blogblog.com/rounders3/corners_side_top.gif") no-repeat left top;
+  margin:0 0 15px;
+  padding:10px 0 0;
+  color: #ffffff;
+}
+
+#sidebarbottom-wrap2 {
+  background:url("http://www.blogblog.com/rounders3/corners_side_bot.gif") no-repeat left bottom;
+  padding:8px 0px 8px;
+}
+
+.sidebar h2 {
+  margin:0 0 .5em 0;
+  padding:0 0 .2em;
+  line-height:1.5em;
+  font:normal bold 100% 'Trebuchet MS',Verdana,Arial,Sans-serif;
+}
+
+.sidebar ul {
+  list-style:none;
+  margin:0 0 1.25em;
+  padding:0 0px;
+}
+
+.sidebar ul li {
+  background:url("http://www.blogblog.com/rounders3/icon_arrow_sm.gif") no-repeat 2px .25em;
+  margin:0;
+  padding:0 0 3px 16px;
+  margin-bottom:3px;
+  border-bottom:1px dotted #bbbbbb;
+  line-height:1.4em;
+  }
+.sidebar p {
+  margin:0 0 .6em;
+  }
+
+#sidebar h2 { 
+  color: #aabbcc;
+  border-bottom: 1px dotted #aabbcc;
+ }
+
+/* Footer
+----------------------------------------------- */
+#footer-wrap1 {
+  clear:both;
+  margin:0;
+  padding:15px 0 0;
+  }
+#footer-wrap2 {
+  background:#335577 url("http://www.blogblog.com/rounders3/corners_cap_top.gif") no-repeat left top;
+  padding:8px 0 0;
+  color:#ffffff;
+  }
+#footer {
+  background:url("http://www.blogblog.com/rounders3/corners_cap_bot.gif") no-repeat left bottom;
+  padding:8px 15px 8px;
+  }
+#footer hr {display:none;}
+#footer p {margin:0;}
+#footer a {color:#ffffff;}
+
+/** Page structure tweaks for layout editor wireframe */
+body#layout #main-wrap1,
+body#layout #sidebar-wrap,
+body#layout #header-wrapper {
+  margin-top: 0;
+}
+
+body#layout #header, body#layout #header-wrapper,
+body#layout #outer-wrapper { 
+  margin-left:0,
+  margin-right: 0;
+  padding: 0;
+}
+
+body#layout #outer-wrapper { 
+  width: 730px;
+}
+
+body#layout #footer-wrap1 { 
+  padding-top: 0;
+ }
+
+--></style>
+
+<style type='text/css'>
+    /* Stylesheet generated from TextMate theme
+ *
+ * Vibrant Ink
+ * 
+ *
+ */
+
+/* Mostly to improve view within the TextMate HTML viewer */
+body {
+	margin: 0;
+	padding: 0;
+}
+
+pre.textmate-source {
+	margin: 0;
+	padding: 3px;
+	font-family: Monaco, monospace;
+	font-size: 12px;
+	line-height: 1.3em;
+	word-wrap: break-word;
+	white-space: pre;
+	white-space: pre-wrap;
+	white-space: -moz-pre-wrap;
+	white-space: -o-pre-wrap;
+}
+
+pre.textmate-source.vibrant_ink {
+	color: #FFFFFF;
+	background-color: #000000;
+}
+
+pre.textmate-source .linenum {
+	width: 75px;
+	padding: 0.1em 1em 0.2em 0;
+	color: #888;
+	background-color: #eee;
+}
+pre.textmate-source.vibrant_ink span {
+   padding-top: 0.2em;
+   padding-bottom: 0.1em;
+}
+pre.textmate-source.vibrant_ink ::selection {
+	background-color: rgba(53, 73, 60, 0.88);
+}
+/* Text base */
+pre.textmate-source.vibrant_ink .text {
+	color: #FFFFFF;
+	background-color: #0F0F0F;
+}
+
+/* Inline Ruby Html */
+pre.textmate-source.vibrant_ink .source_ruby_rails_embedded_html {
+	background-color: #000000;
+}
+
+/* Ruby Html */
+pre.textmate-source.vibrant_ink .text_html_ruby {
+	color: #FFFFFF;
+	background-color: #101010;
+}
+
+/* Ruby Number */
+pre.textmate-source.vibrant_ink .constant_numeric_ruby {
+	color: #CCFF33;
+}
+
+/* Ruby source */
+pre.textmate-source.vibrant_ink .source_ruby {
+}
+
+/* Source base */
+pre.textmate-source.vibrant_ink .source {
+	color: #FFFFFF;
+	background-color: #000000;
+}
+
+/* Comment */
+pre.textmate-source.vibrant_ink .comment {
+	color: #9933CC;
+}
+
+/* Constant */
+pre.textmate-source.vibrant_ink .constant {
+	color: #339999;
+}
+
+/* Keyword */
+pre.textmate-source.vibrant_ink .keyword {
+	color: #FF6600;
+}
+
+/* Pre-processor Line */
+pre.textmate-source.vibrant_ink .keyword_preprocessor {
+	color: #EDF8F9;
+}
+
+/* Pre-processor Directive */
+pre.textmate-source.vibrant_ink .keyword_preprocessor .directive {
+	color: #FFFFFF;
+}
+
+/* Function name */
+pre.textmate-source.vibrant_ink .entity_name_function, pre.textmate-source.vibrant_ink .storage_type_function_js {
+	color: #FFCC00;
+}
+
+/* Function argument */
+pre.textmate-source.vibrant_ink .variable_parameter {
+	font-style: italic;
+}
+
+/* Block comment */
+pre.textmate-source.vibrant_ink .source .comment_block {
+	color: #772CB7;
+	background-color: #070707;
+}
+
+/* Variable */
+pre.textmate-source.vibrant_ink .variable_other {
+	color: #FFFFFF;
+}
+
+/* ActiveRecord Function */
+pre.textmate-source.vibrant_ink .support_function_activerecord_rails {
+	color: #999966;
+}
+
+/* String */
+pre.textmate-source.vibrant_ink .string {
+	color: #66FF00;
+}
+
+/* String escapes */
+pre.textmate-source.vibrant_ink .string .constant_character_escape {
+	color: #AAAAAA;
+}
+
+/* String (executed) */
+pre.textmate-source.vibrant_ink .string_interpolated {
+	color: #000000;
+	background-color: #CCCC33;
+}
+
+/* Regular expression */
+pre.textmate-source.vibrant_ink .string_regexp {
+	color: #44B4CC;
+}
+
+/* String (literal) */
+pre.textmate-source.vibrant_ink .string_literal {
+	color: #CCCC33;
+}
+
+/* String escapes (executed) */
+pre.textmate-source.vibrant_ink .string_interpolated .constant_character_escape {
+	color: #555555;
+}
+
+/* Class name */
+pre.textmate-source.vibrant_ink .entity_name_class, pre.textmate-source.vibrant_ink .support_class_js {
+	text-decoration: underline;
+}
+
+/* Class inheritance */
+pre.textmate-source.vibrant_ink .entity_other_inherited-class {
+	font-style: italic;
+	text-decoration: underline;
+}
+
+/* Tag name */
+pre.textmate-source.vibrant_ink .entity_name_tag {
+}
+
+/* Html Meta */
+pre.textmate-source.vibrant_ink .meta_tag_inline_any_html, pre.textmate-source.vibrant_ink . .meta_tag_block_any_html {
+	color: #FF6600;
+}
+
+/* Tag attribute */
+pre.textmate-source.vibrant_ink .entity_other_attribute-name {
+	color: #99CC99;
+	font-style: italic;
+}
+
+/* Other Keywords */
+pre.textmate-source.vibrant_ink .keyword_other {
+	color: #DDE93D;
+}
+
+/* CSS Selector */
+pre.textmate-source.vibrant_ink .meta_selector_css, pre.textmate-source.vibrant_ink .entity_other_attribute-name_pseudo-class_css, pre.textmate-source.vibrant_ink .entity_name_tag_wildcard_css, pre.textmate-source.vibrant_ink .entity_other_attribute-name_id_css, pre.textmate-source.vibrant_ink .entity_other_attribute-name_class_css {
+	color: #FF6600;
+}
+
+/* CSS Property */
+pre.textmate-source.vibrant_ink .support_type_property-name_css {
+	color: #999966;
+}
+
+/* CSS Other */
+pre.textmate-source.vibrant_ink .keyword_other_unit_css, pre.textmate-source.vibrant_ink .constant_other_rgb-value_css, pre.textmate-source.vibrant_ink .constant_numeric_css {
+	color: #FFFFFF;
+}
+
+/* Javascript Events */
+pre.textmate-source.vibrant_ink .support_function_event-handler_js {
+	color: #FFFFFF;
+}
+
+/* Javascript Operators */
+pre.textmate-source.vibrant_ink .keyword_operator_js {
+	color: #FFFFFF;
+}
+
+/* Javascript Keywords */
+pre.textmate-source.vibrant_ink .keyword_control_js {
+	color: #CCCC66;
+}
+
+/* Prototype Objects */
+pre.textmate-source.vibrant_ink .support_class_prototype_js {
+	color: #FFFFFF;
+}
+
+/* Prototype Methods */
+pre.textmate-source.vibrant_ink .object_property_function_prototype_js {
+	color: #FF6600;
+}
+
+/* Storage */
+pre.textmate-source.vibrant_ink .storage {
+	color: #FF8936;
+}
+  </style>
+
+<link rel='stylesheet' type='text/css' href='http://www.blogger.com/widgets/3319451950-blogarchive.css'/><!-- --><style type="text/css">@import url('http://www.blogger.com/css/blog_controls.css');
+@import url('http://www.blogger.com/dyn-css/authorization.css?targetBlogID=22641314');
+#navbar-iframe { display:block }
+</style>
+
+<link rel='stylesheet' type='text/css' href='http://www.blogger.com/widgets/3744004394-blog.css'/><script type="text/javascript" src="http://www.blogger.com/widgets/1513184922-widgets.js"></script>
+</head>
+
+<body>
+  <div class='navbar section' id='navbar'><div class='widget Navbar' id='Navbar1'><iframe src="http://www.blogger.com/navbar.g?targetBlogID=22641314&amp;blogName=Clever+Title+Pending&amp;publishMode=PUBLISH_MODE_BLOGSPOT&amp;navbarType=BLUE&amp;layoutType=LAYOUTS&amp;homepageUrl=http%3A%2F%2Fseangeo.blogspot.com%2F&amp;searchRoot=http%3A%2F%2Fseangeo.blogspot.com%2Fsearch" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" height="30px" width="100%" id="navbar-iframe"></iframe>
+<div id="space-for-ie"></div></div></div>
+
+
+  <div id='outer-wrapper'>
+
+  <div id='header-wrapper'>
+    <div class='header section' id='header'><div class='widget Header' id='Header1'>
+
+  
+    
+    <div id='header-inner'>
+      <div class='titlewrapper'>
+        <h1 class='title'>
+          
+  
+    <a href='http://seangeo.blogspot.com/'>Clever Title Pending</a>
+  
+
+        </h1>
+      </div>
+      
+  <div class='descriptionwrapper'>
+    <p class='description'><span></span></p>
+  </div>
+
+    </div>
+  
+</div></div>
+  </div>
+
+  <div id='crosscol-wrapper' style='text-align:center'>
+    <div class='crosscol section' id='crosscol'></div>
+  </div>
+
+  <div id='main-wrap1'><div id='main-wrap2'>
+    <div class='main section' id='main'><div class='widget Blog' id='Blog1'>
+  
+  <div class='blog-posts hfeed'>
+
+    
+  
+
+
+    <!-- google_ad_section_start -->
+    
+      
+        <h2 class='date-header'>Wednesday, September 26, 2007</h2>
+      
+      
+  <div class='post hentry uncustomized-post-template'>
+    <a name='8827410976060723073'></a>
+    
+      <h3 class='post-title entry-title'>
+     
+        
+          <a href='http://seangeo.blogspot.com/2007/09/building-erlang-with-rake.html'>Building Erlang with Rake</a>
+        
+     
+      </h3>
+    
+
+    <div class='post-header-line-1'></div>
+
+    <div class='post-body entry-content'>
+      <p>This is blogger post content.</p>
+    </div>
+    <div class='post-footer'>
+    <p class='post-footer-line post-footer-line-1'>
+      <span class='post-author vcard'>
+        
+          Posted by
+          <span class='fn'>Sean Geoghegan</span>
+        
+      </span>
+
+      <span class='post-timestamp'>
+        
+          at
+        
+          <a class='timestamp-link' href='http://seangeo.blogspot.com/2007/09/building-erlang-with-rake.html' rel='bookmark' title='permanent link'><abbr class='published' title='2007-09-26T03:09:00-07:00'>3:09 AM</abbr></a>
+        
+        
+      </span>
+
+      <span class='post-comment-link'>
+        
+      </span>
+
+       
+       <span class='post-backlinks post-comment-link'>
+         
+       </span>
+
+      <span class='post-icons'>
+        
+        
+          <span class='item-action'>
+          <a href='http://www.blogger.com/email-post.g?blogID=22641314&postID=8827410976060723073' title='Email Post'>
+              <img alt='' class='icon-action' src='http://www.blogger.com/img/icon18_email.gif'/>
+          </a>
+          </span>
+        
+
+        
+        
+  
+    <span class='item-control blog-admin pid-2262414'>
+      <a href='http://www.blogger.com/post-edit.g?blogID=22641314&postID=8827410976060723073' title='Edit Post'>
+        <img alt='' class='icon-action' src='http://www.blogger.com/img/icon18_edit_allbkg.gif'/>
+      </a>
+    </span>
+  
+
+      </span>
+      </p>
+
+      <p class='post-footer-line post-footer-line-2'>
+      <span class='post-labels'>
+        
+          Labels:
+          
+            <a href='http://seangeo.blogspot.com/search/label/code' rel='tag'>code</a>,
+          
+            <a href='http://seangeo.blogspot.com/search/label/erlang' rel='tag'>erlang</a>,
+          
+            <a href='http://seangeo.blogspot.com/search/label/rake' rel='tag'>rake</a>
+          
+        
+      </span>
+      </p>
+
+      <p class='post-footer-line post-footer-line-3'></p>
+    </div>
+  </div>
+
+      
+        
+  <div class='comments' id='comments'>
+    <a name='comments'></a>
+    
+      <h4>
+        
+          4 comments:
+        
+      </h4>
+
+      <dl id='comments-block'>
+        
+          <dt class='comment-author anon-comment-icon' id='c4322273869650676541'>
+            <a name='c4322273869650676541'></a>
+            
+              <a href='http://caraldi.com/jbq/' rel='nofollow'>Jean-Baptiste Quenot</a>
+            
+            said...
+          </dt>
+          <dd class='comment-body'>
+            
+              <p>Sorry, but:<BR/><BR/>** Invoke compile (first_time)<BR/>** Invoke ebin (first_time, not_needed)<BR/>rake aborted!<BR/>Don't know how to build task 'ebin/shop1.beam ebin/shop.beam ebin/geom.beam'</p>
+            
+          </dd>
+          <dd class='comment-footer'>
+            <span class='comment-timestamp'>
+              <a href='http://seangeo.blogspot.com/2007/09/building-erlang-with-rake.html#c4322273869650676541' title='comment permalink'>
+                8:54 AM
+              </a>
+              
+  <span class='item-control blog-admin pid-110375647'>
+    <a href='http://www.blogger.com/delete-comment.g?blogID=22641314&postID=4322273869650676541' title='Delete Comment'>
+      <span class='delete-comment-icon'>&#160;</span>
+    </a>
+  </span>
+
+            </span>
+          </dd>
+        
+          <dt class='comment-author blogger-comment-icon' id='c7230272504903430413'>
+            <a name='c7230272504903430413'></a>
+            
+              <a href='http://www.blogger.com/profile/00647947610695016991' rel='nofollow'>Sean Geoghegan</a>
+            
+            said...
+          </dt>
+          <dd class='comment-body'>
+            
+              <p>Thanks for that.  There was a bug in the compile dependencies that caused problems when builing many files after a clean.  It should work now.<BR/><BR/>I fixed this a while ago but forgot to update my blog post so thanks for reminding me.</p>
+            
+          </dd>
+          <dd class='comment-footer'>
+            <span class='comment-timestamp'>
+              <a href='http://seangeo.blogspot.com/2007/09/building-erlang-with-rake.html#c7230272504903430413' title='comment permalink'>
+                3:52 PM
+              </a>
+              
+  <span class='item-control blog-admin pid-2262414'>
+    <a href='http://www.blogger.com/delete-comment.g?blogID=22641314&postID=7230272504903430413' title='Delete Comment'>
+      <span class='delete-comment-icon'>&#160;</span>
+    </a>
+  </span>
+
+            </span>
+          </dd>
+        
+          <dt class='comment-author anon-comment-icon' id='c2199866951639944247'>
+            <a name='c2199866951639944247'></a>
+            
+              Anonymous
+            
+            said...
+          </dt>
+          <dd class='comment-body'>
+            
+              <p>I have also used Rake with erlang.<BR/>Here is what I came up with when I need to rebuild eunit.<BR/>========================<BR/>require 'rake/clean'<BR/>CLOBBER.include 'ebin'<BR/>SRC_TO_BIN = [/src(\/.*\.)erl/,'ebin\1beam']<BR/>BIN_TO_SRC = [/ebin(\/.*\.)beam/,'src\1erl']<BR/><BR/>beams = ['ebin'] + FileList.new('src/*.erl').gsub(*SRC_TO_BIN)<BR/>task :default => beams<BR/>directory 'ebin'<BR/><BR/>rule(%r{^ebin/.*\.beam$} => lambda { |fn| fn.gsub(*BIN_TO_SRC) }) do |t|<BR/>  `erlc -pa ebin -Iinclude +warn_unused_vars +nowarn_shadow_vars +warn_unused_import -oebin #{t.source}`<BR/>end<BR/>========================<BR/>-- Mike Berrow</p>
+            
+          </dd>
+          <dd class='comment-footer'>
+            <span class='comment-timestamp'>
+              <a href='http://seangeo.blogspot.com/2007/09/building-erlang-with-rake.html#c2199866951639944247' title='comment permalink'>
+                9:51 AM
+              </a>
+              
+  <span class='item-control blog-admin pid-110375647'>
+    <a href='http://www.blogger.com/delete-comment.g?blogID=22641314&postID=2199866951639944247' title='Delete Comment'>
+      <span class='delete-comment-icon'>&#160;</span>
+    </a>
+  </span>
+
+            </span>
+          </dd>
+        
+          <dt class='comment-author anon-comment-icon' id='c7369100295198413389'>
+            <a name='c7369100295198413389'></a>
+            
+              CresceNet
+            
+            said...
+          </dt>
+          <dd class='comment-body'>
+            
+              <p>Oi, achei seu blog pelo google está bem interessante gostei desse post. Gostaria de falar sobre o <A HREF="http://www.provedorcrescenet.com" REL="nofollow">CresceNet</A>. O <A HREF="http://www.provedorcrescenet.com" REL="nofollow">CresceNet</A> é um provedor de <A HREF="http://www.provedorcrescenet.com" REL="nofollow">internet discada</A> que remunera seus usuários pelo tempo conectado. Exatamente isso que você leu, estão pagando para você conectar. O <A HREF="http://www.provedorcrescenet.com" REL="nofollow">provedor</A> paga 20 centavos por hora de <A HREF="http://www.provedorcrescenet.com" REL="nofollow">conexão discada</A> com ligação local para mais de 2100 cidades do Brasil. O CresceNet tem um <A HREF="http://www.provedorcrescenet.com" REL="nofollow">acelerador de conexão</A>, que deixa sua conexão até 10 vezes mais rápida. Quem utiliza <A HREF="http://www.provedorcrescenet.com" REL="nofollow">banda larga</A> pode lucrar também, basta se cadastrar no CresceNet e quando for dormir conectar por discada, é possível pagar a ADSL só com o <A HREF="http://www.provedorcrescenet.com" REL="nofollow">dinheiro</A> da discada. Nos horários de minuto único o gasto com telefone é mínimo e a remuneração do CresceNet generosa. Se você quiser linkar o <A HREF="http://www.provedorcrescenet.com" REL="nofollow">Cresce.Net</A>(www.provedorcrescenet.com) no seu blog eu ficaria agradecido, até mais e sucesso. If is possible add the CresceNet(www.provedorcrescenet.com) in your blogroll, I thank. Good bye friend.<A HREF="3020506708" REL="nofollow"></A></p>
+            
+          </dd>
+          <dd class='comment-footer'>
+            <span class='comment-timestamp'>
+              <a href='http://seangeo.blogspot.com/2007/09/building-erlang-with-rake.html#c7369100295198413389' title='comment permalink'>
+                3:38 PM
+              </a>
+              
+  <span class='item-control blog-admin pid-110375647'>
+    <a href='http://www.blogger.com/delete-comment.g?blogID=22641314&postID=7369100295198413389' title='Delete Comment'>
+      <span class='delete-comment-icon'>&#160;</span>
+    </a>
+  </span>
+
+            </span>
+          </dd>
+        
+      </dl>
+
+      <p class='comment-footer'>
+        <a href='http://www.blogger.com/comment.g?blogID=22641314&postID=8827410976060723073' onclick=''>Post a Comment</a>
+      </p>
+    
+
+    <div id='backlinks-container'>
+    <div id='Blog1_backlinks-container'>
+       
+         
+  <a name='links'></a><h4></h4>
+  
+  <p class='comment-footer'>
+    <a class='comment-link' href='' id='Blog1_backlinks-create-link' target='_blank'></a>
+  </p>
+
+       
+    </div>
+    </div>
+  </div>
+
+      
+      
+    
+    <!-- google_ad_section_end -->
+  </div>
+
+  
+  
+  <div class='blog-pager' id='blog-pager'>
+    
+
+    
+      <span id='blog-pager-older-link'>
+      <a class='blog-pager-older-link' href='http://seangeo.blogspot.com/2007/09/testing-activeresource.html' id='Blog1_blog-pager-older-link' title='Older Post'>Older Post</a>
+      </span>
+    
+
+    
+      <a class='home-link' href='http://seangeo.blogspot.com/'>Home</a>
+      
+
+  </div>
+  <div class='clear'></div>
+
+
+  
+  
+   
+    <div class='post-feeds'>
+      
+        
+          
+            
+  <div class='feed-links'>
+  Subscribe to:
+  
+     <a class='feed-link' href='http://seangeo.blogspot.com/feeds/8827410976060723073/comments/default' target='_blank' type='application/atom+xml'>Post Comments (Atom)</a>
+  
+  </div>
+
+          
+        
+      
+    </div>
+  
+
+</div></div>
+  </div></div>
+
+  <div id='sidebar-wrap'>
+
+    <div id='sidebartop-wrap'><div id='sidebartop-wrap2'>
+      <div class='sidebar section' id='sidebartop'><div class='widget AdSense' id='AdSense2'>
+  <div class='widget-content'>
+    <script type="text/javascript"><!--
+google_ad_client="pub-4928768161222524";
+google_ad_host="pub-1556223355139109";
+google_ad_width=180;
+google_ad_height=150;
+google_ad_format="180x150_as";
+google_ad_type="text";
+google_color_border="EEEECC";
+google_color_bg="EEEECC";
+google_color_link="445566";
+google_color_url="445566";
+google_color_text="333333";
+//--></script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+
+  </div>
+</div><div class='widget AdSense' id='AdSense1'>
+  <div class='widget-content'>
+    <script type="text/javascript"><!--
+google_ad_client="pub-4928768161222524";
+google_ad_host="pub-1556223355139109";
+google_ad_width=180;
+google_ad_height=150;
+google_ad_format="180x150_as";
+google_ad_type="text";
+google_color_border="EEEECC";
+google_color_bg="EEEECC";
+google_color_link="445566";
+google_color_url="445566";
+google_color_text="333333";
+//--></script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+
+  </div>
+</div><div class='widget Profile' id='Profile1'>
+    
+      <h2>About Me</h2>
+    
+    <div class='widget-content'>
+     
+
+      
+
+      <dl class='profile-datablock'>
+        <dt class='profile-data'>Sean Geoghegan</dt>
+
+        
+
+        
+      </dl>
+      <a class='profile-link' href='http://www.blogger.com/profile/00647947610695016991'>View my complete profile</a>
+    
+
+     
+  <div class='clear'></div>
+  <span class='widget-item-control'>
+  <span class='item-control blog-admin'>
+    <a class='quickedit' href='http://www.blogger.com/rearrange?blogID=22641314&widgetType=Profile&widgetId=Profile1&action=editWidget' onclick='return _WidgetManager._PopupConfig(document.getElementById("Profile1"));' target='configProfile1' title='Edit'>
+      <img alt='' src='http://www.blogger.com/img/icon18_wrench_allbkg.gif'/>
+    </a>
+  </span>
+  </span>
+  <div class='clear'></div>
+
+    </div>
+  </div></div>
+    </div></div>
+
+    <div id='sidebarbottom-wrap1'><div id='sidebarbottom-wrap2'>
+      <div class='sidebar section' id='sidebar'><div class='widget HTML' id='HTML1'>
+  
+  
+    <h2 class='title'>Subscribe Now: Feed Icon</h2>
+  
+  <div class='widget-content'>
+    <a href="http://feeds.feedburner.com/CleverTitlePending" rel="alternate" title="Subscribe to my feed" type="application/rss+xml"><img alt="" style="border:0" src="http://www.feedburner.com/fb/images/pub/feed-icon32x32.png"/></a><a href="http://feeds.feedburner.com/CleverTitlePending" rel="alternate" title="Subscribe to my feed" type="application/rss+xml">Subscribe in a reader</a>
+  </div>
+
+  
+  <div class='clear'></div>
+  <span class='widget-item-control'>
+  <span class='item-control blog-admin'>
+    <a class='quickedit' href='http://www.blogger.com/rearrange?blogID=22641314&widgetType=HTML&widgetId=HTML1&action=editWidget' onclick='return _WidgetManager._PopupConfig(document.getElementById("HTML1"));' target='configHTML1' title='Edit'>
+      <img alt='' src='http://www.blogger.com/img/icon18_wrench_allbkg.gif'/>
+    </a>
+  </span>
+  </span>
+  <div class='clear'></div>
+
+</div><div class='widget BlogArchive' id='BlogArchive1'>
+  
+    <h2>Blog Archive</h2>
+  
+  <div class='widget-content'>
+  <div id='ArchiveList'>
+  <div id='BlogArchive1_ArchiveList'>
+    
+     
+  
+      <ul>
+        <li class='archivedate expanded'>
+          
+  
+  
+    <a class='toggle' href='http://seangeo.blogspot.com/2007/09/building-erlang-with-rake.html?widgetType=BlogArchive&widgetId=BlogArchive1&action=toggle&dir=close&toggle=YEARLY-1167638400000&toggleopen=MONTHLY-1188630000000'>
+        <span class='zippy toggle-open'>&#9660; </span>
+    </a>
+  
+ 
+
+          <a class='post-count-link' href='http://seangeo.blogspot.com/search?updated-min=2007-01-01T00%3A00%3A00-08%3A00&updated-max=2008-01-01T00%3A00%3A00-08%3A00&max-results=3'>2007</a>
+            <span class='post-count' dir='ltr'>(3)</span>
+          
+            
+  
+      <ul>
+        <li class='archivedate expanded'>
+          
+  
+  
+    <a class='toggle' href='http://seangeo.blogspot.com/2007/09/building-erlang-with-rake.html?widgetType=BlogArchive&widgetId=BlogArchive1&action=toggle&dir=close&toggle=MONTHLY-1188630000000&toggleopen=MONTHLY-1188630000000'>
+        <span class='zippy toggle-open'>&#9660; </span>
+    </a>
+  
+ 
+
+          <a class='post-count-link' href='http://seangeo.blogspot.com/2007_09_01_archive.html'>September</a>
+            <span class='post-count' dir='ltr'>(2)</span>
+          
+          
+            
+  <ul class='posts'>
+    
+      <li><a href='http://seangeo.blogspot.com/2007/09/building-erlang-with-rake.html'>Building Erlang with Rake</a></li>
+    
+      <li><a href='http://seangeo.blogspot.com/2007/09/testing-activeresource.html'>Testing ActiveResource</a></li>
+    
+  </ul>
+
+          
+        </li>
+      </ul>
+  
+      <ul>
+        <li class='archivedate collapsed'>
+          
+  
+  
+    <a class='toggle' href='http://seangeo.blogspot.com/2007/09/building-erlang-with-rake.html?widgetType=BlogArchive&widgetId=BlogArchive1&action=toggle&dir=open&toggle=MONTHLY-1178002800000&toggleopen=MONTHLY-1188630000000'>
+          <span class='zippy'>
+            
+              &#9658;
+            
+          </span>
+    </a>
+  
+ 
+
+          <a class='post-count-link' href='http://seangeo.blogspot.com/2007_05_01_archive.html'>May</a>
+            <span class='post-count' dir='ltr'>(1)</span>
+          
+          
+            
+  <ul class='posts'>
+    
+      <li><a href='http://seangeo.blogspot.com/2007/05/index-ruby-objects-by-attribute.html'>Index Ruby Objects by an Attribute</a></li>
+    
+  </ul>
+
+          
+        </li>
+      </ul>
+  
+
+          
+          
+        </li>
+      </ul>
+  
+      <ul>
+        <li class='archivedate collapsed'>
+          
+  
+  
+    <a class='toggle' href='http://seangeo.blogspot.com/2007/09/building-erlang-with-rake.html?widgetType=BlogArchive&widgetId=BlogArchive1&action=toggle&dir=open&toggle=YEARLY-1136102400000&toggleopen=MONTHLY-1188630000000'>
+          <span class='zippy'>
+            
+              &#9658;
+            
+          </span>
+    </a>
+  
+ 
+
+          <a class='post-count-link' href='http://seangeo.blogspot.com/search?updated-min=2006-01-01T00%3A00%3A00-08%3A00&updated-max=2007-01-01T00%3A00%3A00-08%3A00&max-results=6'>2006</a>
+            <span class='post-count' dir='ltr'>(6)</span>
+          
+            
+  
+      <ul>
+        <li class='archivedate collapsed'>
+          
+  
+  
+    <a class='toggle' href='http://seangeo.blogspot.com/2007/09/building-erlang-with-rake.html?widgetType=BlogArchive&widgetId=BlogArchive1&action=toggle&dir=open&toggle=MONTHLY-1143878400000&toggleopen=MONTHLY-1188630000000'>
+          <span class='zippy'>
+            
+              &#9658;
+            
+          </span>
+    </a>
+  
+ 
+
+          <a class='post-count-link' href='http://seangeo.blogspot.com/2006_04_01_archive.html'>April</a>
+            <span class='post-count' dir='ltr'>(2)</span>
+          
+          
+            
+  <ul class='posts'>
+    
+      <li><a href='http://seangeo.blogspot.com/2006/04/why-get-should-always-be-idempotent.html'>Why GET should always be idempotent: A lesson from...</a></li>
+    
+      <li><a href='http://seangeo.blogspot.com/2006/04/calling-web-services-from-rails.html'>Calling Web Services From Rails</a></li>
+    
+  </ul>
+
+          
+        </li>
+      </ul>
+  
+      <ul>
+        <li class='archivedate collapsed'>
+          
+  
+  
+    <a class='toggle' href='http://seangeo.blogspot.com/2007/09/building-erlang-with-rake.html?widgetType=BlogArchive&widgetId=BlogArchive1&action=toggle&dir=open&toggle=MONTHLY-1141200000000&toggleopen=MONTHLY-1188630000000'>
+          <span class='zippy'>
+            
+              &#9658;
+            
+          </span>
+    </a>
+  
+ 
+
+          <a class='post-count-link' href='http://seangeo.blogspot.com/2006_03_01_archive.html'>March</a>
+            <span class='post-count' dir='ltr'>(1)</span>
+          
+          
+            
+  <ul class='posts'>
+    
+      <li><a href='http://seangeo.blogspot.com/2006/03/javascript-graph-visualisation.html'>Javascript Graph Visualisation</a></li>
+    
+  </ul>
+
+          
+        </li>
+      </ul>
+  
+      <ul>
+        <li class='archivedate collapsed'>
+          
+  
+  
+    <a class='toggle' href='http://seangeo.blogspot.com/2007/09/building-erlang-with-rake.html?widgetType=BlogArchive&widgetId=BlogArchive1&action=toggle&dir=open&toggle=MONTHLY-1138780800000&toggleopen=MONTHLY-1188630000000'>
+          <span class='zippy'>
+            
+              &#9658;
+            
+          </span>
+    </a>
+  
+ 
+
+          <a class='post-count-link' href='http://seangeo.blogspot.com/2006_02_01_archive.html'>February</a>
+            <span class='post-count' dir='ltr'>(3)</span>
+          
+          
+            
+  <ul class='posts'>
+    
+      <li><a href='http://seangeo.blogspot.com/2006/02/active-ontology-for-ruby-on-rails.html'>Active Ontology for Ruby on Rails</a></li>
+    
+      <li><a href='http://seangeo.blogspot.com/2006/02/rdf-schema-generator.html'>RDF Schema Generator</a></li>
+    
+      <li><a href='http://seangeo.blogspot.com/2006/02/first-post.html'>First Post</a></li>
+    
+  </ul>
+
+          
+        </li>
+      </ul>
+  
+
+          
+          
+        </li>
+      </ul>
+  
+
+    
+    
+    
+  </div>
+  </div>
+  
+  <div class='clear'></div>
+  <span class='widget-item-control'>
+  <span class='item-control blog-admin'>
+    <a class='quickedit' href='http://www.blogger.com/rearrange?blogID=22641314&widgetType=BlogArchive&widgetId=BlogArchive1&action=editWidget' onclick='return _WidgetManager._PopupConfig(document.getElementById("BlogArchive1"));' target='configBlogArchive1' title='Edit'>
+      <img alt='' src='http://www.blogger.com/img/icon18_wrench_allbkg.gif'/>
+    </a>
+  </span>
+  </span>
+  <div class='clear'></div>
+
+  </div>
+</div><div class='widget LinkList' id='LinkList1'>
+
+<h2>Links</h2>
+ <div class='widget-content'>
+   <ul>
+     
+       <li><a href='http://news.google.com/'>Google News</a></li>
+     
+       <li><a href='http://www.egg-tech.com'><img src="http://www.egg-tech.com/images/egg_site_link_tiny.png" alt="Egg Tech"/></a></li>
+     
+   </ul>
+   
+  <div class='clear'></div>
+  <span class='widget-item-control'>
+  <span class='item-control blog-admin'>
+    <a class='quickedit' href='http://www.blogger.com/rearrange?blogID=22641314&widgetType=LinkList&widgetId=LinkList1&action=editWidget' onclick='return _WidgetManager._PopupConfig(document.getElementById("LinkList1"));' target='configLinkList1' title='Edit'>
+      <img alt='' src='http://www.blogger.com/img/icon18_wrench_allbkg.gif'/>
+    </a>
+  </span>
+  </span>
+  <div class='clear'></div>
+
+ </div>
+</div></div>
+    </div></div>
+
+  </div>
+
+  <div id='footer-wrap1'><div id='footer-wrap2'>
+    <div class='footer section' id='footer'></div>
+  </div></div>
+
+</div>
+<script src='http://www.google-analytics.com/urchin.js' type='text/javascript'>
+</script>
+<script type='text/javascript'>
+_uacct = "UA-2084039-1";
+urchinTracker();
+</script>
+<script type='text/javascript'>
+_WidgetManager._Init('http://www.blogger.com/rearrange?blogID=22641314', 'http://seangeo.blogspot.com/2007/09/building-erlang-with-rake.html','22641314');
+_WidgetManager._SetPageActionUrl('http://www.blogger.com/display?blogID=22641314', 'WrRX59BpcVTV1d3VVOSDI1i9Dis=:1198031405014');
+_WidgetManager._SetDataContext([{'name': 'blog', 'data': {'title': 'Clever Title Pending', 'pageType': 'item', 'url': 'http://seangeo.blogspot.com/2007/09/building-erlang-with-rake.html', 'homepageUrl': 'http://seangeo.blogspot.com/', 'pageTitle': 'Clever Title Pending: Building Erlang with Rake', 'encoding': 'UTF-8', 'isPrivate': false, 'languageDirection': 'ltr', 'feedLinks': '\u003clink rel\u003d\"alternate\" type\u003d\"application/atom+xml\" title\u003d\"Clever Title Pending - Atom\" href\u003d\"http://seangeo.blogspot.com/feeds/posts/default\" /\>\n\u003clink rel\u003d\"alternate\" type\u003d\"application/rss+xml\" title\u003d\"Clever Title Pending - RSS\" href\u003d\"http://seangeo.blogspot.com/feeds/posts/default?alt\u003drss\" /\>\n\u003clink rel\u003d\"service.post\" type\u003d\"application/atom+xml\" title\u003d\"Clever Title Pending - Atom\" href\u003d\"http://www.blogger.com/feeds/22641314/posts/default\" /\>\n\u003clink rel\u003d\"EditURI\" type\u003d\"application/rsd+xml\" title\u003d\"RSD\" href\u003d\"http://www.blogger.com/rsd.g?blogID\u003d22641314\" /\>\n\u003clink rel\u003d\"alternate\" type\u003d\"application/atom+xml\" title\u003d\"Clever Title Pending - Atom\" href\u003d\"http://seangeo.blogspot.com/feeds/8827410976060723073/comments/default\" /\>\n', 'openIdOpTag': ''}}]);
+_WidgetManager._SetSystemMarkup({'layout': {'varName': '', 'template': '\u003cdiv class\u003d\'widget-wrap1\'\>  \u003cdiv class\u003d\'widget-wrap2\'\> \u003cdiv class\u003d\'widget-wrap3\'\> \u003cdiv class\u003d\'widget-content\'\> \u003cdiv class\u003d\'layout-title\'\>\u003cdata:layout-title\>\u003c/data:layout-title\>\u003c/div\> \u003ca class\u003d\'editlink\' expr:href\u003d\'data:widget.quickEditUrl\' expr:onclick\u003d\'\"return _WidgetManager._PopupConfig(document.getElementById(\\\"\" +       data:widget.instanceId + \"\\\"));\"\' target\u003d\'chooseWidget\'\>\u003cdata:edit-link\>\u003c/data:edit-link\>\u003c/a\> \u003c/div\> \u003c/div\> \u003c/div\> \u003c/div\>'}, 'quickedit': {'varName': '', 'template': '\u003cdiv class\u003d\'clear\'\>\u003c/div\> \u003cspan class\u003d\'widget-item-control\'\> \u003cspan class\u003d\'item-control blog-admin\'\> \u003ca class\u003d\'quickedit\' expr:href\u003d\'data:widget.quickEditUrl\' expr:onclick\u003d\'\"return _WidgetManager._PopupConfig(document.getElementById(\\\"\" +       data:widget.instanceId + \"\\\"));\"\' expr:target\u003d\'\"config\" + data:widget.instanceId\' expr:title\u003d\'data:edit-link\'\> \u003cimg alt\u003d\'\' src\u003d\'http://www.blogger.com/img/icon18_wrench_allbkg.gif\'/\> \u003c/a\> \u003c/span\> \u003c/span\> \u003cdiv class\u003d\'clear\'\>\u003c/div\>'}, 'all-head-content': {'varName': 'page', 'template': '\u003cmeta expr:content\u003d\'\"text/html; charset\u003d\" + data:page.encoding\' http-equiv\u003d\'Content-Type\'/\> \u003cmeta content\u003d\'true\' name\u003d\'MSSmartTagsPreventParsing\'/\> \u003cmeta content\u003d\'blogger\' name\u003d\'generator\'/\> \u003cdata:blog.feedLinks\>\u003c/data:blog.feedLinks\> \u003cdata:blog.openIdOpTag\>\u003c/data:blog.openIdOpTag\> \u003cb:if cond\u003d\'data:page.isPrivate\'\> \u003cmeta content\u003d\'NOINDEX,NOFOLLOW\' name\u003d\'robots\'/\> \u003c/b:if\>'}});
+_WidgetManager._RegisterWidget('_AdSenseView', new _WidgetInfo('AdSense2',  'sidebartop',{'main': {'varName': '', 'template': '\u003cdiv class\u003d\'widget-content\'\> \u003cdata:adCode\>\u003c/data:adCode\> \u003c/div\>'}}, document.getElementById('AdSense2'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_AdSenseView', new _WidgetInfo('AdSense1',  'sidebartop',{'main': {'varName': '', 'template': '\u003cdiv class\u003d\'widget-content\'\> \u003cdata:adCode\>\u003c/data:adCode\> \u003c/div\>'}}, document.getElementById('AdSense1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_ProfileView', new _WidgetInfo('Profile1',  'sidebartop',{'main': {'varName': '', 'template': '\u003cb:if cond\u003d\'data:title !\u003d \"\"\'\> \u003ch2\>\u003cdata:title\>\u003c/data:title\>\u003c/h2\> \u003c/b:if\> \u003cdiv class\u003d\'widget-content\'\> \u003cb:if cond\u003d\'data:team \u003d\u003d \"true\"\'\>  \u003cul\> \u003cb:loop values\u003d\'data:authors\' var\u003d\'i\'\> \u003cli\>\u003ca expr:href\u003d\'data:i.userUrl\'\>\u003cdata:i.display-name\>\u003c/data:i.display-name\>\u003c/a\>\u003c/li\> \u003c/b:loop\> \u003c/ul\> \u003cb:else\>\u003c/b:else\>  \u003cb:if cond\u003d\'data:photo.url !\u003d \"\"\'\> \u003ca expr:href\u003d\'data:userUrl\'\>\u003cimg class\u003d\'profile-img\' expr:alt\u003d\'data:photo.alt\' expr:height\u003d\'data:photo.height\' expr:src\u003d\'data:photo.url\' expr:width\u003d\'data:photo.width\'/\>\u003c/a\> \u003c/b:if\> \u003cdl class\u003d\'profile-datablock\'\> \u003cdt class\u003d\'profile-data\'\>\u003cdata:displayname\>\u003c/data:displayname\>\u003c/dt\> \u003cb:if cond\u003d\'data:showlocation \u003d\u003d \"true\"\'\> \u003cdd class\u003d\'profile-data\'\>\u003cdata:location\>\u003c/data:location\>\u003c/dd\> \u003c/b:if\> \u003cb:if cond\u003d\'data:aboutme !\u003d \"\"\'\>\u003cdd class\u003d\'profile-textblock\'\>\u003cdata:aboutme\>\u003c/data:aboutme\>\u003c/dd\>\u003c/b:if\> \u003c/dl\> \u003ca class\u003d\'profile-link\' expr:href\u003d\'data:userUrl\'\>\u003cdata:viewProfileMsg\>\u003c/data:viewProfileMsg\>\u003c/a\> \u003c/b:if\> \u003cb:include name\u003d\'quickedit\'\>\u003c/b:include\> \u003c/div\>'}}, document.getElementById('Profile1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_HTMLView', new _WidgetInfo('HTML1',  'sidebar',{'main': {'varName': '', 'template': '\u003cb:if cond\u003d\'data:title !\u003d \"\"\'\> \u003ch2 class\u003d\'title\'\>\u003cdata:title\>\u003c/data:title\>\u003c/h2\> \u003c/b:if\> \u003cdiv class\u003d\'widget-content\'\> \u003cdata:content\>\u003c/data:content\> \u003c/div\> \u003cb:include name\u003d\'quickedit\'\>\u003c/b:include\>'}}, document.getElementById('HTML1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_BlogArchiveView', new _WidgetInfo('BlogArchive1',  'sidebar',{'main': {'varName': '', 'template': '\u003cb:if cond\u003d\'data:title\'\> \u003ch2\>\u003cdata:title\>\u003c/data:title\>\u003c/h2\> \u003c/b:if\> \u003cdiv class\u003d\'widget-content\'\> \u003cdiv id\u003d\'ArchiveList\'\> \u003cdiv expr:id\u003d\'data:widget.instanceId + \"_ArchiveList\"\'\> \u003cb:if cond\u003d\'data:style \u003d\u003d \"HIERARCHY\"\'\> \u003cb:include data\u003d\'data\' name\u003d\'interval\'\>\u003c/b:include\> \u003c/b:if\> \u003cb:if cond\u003d\'data:style \u003d\u003d \"FLAT\"\'\> \u003cb:include data\u003d\'data\' name\u003d\'flat\'\>\u003c/b:include\> \u003c/b:if\> \u003cb:if cond\u003d\'data:style \u003d\u003d \"MENU\"\'\> \u003cb:include data\u003d\'data\' name\u003d\'menu\'\>\u003c/b:include\> \u003c/b:if\> \u003c/div\> \u003c/div\> \u003cb:include name\u003d\'quickedit\'\>\u003c/b:include\> \u003c/div\>'}, 'flat': {'varName': 'data', 'template': '\u003cul\> \u003cb:loop values\u003d\'data:data\' var\u003d\'i\'\> \u003cli class\u003d\'archivedate\'\> \u003ca expr:href\u003d\'data:i.url\'\>\u003cdata:i.name\>\u003c/data:i.name\>\u003c/a\> (\u003cdata:i.post-count\>\u003c/data:i.post-count\>) \u003c/li\> \u003c/b:loop\> \u003c/ul\>'}, 'menu': {'varName': 'data', 'template': '\u003cselect expr:id\u003d\'data:widget.instanceId + \"_ArchiveMenu\"\'\> \u003coption value\u003d\'\'\>\u003cdata:title\>\u003c/data:title\>\u003c/option\> \u003cb:loop values\u003d\'data:data\' var\u003d\'i\'\> \u003coption expr:value\u003d\'data:i.url\'\>\u003cdata:i.name\>\u003c/data:i.name\> (\u003cdata:i.post-count\>\u003c/data:i.post-count\>)\u003c/option\> \u003c/b:loop\> \u003c/select\>'}, 'interval': {'varName': 'intervalData', 'template': '\u003cb:loop values\u003d\'data:intervalData\' var\u003d\'i\'\> \u003cul\> \u003cli expr:class\u003d\'\"archivedate \" + data:i.expclass\'\> \u003cb:include data\u003d\'i\' name\u003d\'toggle\'\>\u003c/b:include\> \u003ca class\u003d\'post-count-link\' expr:href\u003d\'data:i.url\'\>\u003cdata:i.name\>\u003c/data:i.name\>\u003c/a\> \u003cspan class\u003d\'post-count\' dir\u003d\'ltr\'\>(\u003cdata:i.post-count\>\u003c/data:i.post-count\>)\u003c/span\> \u003cb:if cond\u003d\'data:i.data\'\> \u003cb:include data\u003d\'i.data\' name\u003d\'interval\'\>\u003c/b:include\> \u003c/b:if\> \u003cb:if cond\u003d\'data:i.posts\'\> \u003cb:include data\u003d\'i.posts\' name\u003d\'posts\'\>\u003c/b:include\> \u003c/b:if\> \u003c/li\> \u003c/ul\> \u003c/b:loop\>'}, 'toggle': {'varName': 'interval', 'template': '\u003cb:if cond\u003d\'data:interval.toggleId\'\> \u003cb:if cond\u003d\'data:interval.expclass \u003d\u003d \"expanded\"\'\> \u003ca class\u003d\'toggle\' expr:href\u003d\'data:widget.actionUrl + \"&amp;action\u003dtoggle\" +       \"&amp;dir\u003dclose&amp;toggle\u003d\" + data:interval.toggleId +       \"&amp;toggleopen\u003d\" + data:toggleopen\'\> \u003cspan class\u003d\'zippy toggle-open\'\>&#9660; \u003c/span\> \u003c/a\> \u003cb:else\>\u003c/b:else\> \u003ca class\u003d\'toggle\' expr:href\u003d\'data:widget.actionUrl + \"&amp;action\u003dtoggle\" +         \"&amp;dir\u003dopen&amp;toggle\u003d\" + data:interval.toggleId +         \"&amp;toggleopen\u003d\" + data:toggleopen\'\> \u003cspan class\u003d\'zippy\'\> \u003cb:if cond\u003d\'data:blog.languageDirection \u003d\u003d \"rtl\"\'\> &#9668; \u003cb:else\>\u003c/b:else\> &#9658; \u003c/b:if\> \u003c/span\> \u003c/a\> \u003c/b:if\> \u003c/b:if\>'}, 'posts': {'varName': 'posts', 'template': '\u003cul class\u003d\'posts\'\> \u003cb:loop values\u003d\'data:posts\' var\u003d\'i\'\> \u003cli\>\u003ca expr:href\u003d\'data:i.url\'\>\u003cdata:i.title\>\u003c/data:i.title\>\u003c/a\>\u003c/li\> \u003c/b:loop\> \u003c/ul\>'}}, document.getElementById('BlogArchive1'), {'languageDirection': 'ltr'}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_LinkListView', new _WidgetInfo('LinkList1',  'sidebar',{'main': {'varName': '', 'template': '\u003cb:if cond\u003d\'data:title\'\>\u003ch2\>\u003cdata:title\>\u003c/data:title\>\u003c/h2\>\u003c/b:if\> \u003cdiv class\u003d\'widget-content\'\> \u003cul\> \u003cb:loop values\u003d\'data:links\' var\u003d\'link\'\> \u003cli\>\u003ca expr:href\u003d\'data:link.target\'\>\u003cdata:link.name\>\u003c/data:link.name\>\u003c/a\>\u003c/li\> \u003c/b:loop\> \u003c/ul\> \u003cb:include name\u003d\'quickedit\'\>\u003c/b:include\> \u003c/div\>'}}, document.getElementById('LinkList1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_HeaderView', new _WidgetInfo('Header1',  'header',{'main': {'varName': '', 'template': '\u003cb:if cond\u003d\'data:useImage\'\> \u003cb:if cond\u003d\'data:imagePlacement \u003d\u003d \"REPLACE\"\'\>  \u003cdiv id\u003d\'header-inner\'\> \u003ca expr:href\u003d\'data:blog.homepageUrl\' style\u003d\'display: block\'\> \u003cimg expr:alt\u003d\'data:title\' expr:height\u003d\'data:height\' expr:id\u003d\'data:widget.instanceId + \"_headerimg\"\' expr:src\u003d\'data:sourceUrl\' expr:width\u003d\'data:width\' style\u003d\'display: block\'/\> \u003c/a\> \u003c/div\> \u003cb:else\>\u003c/b:else\>  \u003cb:if cond\u003d\'data:blog.languageDirection \u003d\u003d \"rtl\"\'\> \u003cdiv expr:style\u003d\'\"background-image: url(\\\"\" + data:sourceUrl + \"\\\"); \"                        + \"background-position: right; \"                        + \"background-repeat: no-repeat; \"\' id\u003d\'header-inner\'\> \u003cdiv class\u003d\'titlewrapper\' style\u003d\'background: transparent\'\> \u003ch1 class\u003d\'title\' style\u003d\'background: transparent; border-width: 0px\'\> \u003cb:include name\u003d\'title\'\>\u003c/b:include\> \u003c/h1\> \u003c/div\> \u003cb:include name\u003d\'description\'\>\u003c/b:include\> \u003c/div\> \u003cb:else\>\u003c/b:else\> \u003cdiv expr:style\u003d\'\"background-image: url(\\\"\" + data:sourceUrl + \"\\\"); \"                        + \"background-position: left; \"                        + \"background-repeat: no-repeat; \"\' id\u003d\'header-inner\'\> \u003cdiv class\u003d\'titlewrapper\' style\u003d\'background: transparent\'\> \u003ch1 class\u003d\'title\' style\u003d\'background: transparent; border-width: 0px\'\> \u003cb:include name\u003d\'title\'\>\u003c/b:include\> \u003c/h1\> \u003c/div\> \u003cb:include name\u003d\'description\'\>\u003c/b:include\> \u003c/div\> \u003c/b:if\> \u003c/b:if\> \u003cb:else\>\u003c/b:else\>  \u003cdiv id\u003d\'header-inner\'\> \u003cdiv class\u003d\'titlewrapper\'\> \u003ch1 class\u003d\'title\'\> \u003cb:include name\u003d\'title\'\>\u003c/b:include\> \u003c/h1\> \u003c/div\> \u003cb:include name\u003d\'description\'\>\u003c/b:include\> \u003c/div\> \u003c/b:if\>'}, 'title': {'varName': '', 'template': '\u003cb:if cond\u003d\'data:blog.url \u003d\u003d data:blog.homepageUrl\'\> \u003cdata:title\>\u003c/data:title\> \u003cb:else\>\u003c/b:else\> \u003ca expr:href\u003d\'data:blog.homepageUrl\'\>\u003cdata:title\>\u003c/data:title\>\u003c/a\> \u003c/b:if\>'}, 'description': {'varName': '', 'template': '\u003cdiv class\u003d\'descriptionwrapper\'\> \u003cp class\u003d\'description\'\>\u003cspan\>\u003cdata:description\>\u003c/data:description\>\u003c/span\>\u003c/p\> \u003c/div\>'}}, document.getElementById('Header1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_NavbarView', new _WidgetInfo('Navbar1',  'navbar',{'main': {'varName': '', 'template': '&lt;iframe src\u003d&quot;http://www.blogger.com/navbar.g?targetBlogID\u003d22641314&amp;amp;blogName\u003dClever+Title+Pending&amp;amp;publishMode\u003dPUBLISH_MODE_BLOGSPOT&amp;amp;navbarType\u003dBLUE&amp;amp;layoutType\u003dLAYOUTS&amp;amp;homepageUrl\u003dhttp%3A%2F%2Fseangeo.blogspot.com%2F&amp;amp;searchRoot\u003dhttp%3A%2F%2Fseangeo.blogspot.com%2Fsearch&quot; marginwidth\u003d&quot;0&quot; marginheight\u003d&quot;0&quot; scrolling\u003d&quot;no&quot; frameborder\u003d&quot;0&quot; height\u003d&quot;30px&quot; width\u003d&quot;100%&quot; id\u003d&quot;navbar-iframe&quot;&gt;&lt;/iframe&gt; &lt;div id\u003d&quot;space-for-ie&quot;&gt;&lt;/div&gt;'}}, document.getElementById('Navbar1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_BlogView', new _WidgetInfo('Blog1',  'main',{'main': {'varName': 'top', 'template': '\u003cdiv class\u003d\'blog-posts hfeed\'\> \u003cb:include data\u003d\'top\' name\u003d\'status-message\'\>\u003c/b:include\> \u003cdata:adStart\>\u003c/data:adStart\> \u003cb:loop values\u003d\'data:posts\' var\u003d\'post\'\> \u003cb:if cond\u003d\'data:post.dateHeader\'\> \u003ch2 class\u003d\'date-header\'\>\u003cdata:post.dateHeader\>\u003c/data:post.dateHeader\>\u003c/h2\> \u003c/b:if\> \u003cb:include data\u003d\'post\' name\u003d\'post\'\>\u003c/b:include\> \u003cb:if cond\u003d\'data:blog.pageType \u003d\u003d \"item\"\'\> \u003cb:include data\u003d\'post\' name\u003d\'comments\'\>\u003c/b:include\> \u003c/b:if\> \u003cb:if cond\u003d\'data:post.includeAd\'\> \u003cdata:adEnd\>\u003c/data:adEnd\> \u003cdata:adCode\>\u003c/data:adCode\> \u003cdata:adStart\>\u003c/data:adStart\> \u003c/b:if\> \u003c/b:loop\> \u003cdata:adEnd\>\u003c/data:adEnd\> \u003c/div\>  \u003cb:include name\u003d\'nextprev\'\>\u003c/b:include\>  \u003cb:include name\u003d\'feedLinks\'\>\u003c/b:include\>'}, 'nextprev': {'varName': '', 'template': '\u003cdiv class\u003d\'blog-pager\' id\u003d\'blog-pager\'\> \u003cb:if cond\u003d\'data:newerPageUrl\'\> \u003cspan id\u003d\'blog-pager-newer-link\'\> \u003ca class\u003d\'blog-pager-newer-link\' expr:href\u003d\'data:newerPageUrl\' expr:id\u003d\'data:widget.instanceId + \"_blog-pager-newer-link\"\' expr:title\u003d\'data:newerPageTitle\'\>\u003cdata:newerPageTitle\>\u003c/data:newerPageTitle\>\u003c/a\> \u003c/span\> \u003c/b:if\> \u003cb:if cond\u003d\'data:olderPageUrl\'\> \u003cspan id\u003d\'blog-pager-older-link\'\> \u003ca class\u003d\'blog-pager-older-link\' expr:href\u003d\'data:olderPageUrl\' expr:id\u003d\'data:widget.instanceId + \"_blog-pager-older-link\"\' expr:title\u003d\'data:olderPageTitle\'\>\u003cdata:olderPageTitle\>\u003c/data:olderPageTitle\>\u003c/a\> \u003c/span\> \u003c/b:if\> \u003cb:if cond\u003d\'data:blog.homepageUrl !\u003d data:blog.url\'\> \u003ca class\u003d\'home-link\' expr:href\u003d\'data:blog.homepageUrl\'\>\u003cdata:homeMsg\>\u003c/data:homeMsg\>\u003c/a\> \u003cb:else\>\u003c/b:else\> \u003cb:if cond\u003d\'data:newerPageUrl\'\> \u003ca class\u003d\'home-link\' expr:href\u003d\'data:blog.homepageUrl\'\>\u003cdata:homeMsg\>\u003c/data:homeMsg\>\u003c/a\> \u003c/b:if\> \u003c/b:if\> \u003c/div\> \u003cdiv class\u003d\'clear\'\>\u003c/div\>'}, 'post': {'varName': 'post', 'template': '\u003cdiv class\u003d\'post hentry uncustomized-post-template\'\> \u003ca expr:name\u003d\'data:post.id\'\>\u003c/a\> \u003cb:if cond\u003d\'data:post.title\'\> \u003ch3 class\u003d\'post-title entry-title\'\> \u003cb:if cond\u003d\'data:post.link\'\> \u003ca expr:href\u003d\'data:post.link\'\>\u003cdata:post.title\>\u003c/data:post.title\>\u003c/a\> \u003cb:else\>\u003c/b:else\> \u003cb:if cond\u003d\'data:post.url\'\> \u003ca expr:href\u003d\'data:post.url\'\>\u003cdata:post.title\>\u003c/data:post.title\>\u003c/a\> \u003cb:else\>\u003c/b:else\> \u003cdata:post.title\>\u003c/data:post.title\> \u003c/b:if\> \u003c/b:if\> \u003c/h3\> \u003c/b:if\> \u003cdiv class\u003d\'post-header-line-1\'\>\u003c/div\> \u003cdiv class\u003d\'post-body entry-content\'\> \u003cp\>\u003cdata:post.body\>\u003c/data:post.body\>\u003c/p\> \u003cdiv style\u003d\'clear: both;\'\>\u003c/div\>  \u003c/div\> \u003cdiv class\u003d\'post-footer\'\> \u003cp class\u003d\'post-footer-line post-footer-line-1\'\> \u003cspan class\u003d\'post-author vcard\'\> \u003cb:if cond\u003d\'data:top.showAuthor\'\> \u003cdata:top.authorLabel\>\u003c/data:top.authorLabel\> \u003cspan class\u003d\'fn\'\>\u003cdata:post.author\>\u003c/data:post.author\>\u003c/span\> \u003c/b:if\> \u003c/span\> \u003cspan class\u003d\'post-timestamp\'\> \u003cb:if cond\u003d\'data:top.showTimestamp\'\> \u003cdata:top.timestampLabel\>\u003c/data:top.timestampLabel\> \u003cb:if cond\u003d\'data:post.url\'\> \u003ca class\u003d\'timestamp-link\' expr:href\u003d\'data:post.url\' rel\u003d\'bookmark\' title\u003d\'permanent link\'\>\u003cabbr class\u003d\'published\' expr:title\u003d\'data:post.timestampISO8601\'\>\u003cdata:post.timestamp\>\u003c/data:post.timestamp\>\u003c/abbr\>\u003c/a\> \u003c/b:if\> \u003c/b:if\> \u003c/span\> \u003cspan class\u003d\'post-comment-link\'\> \u003cb:if cond\u003d\'data:blog.pageType !\u003d \"item\"\'\> \u003cb:if cond\u003d\'data:post.allowComments\'\> \u003ca class\u003d\'comment-link\' expr:href\u003d\'data:post.addCommentUrl\' expr:onclick\u003d\'data:post.addCommentOnclick\'\>\u003cb:if cond\u003d\'data:post.numComments \u003d\u003d 1\'\>1 \u003cdata:top.commentLabel\>\u003c/data:top.commentLabel\>\u003cb:else\>\u003c/b:else\>\u003cdata:post.numComments\>\u003c/data:post.numComments\> \u003cdata:top.commentLabelPlural\>\u003c/data:top.commentLabelPlural\>\u003c/b:if\>\u003c/a\> \u003c/b:if\> \u003c/b:if\> \u003c/span\>  \u003cspan class\u003d\'post-backlinks post-comment-link\'\> \u003cb:if cond\u003d\'data:blog.pageType !\u003d \"item\"\'\> \u003cb:if cond\u003d\'data:post.showBacklinks\'\> \u003ca class\u003d\'comment-link\' expr:href\u003d\'data:post.url + \"#links\"\'\>\u003cdata:top.backlinkLabel\>\u003c/data:top.backlinkLabel\>\u003c/a\> \u003c/b:if\> \u003c/b:if\> \u003c/span\> \u003cspan class\u003d\'post-icons\'\>  \u003cb:if cond\u003d\'data:post.emailPostUrl\'\> \u003cspan class\u003d\'item-action\'\> \u003ca expr:href\u003d\'data:post.emailPostUrl\' expr:title\u003d\'data:top.emailPostMsg\'\> \u003cimg alt\u003d\'\' class\u003d\'icon-action\' src\u003d\'http://www.blogger.com/img/icon18_email.gif\'/\> \u003c/a\> \u003c/span\> \u003c/b:if\>  \u003cb:include data\u003d\'post\' name\u003d\'postQuickEdit\'\>\u003c/b:include\> \u003c/span\> \u003c/p\> \u003cp class\u003d\'post-footer-line post-footer-line-2\'\> \u003cspan class\u003d\'post-labels\'\> \u003cb:if cond\u003d\'data:post.labels\'\> \u003cdata:postLabelsLabel\>\u003c/data:postLabelsLabel\> \u003cb:loop values\u003d\'data:post.labels\' var\u003d\'label\'\> \u003ca expr:href\u003d\'data:label.url\' rel\u003d\'tag\'\>\u003cdata:label.name\>\u003c/data:label.name\>\u003c/a\>\u003cb:if cond\u003d\'data:label.isLast !\u003d \"true\"\'\>,\u003c/b:if\> \u003c/b:loop\> \u003c/b:if\> \u003c/span\> \u003c/p\> \u003cp class\u003d\'post-footer-line post-footer-line-3\'\>\u003c/p\> \u003c/div\> \u003c/div\>'}, 'postQuickEdit': {'varName': 'post', 'template': '\u003cb:if cond\u003d\'data:post.editUrl\'\> \u003cspan expr:class\u003d\'\"item-control \" + data:post.adminClass\'\> \u003ca expr:href\u003d\'data:post.editUrl\' expr:title\u003d\'data:top.editPostMsg\'\> \u003cimg alt\u003d\'\' class\u003d\'icon-action\' src\u003d\'http://www.blogger.com/img/icon18_edit_allbkg.gif\'/\> \u003c/a\> \u003c/span\> \u003c/b:if\>'}, 'commentDeleteIcon': {'varName': 'comment', 'template': '\u003cspan expr:class\u003d\'\"item-control \" + data:comment.adminClass\'\> \u003ca expr:href\u003d\'data:comment.deleteUrl\' expr:title\u003d\'data:top.deleteCommentMsg\'\> \u003cspan class\u003d\'delete-comment-icon\'\>&#160;\u003c/span\> \u003c/a\> \u003c/span\>'}, 'backlinkDeleteIcon': {'varName': 'backlink', 'template': '\u003cspan expr:class\u003d\'\"item-control \" + data:backlink.adminClass\'\> \u003ca expr:href\u003d\'data:backlink.deleteUrl\' expr:title\u003d\'data:top.deleteBacklinkMsg\'\> \u003cspan class\u003d\'delete-comment-icon\'\>&#160;\u003c/span\> \u003c/a\> \u003c/span\>'}, 'comments': {'varName': 'post', 'template': '\u003cdiv class\u003d\'comments\' id\u003d\'comments\'\> \u003ca name\u003d\'comments\'\>\u003c/a\> \u003cb:if cond\u003d\'data:post.allowComments\'\> \u003ch4\> \u003cb:if cond\u003d\'data:post.numComments \u003d\u003d 1\'\> 1 \u003cdata:commentLabel\>\u003c/data:commentLabel\>: \u003cb:else\>\u003c/b:else\> \u003cdata:post.numComments\>\u003c/data:post.numComments\> \u003cdata:commentLabelPlural\>\u003c/data:commentLabelPlural\>: \u003c/b:if\> \u003c/h4\> \u003cdl id\u003d\'comments-block\'\> \u003cb:loop values\u003d\'data:post.comments\' var\u003d\'comment\'\> \u003cdt expr:class\u003d\'\"comment-author \" + data:comment.authorClass\' expr:id\u003d\'data:comment.anchorName\'\> \u003ca expr:name\u003d\'data:comment.anchorName\'\>\u003c/a\> \u003cb:if cond\u003d\'data:comment.authorUrl\'\> \u003ca expr:href\u003d\'data:comment.authorUrl\' rel\u003d\'nofollow\'\>\u003cdata:comment.author\>\u003c/data:comment.author\>\u003c/a\> \u003cb:else\>\u003c/b:else\> \u003cdata:comment.author\>\u003c/data:comment.author\> \u003c/b:if\> \u003cdata:commentPostedByMsg\>\u003c/data:commentPostedByMsg\> \u003c/dt\> \u003cdd class\u003d\'comment-body\'\> \u003cb:if cond\u003d\'data:comment.isDeleted\'\> \u003cspan class\u003d\'deleted-comment\'\>\u003cdata:comment.body\>\u003c/data:comment.body\>\u003c/span\> \u003cb:else\>\u003c/b:else\> \u003cp\>\u003cdata:comment.body\>\u003c/data:comment.body\>\u003c/p\> \u003c/b:if\> \u003c/dd\> \u003cdd class\u003d\'comment-footer\'\> \u003cspan class\u003d\'comment-timestamp\'\> \u003ca expr:href\u003d\'data:comment.url\' title\u003d\'comment permalink\'\> \u003cdata:comment.timestamp\>\u003c/data:comment.timestamp\> \u003c/a\> \u003cb:include data\u003d\'comment\' name\u003d\'commentDeleteIcon\'\>\u003c/b:include\> \u003c/span\> \u003c/dd\> \u003c/b:loop\> \u003c/dl\> \u003cp class\u003d\'comment-footer\'\> \u003ca expr:href\u003d\'data:post.addCommentUrl\' expr:onclick\u003d\'data:post.addCommentOnclick\'\>\u003cdata:postCommentMsg\>\u003c/data:postCommentMsg\>\u003c/a\> \u003c/p\> \u003c/b:if\> \u003cdiv id\u003d\'backlinks-container\'\> \u003cdiv expr:id\u003d\'data:widget.instanceId + \"_backlinks-container\"\'\> \u003cb:if cond\u003d\'data:post.showBacklinks\'\> \u003cb:include data\u003d\'post\' name\u003d\'backlinks\'\>\u003c/b:include\> \u003c/b:if\> \u003c/div\> \u003c/div\> \u003c/div\>'}, 'backlinks': {'varName': 'post', 'template': '\u003ca name\u003d\'links\'\>\u003c/a\>\u003ch4\>\u003cdata:post.backlinksLabel\>\u003c/data:post.backlinksLabel\>\u003c/h4\> \u003cb:if cond\u003d\'data:post.numBacklinks !\u003d 0\'\> \u003cdl class\u003d\'comments-block\' id\u003d\'comments-block\'\> \u003cb:loop values\u003d\'data:post.backlinks\' var\u003d\'backlink\'\> \u003cdiv class\u003d\'collapsed-backlink backlink-control\'\> \u003cdt class\u003d\'comment-title\'\> \u003cspan class\u003d\'backlink-toggle-zippy\'\>&#160;\u003c/span\> \u003ca expr:href\u003d\'data:backlink.url\' rel\u003d\'nofollow\'\>\u003cdata:backlink.title\>\u003c/data:backlink.title\>\u003c/a\> \u003cb:include data\u003d\'backlink\' name\u003d\'backlinkDeleteIcon\'\>\u003c/b:include\> \u003c/dt\> \u003cdd class\u003d\'comment-body collapseable\'\> \u003cdata:backlink.snippet\>\u003c/data:backlink.snippet\> \u003c/dd\> \u003cdd class\u003d\'comment-footer collapseable\'\> \u003cspan class\u003d\'comment-author\'\>\u003cdata:post.authorLabel\>\u003c/data:post.authorLabel\> \u003cdata:backlink.author\>\u003c/data:backlink.author\>\u003c/span\> \u003cspan class\u003d\'comment-timestamp\'\>\u003cdata:post.timestampLabel\>\u003c/data:post.timestampLabel\> \u003cdata:backlink.timestamp\>\u003c/data:backlink.timestamp\>\u003c/span\> \u003c/dd\> \u003c/div\> \u003c/b:loop\> \u003c/dl\> \u003c/b:if\> \u003cp class\u003d\'comment-footer\'\> \u003ca class\u003d\'comment-link\' expr:href\u003d\'data:post.createLinkUrl\' expr:id\u003d\'data:widget.instanceId + \"_backlinks-create-link\"\' target\u003d\'_blank\'\>\u003cdata:post.createLinkLabel\>\u003c/data:post.createLinkLabel\>\u003c/a\> \u003c/p\>'}, 'feedLinks': {'varName': '', 'template': '\u003cb:if cond\u003d\'data:blog.pageType !\u003d \"item\"\'\>  \u003cb:if cond\u003d\'data:feedLinks\'\> \u003cdiv class\u003d\'blog-feeds\'\> \u003cb:include data\u003d\'feedLinks\' name\u003d\'feedLinksBody\'\>\u003c/b:include\> \u003c/div\> \u003c/b:if\> \u003cb:else\>\u003c/b:else\>  \u003cdiv class\u003d\'post-feeds\'\> \u003cb:loop values\u003d\'data:posts\' var\u003d\'post\'\> \u003cb:if cond\u003d\'data:post.allowComments\'\> \u003cb:if cond\u003d\'data:post.feedLinks\'\> \u003cb:include data\u003d\'post.feedLinks\' name\u003d\'feedLinksBody\'\>\u003c/b:include\> \u003c/b:if\> \u003c/b:if\> \u003c/b:loop\> \u003c/div\> \u003c/b:if\>'}, 'feedLinksBody': {'varName': 'links', 'template': '\u003cdiv class\u003d\'feed-links\'\> \u003cdata:feedLinksMsg\>\u003c/data:feedLinksMsg\> \u003cb:loop values\u003d\'data:links\' var\u003d\'f\'\> \u003ca class\u003d\'feed-link\' expr:href\u003d\'data:f.url\' expr:type\u003d\'data:f.mimeType\' target\u003d\'_blank\'\>\u003cdata:f.name\>\u003c/data:f.name\> (\u003cdata:f.feedType\>\u003c/data:f.feedType\>)\u003c/a\> \u003c/b:loop\> \u003c/div\>'}, 'status-message': {'varName': '', 'template': '\u003cb:if cond\u003d\'data:navMessage\'\> \u003cdiv class\u003d\'status-msg-wrap\'\> \u003cdiv class\u003d\'status-msg-body\'\> \u003cdata:navMessage\>\u003c/data:navMessage\> \u003c/div\> \u003cdiv class\u003d\'status-msg-border\'\> \u003cdiv class\u003d\'status-msg-bg\'\> \u003cdiv class\u003d\'status-msg-hidden\'\>\u003cdata:navMessage\>\u003c/data:navMessage\>\u003c/div\> \u003c/div\> \u003c/div\> \u003c/div\> \u003cdiv style\u003d\'clear: both;\'\>\u003c/div\> \u003c/b:if\>'}}, document.getElementById('Blog1'), {'showBacklinks': true, 'postId': '8827410976060723073'}, 'displayModeFull'));
+</script>
+</body>
+</html>

@@ -13,10 +13,15 @@ class SpiderTest < Test::Unit::TestCase
   end
   
   def test_loads_scrapers_from_source_files
+    Spider.scrapers.clear
     Spider.load_scrapers(File.join(RAILS_ROOT, 'test', 'mocks', 'test'))
     assert_equal 2, Spider.scrapers.size
     assert_instance_of(MockScraperA, Spider.scrapers.first)
     assert_instance_of(MockScraperB, Spider.scrapers.last)
+    
+    Spider.scrapers.clear
+    Spider.load_scrapers(File.join(RAILS_ROOT, 'test', 'mocks', 'test'))
+    assert_equal 2, Spider.scrapers.size
   end
   
   def test_spider_checks_each_loaded_scraper
@@ -26,8 +31,8 @@ class SpiderTest < Test::Unit::TestCase
     
     scraper1 = mock('scraper1')
     scraper2 = mock('scraper2')
-    scraper1.expects(:scrapes?).with("http://example.com", response).returns(false)
-    scraper2.expects(:scrapes?).with("http://example.com", response).returns(false)
+    scraper1.expects(:scrape).with("http://example.com", response).returns(nil)
+    scraper2.expects(:scrape).with("http://example.com", response).returns(nil)
     
     Spider.default_scraper.expects(:scrape).with("http://example.com", response).returns(mock_content)
     Spider.scrapers.push(scraper1)

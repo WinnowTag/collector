@@ -6,5 +6,5 @@
 #
 
 class MockScraperB < BaseScraper
-  
+  def scrape(url, response); end
 end

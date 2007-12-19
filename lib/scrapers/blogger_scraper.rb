@@ -5,10 +5,13 @@
 # Please contact info@peerworks.org for further information.
 #
 
-# Provides a base class for scrapers.
-#
-class BaseScraper    
+class BloggerScraper
   def scrape(url, response)
-    nil
+    if url.is_a?(String) && url =~ /http:\/\/\w*\.blogspot.com/
+      hdoc = Hpricot(response.body)
+      if content_element = hdoc.at('div.post-body')
+        content_element.inner_html.strip
+      end
+    end
   end
 end

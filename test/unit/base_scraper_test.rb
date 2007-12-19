@@ -11,11 +11,7 @@ class BaseScraperTest < Test::Unit::TestCase
   def setup
     @scraper = BaseScraper.new
   end
-    
-  def test_base_scraper_returns_false_for_scrapes?
-    assert !@scraper.scrapes?("url", mock)
-  end
-    
+        
   def test_base_scraper_returns_nil_for_handle
     assert_nil(@scraper.scrape("url", mock))
   end
