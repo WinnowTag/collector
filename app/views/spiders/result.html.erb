@@ -1,0 +1,9 @@
+<p>Result for <%= link_to params[:url], params[:url] %></p>
+<% if @result.nil? -%>
+<p>Could not spider content. Probably don't have a scraper for that site type.</p>
+<% else -%>
+<p>Site was spidered using the "<%= @result.scraper_name %>" scraper.</p>
+<div style="margin: 15px; background-color: #eee; padding: 10px; border: 1px solid grey;">
+<%= @result.content %>
+</div>
+<% end -%>

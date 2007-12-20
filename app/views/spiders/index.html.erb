@@ -1,0 +1,14 @@
+<% form_tag spider_path, :method => :post do -%>
+<fieldset>
+    <legend>Spider Testing</legend>
+    <p>This tool lets you enter a URL to see how the spider will handle it.</p>
+    <p>The Spider currently supports these site formats: 
+        <%= Spider.scrapers.map {|s| "\"#{s.name}\""}.to_sentence(:skip_last_comma => true) %></p>
+    <p><label for="url">URL</label>
+        <%= text_field_tag :url, '', :size => 50 %>
+    </p>
+    <p><label>&nbsp;</label>
+        <%= submit_tag 'Spider It!'%>
+    </p>
+</fieldset>
+<% end -%>

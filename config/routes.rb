@@ -17,6 +17,7 @@ ActionController::Routing::Routes.draw do |map|
                   :delete_all => :delete
                 }
   end
+  map.spider 'spider', :controller => 'spiders'
   
   map.connect '', :controller => "feeds"
   
