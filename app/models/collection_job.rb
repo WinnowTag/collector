@@ -58,7 +58,8 @@ class CollectionJob < ActiveRecord::Base
       Net::HTTP.start(uri.host, uri.port) do |http|
         http.post(uri.path,
                   to_xml(:except => [:id, :created_at, :updated_at, :started_at,
-                                    :callback_url, :user_notified, :lock_version]),
+                                    :callback_url, :user_notified, :lock_version],
+                         :root => 'collection-job-result'),
                  'Accept' => 'text/xml', 
                  'Content-Type' => 'text/xml')
       end

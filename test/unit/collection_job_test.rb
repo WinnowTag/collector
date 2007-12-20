@@ -109,7 +109,8 @@ class CollectionJobTest < Test::Unit::TestCase
   def test_posts_xml_to_callback
     job = collection_jobs(:job_with_cb)
     xml = job.to_xml(:except => [:id, :created_at, :updated_at, :started_at,
-                                  :callback_url, :user_notified, :lock_version])
+                                  :callback_url, :user_notified, :lock_version],
+                     :root => 'collection-job-result')
     http = mock
     Net::HTTP.expects(:start).
               with('localhost', 3000).
