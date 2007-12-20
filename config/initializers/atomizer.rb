@@ -1,0 +1,1 @@
+Bayes::TokenAtomizer.store = :db
