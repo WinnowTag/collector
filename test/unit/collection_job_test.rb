@@ -11,7 +11,7 @@ class CollectionJobTest < Test::Unit::TestCase
   fixtures :collection_jobs, :feeds
   
   def setup
-    Feed.any_instance.stubs(:collect).returns(0)
+    Feed.any_instance.stubs(:collect!).returns(0)
   end
   
   def test_next_job_returns_first_job_in_queue
@@ -73,28 +73,28 @@ class CollectionJobTest < Test::Unit::TestCase
   end
   
   def test_execute_sets_item_count
-    Feed.any_instance.expects(:collect).returns(10)
+    Feed.any_instance.expects(:collect!).returns(10)
     job = collection_jobs(:first_in_queue)
     job.execute
     assert_equal(10, job.item_count)    
   end
   
   def test_execute_sets_item_count_message
-    Feed.any_instance.expects(:collect).returns(10)
+    Feed.any_instance.expects(:collect!).returns(10)
     job = collection_jobs(:first_in_queue)
     job.execute
     assert_equal("Collected 10 new items", job.message)
   end
   
   def test_failed_job_is_marked_as_completed
-    Feed.any_instance.expects(:collect).raises
+    Feed.any_instance.expects(:collect!).raises
     job = collection_jobs(:first_in_queue)
     assert_nothing_raised(Exception) { job.execute }
     assert_not_nil job.completed_at
   end
   
   def test_failed_job_send_post_to_callback
-    Feed.any_instance.expects(:collect).raises
+    Feed.any_instance.expects(:collect!).raises
     job = collection_jobs(:first_in_queue)
     job.expects(:post_to_callback).once
     job.execute rescue nil  
@@ -133,14 +133,14 @@ class CollectionJobTest < Test::Unit::TestCase
   end
   
   def test_failure_should_set_message
-    Feed.any_instance.expects(:collect).raises(RuntimeError, "This is an error message")
+    Feed.any_instance.expects(:collect!).raises(RuntimeError, "This is an error message")
     job = collection_jobs(:first_in_queue)
     job.execute
     assert_equal("This is an error message", job.message)
   end
   
   def test_failure_should_set_failed_flag
-    Feed.any_instance.expects(:collect).raises(RuntimeError)
+    Feed.any_instance.expects(:collect!).raises(RuntimeError)
     job = collection_jobs(:first_in_queue)
     job.execute
     assert(job.failed?)

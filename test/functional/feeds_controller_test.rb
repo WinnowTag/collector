@@ -195,6 +195,8 @@ class FeedsControllerTest < Test::Unit::TestCase
       post :import_opml, :opml => Opml.parse(opml_data)
       assert_response :success
       assert_select("feed", 13, @response.body)
+      
+      assert_not_equal([], assigns(:feeds).map(&:title).compact)
     end
   end
   

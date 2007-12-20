@@ -136,7 +136,12 @@ class FeedsController < ApplicationController
         @feeds = []
         if params[:opml]
           @feeds = params[:opml].feeds.map do |f|
-            Feed.find_or_create_by_url(f.xmlUrl)
+            feed = Feed.find_or_create_by_url(f.xmlUrl)
+            if f.title and feed.title.nil?
+              feed.title = f.title
+              feed.save
+            end
+            feed
           end
         else
           logger.debug("import_opml called without opml file")

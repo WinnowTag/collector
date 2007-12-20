@@ -11,4 +11,8 @@ class BaseScraper
   def scrape(url, response)
     nil
   end
+  
+  def name
+    "Empty Scraper"
+  end
 end

@@ -66,8 +66,8 @@ class Spider
           scraper = default_scraper
         end
         
-        Result.new(content, scraper.name)
-      else
+        content.nil? ? nil : Result.new(content, scraper.name)
+      when Net::HTTPResponse
         logger.info "  => could not get #{url}. (#{response.code}) #{response.message}"
       end
     end
@@ -82,7 +82,8 @@ class Spider
         else
           fetch(response['Location'], redirection_limit - 1)
         end
-      when Net::HTTPSuccess then response        
+      else
+        response        
       end        
     end
   end
