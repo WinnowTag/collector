@@ -29,7 +29,7 @@ class CollectionJob < ActiveRecord::Base
         
     begin
       self.update_attribute(:started_at, Time.now.utc)
-      self.item_count = self.feed.collect
+      self.item_count = self.feed.collect!
       self.message = "Collected #{self.item_count} new items"
       complete_job
     rescue ActiveRecord::StaleObjectError => e
