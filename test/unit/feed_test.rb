@@ -228,33 +228,54 @@ class FeedTest < Test::Unit::TestCase
   
   def test_autodiscovery_resulting_in_duplicate_by_url_removes_feed
     mock_response('http://www.slashdot.org/', 'http://rss.slashdot.org/Slashdot/slashdot')
-    feed1 = Feed.new(:url => 'http://www.slashdot.org/')
-    feed1.link = 'http://slashdot.org/'
-    feed1.save
-    feed2 = Feed.create(:url => 'http://rss.slashdot.org/Slashdot/slashdot')
     
-    feed1.collect
+    dup = Feed.create!(:url => 'http://www.slashdot.org/')
+    target = Feed.create!(:url => 'http://rss.slashdot.org/Slashdot/slashdot')
     
-    feed1 = Feed.find(feed1.id)
-    assert feed1.is_duplicate?
-    assert_equal feed2, feed1.duplicate
-    assert 0 < feed2.feed_items.length, "Feed2's feed_items was empty"
-    assert_equal [], feed1.feed_items
+    dup.collect!
+    
+    dup = Feed.find(dup.id)
+    assert dup.is_duplicate?    
+    assert_equal target, dup.duplicate
+    
+    assert 0 < target.feed_items.length, "Feed2's feed_items was empty"
+    assert_equal [], dup.feed_items
   end  
   
   def test_autodiscovery_resulting_in_duplicate_by_link_removes_feed
     mock_response('http://www.slashdot.org/', 'http://rss.slashdot.org/Slashdot/slashdot')
-    feed2 = Feed.new(:url => 'http://rdf.slashdot.org/Slashdot/slashdot')
-    feed2.link = 'http://slashdot.org/'
-    feed2.save!
-    feed1 = Feed.create(:url => 'http://www.slashdot.org/')
-    feed1.collect
     
-    feed1 = Feed.find(feed1.id)
-    assert feed1.is_duplicate?
-    assert_equal feed2, feed1.duplicate
-    assert 0 < feed2.feed_items.length, "Feed2's feed_items was empty"
-    assert [], feed1.feed_items
+    target = Feed.new(:url => 'http://somewhereelse.com/Slashdot/slashdot')
+    target.link = 'http://slashdot.org/'
+    target.save!
+    
+    dup = Feed.create(:url => 'http://www.slashdot.org/')
+    dup.collect!
+    
+    dup = Feed.find(dup.id)
+    assert dup.is_duplicate?
+    assert_equal target, dup.duplicate
+    assert 0 < target.feed_items.length, "Feed2's feed_items was empty"
+    assert [], dup.feed_items
+  end
+  
+  def test_autodiscovery_resulting_in_duplicate_by_link_once_removed
+    mock_response('http://www.slashdot.org/', 'http://rss.slashdot.org/Slashdot/slashdot')
+    
+    targetdup = Feed.create!(:url => 'http://somewhereelse/Slashdot/slashdot')
+
+    middledup = Feed.new(:url => 'http://slashdotdup')
+    middledup.link = 'http://slashdot.org/'
+    middledup.is_duplicate = true
+    middledup.duplicate = targetdup
+    middledup.save!
+    
+    dup = Feed.create!(:url => 'http://www.slashdot.org/')
+    dup.collect
+    
+    dup = Feed.find(dup.id)
+    assert dup.is_duplicate?
+    assert_equal targetdup, dup.duplicate
   end
   
   def mock_response(url, feed_url)

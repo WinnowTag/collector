@@ -135,8 +135,16 @@ class Feed < ActiveRecord::Base
   end
   
   def find_duplicate
-    Feed.find(:first, :conditions => ['(link = ? or url = ?) and id <> ?',
+    duplicate = Feed.find(:first, :conditions => ['(link = ? or url = ?) and id <> ?',
                                       self.link, self.url, self.id])
+    if duplicate
+      # Find the root duplicate
+      until duplicate.duplicate.nil?
+        duplicate = duplicate.duplicate
+      end
+    end
+    
+    duplicate
   end
   
   # Same as collect but raises exceptions
