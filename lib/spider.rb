@@ -73,18 +73,23 @@ class Spider
     end
     
     private
-    def fetch(url, redirection_limit = 5)      
-      case response = Net::HTTP.get_response(URI.parse(url))
-      when Net::HTTPRedirection 
-        if redirection_limit < 1
-          logger.warn "  => #{url} redirected more than 5 times"
-          response
+    def fetch(url, redirection_limit = 5)
+      begin      
+        case response = Net::HTTP.get_response(URI.parse(url))
+        when Net::HTTPRedirection 
+          if redirection_limit < 1
+            logger.warn "  => #{url} redirected more than 5 times"
+            response
+          else
+            fetch(response['Location'], redirection_limit - 1)
+          end
         else
-          fetch(response['Location'], redirection_limit - 1)
-        end
-      else
-        response        
-      end        
+          response        
+        end        
+      rescue Exception => e
+        logger.info "  => #{e.message} when fetching #{url}"
+        nil
+      end
     end
   end
 end
