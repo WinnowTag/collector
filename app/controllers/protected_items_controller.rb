@@ -88,7 +88,7 @@ class ProtectedItemsController < ApplicationController
   end
   
   def create_many
-    items = params[:protected_items][:protected_item] || []
+    items = params[:protected_items] || []
     items.each do |item|
       @protector.protected_items.create(item)
     end

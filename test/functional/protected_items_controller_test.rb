@@ -66,11 +66,11 @@ class ProtectedItemsControllerTest < Test::Unit::TestCase
     protector.protected_items.clear
     assert_difference(ProtectedItem, :count, 3) do
       post :create, :protector_id => protector.id,
-                    :protected_items => { :protected_item => [
-                                            {:feed_item_id => 2},
-                                            {:feed_item_id => 3},
-                                            {:feed_item_id => 4}
-                                          ] }
+                    :protected_items => [ 
+                                          {:feed_item_id => 2},
+                                          {:feed_item_id => 3},
+                                          {:feed_item_id => 4}
+                                        ] 
     end
   end
   
@@ -78,11 +78,11 @@ class ProtectedItemsControllerTest < Test::Unit::TestCase
     protector = Protector.find(2)
     assert_difference(ProtectedItem, :count, 2) do
       post :create, :protector_id => protector.id,
-                    :protected_items => { :protected_item => [
-                                            {:feed_item_id => 2},
-                                            {:feed_item_id => 3},
-                                            {:feed_item_id => 4}
-                                          ] }
+                    :protected_items => [
+                                          {:feed_item_id => 2},
+                                          {:feed_item_id => 3},
+                                          {:feed_item_id => 4}
+                                        ] 
     end
   end
   
