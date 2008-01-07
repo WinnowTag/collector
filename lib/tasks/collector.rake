@@ -11,23 +11,6 @@ task :test => ['test:pw_plugins', 'test:classifier']
 namespace :test do
   task :functionals => "tmp/imported_corpus"
   
-  desc "Run rcov on current app"
-  task :rcov do
-    test_dir    = "#{RAILS_ROOT}/test"
-    dirs        = [ "#{test_dir}/functional/*.rb",
-                    "#{test_dir}/integration/*.rb",
-                    "#{test_dir}/unit/*.rb",
-                    "#{test_dir}/unit/helpers/*.rb",]
-
-    output_dir = (ENV['CC_BUILD_ARTIFACTS'] or 'test')
-    command = "rcov --rails -o #{output_dir}/coverage"
-
-    dirs.each do |dir|
-      command += " #{dir}" unless Dir[dir].empty?
-    end
-    sh command
-  end
-  
   desc 'Test the classifier.'
   task :classifier do
     sh "cd vendor/bayes && rake"
@@ -47,13 +30,16 @@ desc "Task for CruiseControl.rb"
 task :cruise do
   ENV['RAILS_ENV'] = RAILS_ENV = 'test'
 
-  [:'test:recent', :'test:units', :'test:functionals', :'test:integration'].each do |task|
+  [:'test:integration'].each do |task|
     # Removes each of their db:test:prepare dependency
     Rake::Task[task].prerequisites.delete('db:test:prepare')
   end
   
   Rake::Task['db:migrate'].invoke
   Rake::Task['db:test:prepare'].invoke
-  Rake::Task['test'].invoke
-  Rake::Task['test:rcov'].invoke
+  Rake::Task['test:classifier'].invoke
+  Rake::Task['test:pw_plugins'].invoke
+  Rake::Task['spec'].invoke
+  Rake::Task['test:integration'].invoke
+  Rake::Task['spec:rcov'].invoke
 end
