@@ -12,6 +12,7 @@
 class CollectorWorker < BackgrounDRb::Worker::RailsBase
   
   def do_work(args)
+    Spider.logger = Logger.new(File.join(RAILS_ROOT, "log", "spider-bg-collection.log"), 'daily')
     ActiveRecord::Base.logger = Logger.new(File.join(RAILS_ROOT, 'log', 'collection.log'), "daily")
     ActiveRecord::Base.logger.level = Logger::DEBUG
     logger.info("Atomizer: #{Bayes::TokenAtomizer.get_atomizer}")
