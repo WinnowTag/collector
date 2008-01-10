@@ -5,16 +5,7 @@
 # Please contact info@peerworks.org for further information.
 #
 
-class Spider
-  class Result
-    attr_accessor :content, :scraper_name
-    def initialize(content, scraper_name)
-      @content, @scraper_name = content, scraper_name
-    end
-  end
-  
-  @@default_scraper = BaseScraper.new
-  cattr_accessor :default_scraper
+class Spider  
   @@scrapers = []
   cattr_reader :scrapers
   @@logger = ActiveRecord::Base.logger
@@ -45,50 +36,66 @@ class Spider
     def spider(url)      
       spidered_content = nil
       logger.info "Attempting to spider #{url}..."
-      response = fetch(url)
-      
-      case response
-      when Net::HTTPResponse
-        logger.info "  => got 200, content_length = #{response.content_length} ..."
+
+      begin
+        case response = fetch(url)
+        when Net::HTTPSuccess
+          logger.info "  => got 200, content_length = #{response.content_length} ..."
         
-        scraper = nil
-        content = nil
-        scrapers.each do |scraper| 
-          if content = scraper.scrape(url, response)
-            logger.info "  => spidered content was scraped by '#{scraper}', length = #{content.size}."
-            break
+          scraper = nil
+          content = nil
+          scrapers.each do |scraper| 
+            if content = scraper.scrape(url, response)
+              logger.info "  => spidered content was scraped by '#{scraper}', length = #{content.size}."
+              break
+            end
+          end 
+        
+          if content.nil?
+            SpiderResult.new(
+                :url => url,
+                :content => response.body,
+                :failed => true,
+                :failure_message => 'No scraper for content'
+              )
+          else
+            SpiderResult.new(
+                :url => url,
+                :content => response.body,
+                :scraped_content => content, 
+                :scraper => scraper.name
+              )
           end
-        end 
-        
-        if content.nil?
-          logger.info "  => no scraper for #{url}."
-          content = default_scraper.scrape(url, response)
-          scraper = default_scraper
+        when Net::HTTPResponse
+          logger.info "  => could not get #{url}. (#{response.code}) #{response.message}"
+          SpiderResult.new(
+              :url => url,
+              :failed => true,
+              :failure_message => "Retrieval Failure: (#{response.code}) #{response.message}"
+            )        
         end
-        
-        content.nil? ? nil : Result.new(content, scraper.name)
-      when Net::HTTPResponse
-        logger.info "  => could not get #{url}. (#{response.code}) #{response.message}"
+      rescue Exception => e
+        logger.info("  => exception fetching #{url}: #{e.message}")
+        SpiderResult.new(
+            :url => url,
+            :failed => true,
+            :failure_message => "Spider Error: #{e.message}"
+          )
       end
     end
     
     private
     def fetch(url, redirection_limit = 5)
-      begin      
-        case response = Net::HTTP.get_response(URI.parse(url))
-        when Net::HTTPRedirection 
-          if redirection_limit < 1
-            logger.warn "  => #{url} redirected more than 5 times"
-            response
-          else
-            fetch(response['Location'], redirection_limit - 1)
-          end
+       case response = Net::HTTP.get_response(URI.parse(url))
+      when Net::HTTPRedirection 
+        if redirection_limit < 1
+          logger.warn "  => #{url} redirected more than 5 times"
+          response
         else
-          response        
-        end        
-      rescue Exception => e
-        logger.info "  => #{e.message} when fetching #{url}"
-        nil
+          fetch(response['Location'], redirection_limit - 1)
+        end
+      else
+        response        
       end
     end
   end

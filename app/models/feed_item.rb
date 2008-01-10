@@ -52,6 +52,7 @@ load_without_new_constant_marking File.join(RAILS_ROOT, 'vendor', 'plugins', 'wi
 
 class FeedItem < ActiveRecord::Base
   attr_accessor :tokens_with_counts
+  has_one :spider_result, :dependent => :delete
   after_save :save_tokens
 
   # Finds some random items with their tokens.  
@@ -155,7 +156,7 @@ public
   # The FeedItem is not saved in the database. It is not associated with a Feed,
   # it is up to the caller to do that.
   #
-  def self.build_from_feed_item(feed_item, tokenizer = FeedItemTokenizer.new)
+  def self.build_from_feed_item(feed_item, tokenizer = FeedItemTokenizer.new, feed = nil)
     new_feed_item = nil
     unique_id = self.make_unique_id(feed_item)
     
@@ -165,7 +166,8 @@ public
 
       time, time_source = extract_time(feed_item)
       feed_item_content = FeedItemContent.generate_content_for_feed_item(feed_item)
-      new_feed_item = FeedItem.new(:link => feed_item.link, 
+      new_feed_item = FeedItem.new(:feed => feed,
+                                   :link => feed_item.link, 
                                    :unique_id => unique_id,
                                    :xml_data => feed_item.feed_data,
                                    :xml_data_size => feed_item.feed_data ? feed_item.feed_data.size : 0,

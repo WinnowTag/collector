@@ -38,9 +38,19 @@ class FeedItemTokenizer < Bayes::HtmlTokenizer
       if tokens.size < FeedItemTokenizer.minimum_tokens && feed_item.link
         ActiveRecord::Base.logger.info "Only got #{tokens.size} tokens for content of #{feed_item.link}"
         if spider_result = Spider.spider(feed_item.link)
+          # always save the spider result independently of the item,
+          # this way, even if the item is discarded, we still get the
+          # record of the spidering
+          spider_result.feed = feed_item.feed
+          spider_result.save
+          
+          # Now tokenize using the spidered content and
+          # record the spider result with the item itself,
+          # if the item later gets save the FK on the spider
+          # result will get updated
           tokens = super(spider_result.content)
           feed_item.tokens_were_spidered = true
-          feed_item.scraper_name = spider_result.scraper_name
+          feed_item.spider_result = spider_result
         end
       end
       

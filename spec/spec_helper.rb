@@ -36,4 +36,21 @@ Spec::Runner.configure do |config|
   config.mock_with :mocha
   # config.mock_with :flexmock
   # config.mock_with :rr
+  
+  def valid_feed_item_attributes(attributes = {})
+    unique_id = rand(10000)
+    { :link => "http://#{unique_id}.example.com", 
+      :unique_id => unique_id
+    }.merge(attributes)
+  end
+  
+  def valid_feed_attributes(attributes = {})
+    unique_id = rand(1000)
+    { :url => "http://#{unique_id}.example.com/index.xml",
+      :link => "http://#{unique_id}.example.com",
+      :title => "#{unique_id} Example",
+      :feed_items_count => 0,
+      :updated_on => Time.now
+    }.merge(attributes)
+  end
 end

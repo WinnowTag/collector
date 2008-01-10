@@ -39,6 +39,7 @@ load_without_new_constant_marking File.join(RAILS_ROOT, 'vendor', 'plugins', 'wi
 #
 
 class Feed < ActiveRecord::Base
+  has_many :spider_results,    :dependent => :delete_all, :order => 'created_at desc'
   has_many :collection_jobs,   :dependent => :delete_all, :order => 'created_at desc'
   has_many :collection_errors, :dependent => :delete_all, :order => 'created_on desc'
   has_one  :last_error, :order => 'created_on desc'
@@ -201,14 +202,10 @@ class Feed < ActiveRecord::Base
     new_feed_items = nil
     
     new_feed_items = feed.items.map do |fi|
-      FeedItem.build_from_feed_item(fi, FeedItemTokenizer.new)
+      item = FeedItem.build_from_feed_item(fi, FeedItemTokenizer.new, self)
+      item if (item && item.save)
     end.compact
-    
-    new_feed_items.each do |new_feed_item|
-      new_feed_item.feed = self
-      new_feed_item.save
-    end
-    
+        
     self.feed_items.reset
     
     # reload to get the updated feed item counter cache before updating attributes

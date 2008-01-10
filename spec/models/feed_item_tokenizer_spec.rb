@@ -9,18 +9,19 @@ require File.dirname(__FILE__) + '/../test_helper'
 require File.dirname(__FILE__) + '/../spec_helper'
 require 'feed_tools'
 
-class FeedItemTokenizerTest < Test::Unit::TestCase
-  include Bayes
+include Bayes
+describe FeedItemTokenizer do  
   attr_reader :tokenizer
   
-  def setup
+  before(:each) do
     FeedItemTokenizer.minimum_tokens = 0
     @tokenizer = FeedItemTokenizer.new
     @item = FeedItem.new
     @item.stubs(:id).returns(1)
+    @item.feed = Feed.find(:first)
   end
   
-  def teardown
+  after(:each) do
     FileUtils.rm('tokens.log') if File.exists?('tokens.log')
   end
   
@@ -81,8 +82,9 @@ class FeedItemTokenizerTest < Test::Unit::TestCase
     assert_equal expected_tokens, TokenAtomizer.get_atomizer.globalize(tokenizer.tokens_with_counts(@item))
   end
     
-  def test_less_than_minimum_tokens_triggers_spidering
+  it "should spider the content if there are less than minimum tokens" do
     FeedItemTokenizer.minimum_tokens = 5
+    
     content = stub(:encoded_content => "text text", :title => nil, :author => nil)
     @item.stubs(:content).returns(content)
     @item.stubs(:link).returns("http://example.blogspot.com/article.html")
@@ -98,8 +100,10 @@ class FeedItemTokenizerTest < Test::Unit::TestCase
       h
     end
     
-    assert_equal(expected_tokens, TokenAtomizer.get_atomizer.globalize(tokenizer.tokens_with_counts(@item)))
-    assert @item.tokens_were_spidered?
-    assert_equal("Blogger", @item.scraper_name)
+    TokenAtomizer.get_atomizer.globalize(tokenizer.tokens_with_counts(@item)).should == expected_tokens
+    
+    @item.tokens_were_spidered?.should be_true
+    @item.spider_result.should be_an_instance_of(SpiderResult)
+    @item.spider_result.should_not be_new_record
   end
 end
