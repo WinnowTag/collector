@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../test_helper'
 require File.dirname(__FILE__) + '/../spec_helper'
+require File.dirname(__FILE__) + '/../test_helper'
 $: << RAILS_ROOT + '/vendor/plugins/backgroundrb/server/lib'
 require 'backgroundrb/middleman'
 require 'backgroundrb/worker_rails'
@@ -10,7 +10,7 @@ class BackgrounDRb::Worker::RailsBase
   def initialize(args = nil, jobkey = nil); end
 end
 
-class FeedItemCorpusImporterTest < Test::Unit::TestCase
+describe FeedItemCorpusImporterWorker do
   fixtures :feeds, :feed_items
   
   def test_import_of_corpus_with_single_new_feed
