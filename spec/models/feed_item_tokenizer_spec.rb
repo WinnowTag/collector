@@ -91,7 +91,7 @@ describe FeedItemTokenizer do
     
     spidered_content = "this is the longer version of the text from the source"
     response = Net::HTTPSuccess.new(nil, nil, nil)
-    spidered_html = "<div class=\"post-body\">#{spidered_content}</div>"
+    spidered_html = "<div class=\"post-body\">#{spidered_content}</div><p>Content to be scrapped away</p>"
     response.stubs(:body).returns(spidered_html)
     Net::HTTP.expects(:get_response).returns(response)
         
