@@ -14,10 +14,13 @@ describe FeedItemTokenizer do
   attr_reader :tokenizer
   
   before(:each) do
+    Spider.scrapers.clear
+    Spider.load_scrapers(File.join(RAILS_ROOT, 'lib', 'scrapers'))
+    Net::HTTP.rspec_reset
     FeedItemTokenizer.minimum_tokens = 0
     @tokenizer = FeedItemTokenizer.new
     @item = FeedItem.new
-    @item.stubs(:id).returns(1)
+     @item.stubs(:id).returns(1)
     @item.feed = Feed.find(:first)
   end
   
@@ -93,7 +96,7 @@ describe FeedItemTokenizer do
     response = Net::HTTPSuccess.new(nil, nil, nil)
     spidered_html = "<div class=\"post-body\">#{spidered_content}</div><p>Content to be scrapped away</p>"
     response.stubs(:body).returns(spidered_html)
-    Net::HTTP.expects(:get_response).returns(response)
+    Net::HTTP.expects(:get_response).with(URI.parse("http://example.blogspot.com/article.html")).returns(response)
         
     expected_tokens = spidered_content.split.inject(Hash.new(0)) do |h, w|
       h[w] = h[w] + 1

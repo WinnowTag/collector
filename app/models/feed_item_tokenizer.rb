@@ -48,8 +48,11 @@ class FeedItemTokenizer < Bayes::HtmlTokenizer
           # record the spider result with the item itself,
           # if the item later gets save the FK on the spider
           # result will get updated
-          tokens = super(spider_result.scraped_content)
-          feed_item.tokens_were_spidered = true
+          if spider_result.scraped_content
+            tokens = super(spider_result.scraped_content)
+            feed_item.tokens_were_spidered = true
+          end
+            
           feed_item.spider_result = spider_result
         end
       end

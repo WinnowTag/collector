@@ -17,7 +17,10 @@ ActionController::Routing::Routes.draw do |map|
                   :delete_all => :delete
                 }
   end
-  map.spider 'spider', :controller => 'spiders'
+  map.resources :spiders, :collection => {
+                            :test => :any,
+                            :scraper_stats => :any
+                          }
   
   map.connect '', :controller => "feeds"
   
