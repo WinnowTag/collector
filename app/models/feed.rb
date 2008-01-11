@@ -122,6 +122,7 @@ class Feed < ActiveRecord::Base
             when Integer         then summary.item_count += collection_result
             when CollectionError then summary.collection_errors << collection_result
             end
+            summary.save
           end
         end      
       rescue Exception => e
