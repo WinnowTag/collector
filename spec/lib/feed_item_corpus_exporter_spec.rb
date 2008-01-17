@@ -24,7 +24,7 @@ class FeedItemCorpusExporterTest < Test::Unit::TestCase
   def test_full_export
     exporter = FeedItemCorpusExporterWorker.new
     results = {}
-    exporter.stubs(:results).returns(results)
+    exporter.stub!(:results).and_return(results)
     exporter.do_work(:feeds => [1, 2], :output => '/tmp/testoutput.xml.gz', :item_target => 4, :steepness => 100)    
     @output = DocumentOutput.new(Zlib::GzipReader.new(File.open('/tmp/testoutput.xml.gz')))
 
@@ -57,7 +57,7 @@ class FeedItemCorpusExporterTest < Test::Unit::TestCase
   def test_full_export_with_item_count_target   
     exporter = FeedItemCorpusExporterWorker.new
     results = {}
-    exporter.stubs(:results).returns(results)
+    exporter.stub!(:results).and_return(results)
     exporter.do_work(:feeds => [1, 2], :output => '/tmp/testoutput.xml.gz', :item_target => 3, :steepness => 0)    
     @output = DocumentOutput.new(Zlib::GzipReader.new(File.open('/tmp/testoutput.xml.gz')))    
     
@@ -90,7 +90,7 @@ class FeedItemCorpusExporterTest < Test::Unit::TestCase
     end_date = Time.now.utc
     exporter = FeedItemCorpusExporterWorker.new
     results = {}
-    exporter.stubs(:results).returns(results)
+    exporter.stub!(:results).and_return(results)
     exporter.do_work(:feeds => [1], :output => '/tmp/testoutput.xml.gz', :start_date => start_date, :end_date => end_date)
     @output = DocumentOutput.new(Zlib::GzipReader.new(File.new('/tmp/testoutput.xml.gz')))
  
@@ -113,7 +113,7 @@ class FeedItemCorpusExporterTest < Test::Unit::TestCase
   def test_full_export_by_content_length
     exporter = FeedItemCorpusExporterWorker.new
     results = {}
-    exporter.stubs(:results).returns(results)
+    exporter.stub!(:results).and_return(results)
     exporter.do_work(:feeds => [1, 2], :output => '/tmp/testoutput.xml.gz', :min_content_length => 10, :steepness => 0)  
     @output = DocumentOutput.new(Zlib::GzipReader.new(File.open('/tmp/testoutput.xml.gz')))
     

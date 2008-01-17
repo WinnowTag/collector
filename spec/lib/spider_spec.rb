@@ -64,7 +64,7 @@ describe Spider do
 
   it "should follow redirects" do
     redirect = Net::HTTPRedirection.new(nil, nil, nil)
-    redirect.expects(:[]).with('Location').returns("http://example.com/actual.html")
+    redirect.should_receive(:[]).with('Location').and_return("http://example.com/actual.html")
     actual = Net::HTTPSuccess.new(nil, nil, nil)
     actual.stub!(:body).and_return(nil)
     

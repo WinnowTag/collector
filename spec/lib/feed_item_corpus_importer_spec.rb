@@ -14,12 +14,11 @@ describe FeedItemCorpusImporterWorker do
   fixtures :feeds, :feed_items
   
   def test_import_of_corpus_with_single_new_feed
-    FeedItem.any_instance.expects(:content)
     initial_feeds = Feed.find(:all, :include => :feed_items)
     file = File.join(RAILS_ROOT, 'spec', 'fixtures', 'single_new_feed_corpus.xml')
     importer = FeedItemCorpusImporterWorker.new
     results = {}
-    importer.stubs(:results).returns(results)
+    importer.stub!(:results).and_return(results)
     importer.do_work(:feeds => [0], :import_file => file)
     assert_equal [], results[:import_errors]
     
@@ -38,12 +37,11 @@ describe FeedItemCorpusImporterWorker do
   end  
   
   def test_import_of_corpus_with_new_item_for_existing_feed
-    FeedItem.any_instance.expects(:content)
     initial_feeds = Feed.find(:all, :include => :feed_items)
     file = File.join(RAILS_ROOT, 'spec', 'fixtures', 'new_item_to_existing_feed_corpus.xml')
     importer = FeedItemCorpusImporterWorker.new
     results = {}
-    importer.stubs(:results).returns(results)
+    importer.stub!(:results).and_return(results)
     importer.do_work(:feeds => [0], :import_file => file)
     assert_equal [], results[:import_errors]
     
@@ -59,12 +57,11 @@ describe FeedItemCorpusImporterWorker do
   end
   
   def test_import_of_new_and_duplicate_item_for_existing_feed
-    FeedItem.any_instance.expects(:content)
     initial_feeds = Feed.find(:all, :include => :feed_items)
     file = File.join(RAILS_ROOT, 'spec', 'fixtures', 'new_item_and_duplicate_item_for_existing_feed_corpus.xml')
     importer = FeedItemCorpusImporterWorker.new
     results = {}
-    importer.stubs(:results).returns(results)
+    importer.stub!(:results).and_return(results)
     importer.do_work(:feeds => [0], :import_file => file)
     assert_equal [], results[:import_errors]
     
@@ -80,12 +77,11 @@ describe FeedItemCorpusImporterWorker do
   end
   
   def test_import_of_new_items_for_existing_feed
-    FeedItem.any_instance.expects(:content).times(4)
     initial_feeds = Feed.find(:all, :include => :feed_items)
     file = File.join(RAILS_ROOT, 'spec', 'fixtures', 'new_items_for_existing_feeds_corpus.xml')
     importer = FeedItemCorpusImporterWorker.new
     results = {}
-    importer.stubs(:results).returns(results)
+    importer.stub!(:results).and_return(results)
     importer.do_work(:feeds => [0, 1], :import_file => file)
     assert_equal [], results[:import_errors]
     
@@ -105,12 +101,11 @@ describe FeedItemCorpusImporterWorker do
   end
   
   def test_partial_import
-    FeedItem.any_instance.expects(:content)
     initial_feeds = Feed.find(:all, :include => :feed_items)
     file = File.join(RAILS_ROOT, 'spec', 'fixtures', 'new_items_for_existing_feeds_corpus.xml')
     importer = FeedItemCorpusImporterWorker.new
     results = {}
-    importer.stubs(:results).returns(results)
+    importer.stub!(:results).and_return(results)
     importer.do_work(:feeds => [1], :import_file => file)
     
     assert_equal "Successfully imported 0 new feeds and 1 new feed item.", results[:progress_message]

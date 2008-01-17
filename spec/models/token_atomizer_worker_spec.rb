@@ -22,7 +22,7 @@ class TokenAtomizerWorkerTest < Test::Unit::TestCase
   fixtures :tokens
   
   def test_worker_delegation
-    Bayes::TokenAtomizer.expects(:new).returns(mock(:localize => true, :globalize => true))
+    Bayes::TokenAtomizer.should_receive(:new).and_return(mock('atomizer', :localize => true, :globalize => true))
     worker = TokenAtomizerWorker.new
     worker.do_work(nil)
     worker.localize

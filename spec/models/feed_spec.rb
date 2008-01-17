@@ -10,20 +10,23 @@ require File.dirname(__FILE__) + '/../spec_helper'
 class FeedTest < Test::Unit::TestCase
   fixtures :feeds, :feed_items, :collection_errors, :feed_item_tokens
   
-  # Replace this with your real tests.
-  def test_adding_items
+  def setup
     # stub to bypass token filtering in build_from_feed_item
-    FeedItemTokenizer.any_instance.stubs(:tokens_with_counts).returns(stub(:size => 50))
-    
-    feed = stub(:title => 'A Feed', 
+    tokenizer = stub('tokenizer', :tokens_with_counts => stub('tokens', :size => 50))
+    FeedItemTokenizer.stub!(:new).and_return(tokenizer)
+  end
+  
+  # Replace this with your real tests.
+  def test_adding_items   
+    feed = stub('feed', :title => 'A Feed', 
                 :link => 'http://test/site',
                 :feed_data => '<feed><item></item></feed', 
                 :http_headers => {})
-    feed.stubs(:items).returns([
-                        stub(:title => 'An Item',
+    feed.stub!(:items).and_return([
+                        stub('item', :title => 'An Item',
                              :link => 'http://test/item1',
                              :time => Time.now,
-                             :author => stub(:name => 'Ghost'),
+                             :author => stub('author', :name => 'Ghost'),
                              :description => 'description of item',
                              :content => 'longer content',
                              :feed_data => '<item></item>',
@@ -63,26 +66,37 @@ class FeedTest < Test::Unit::TestCase
     assert_equal previous_size, winnow_feed.feed_items.length
   end
   
+  def stub_collection(returning = [1,1])
+    feeds = [mock('feed1'), mock('feed2')]
+    
+    if returning.is_a?(Exception)
+      feeds.first.should_receive(:collect).and_raise(returning)
+    else
+      feeds.each { |f| f.should_receive(:collect).and_return(returning.pop) }
+    end
+    Feed.should_receive(:active_feeds).and_return(feeds)
+  end
+  
   def test_collect_all
-    Feed.any_instance.expects(:collect).times(Feed.count(:conditions => ['active = ? and is_duplicate = ?', true, false]))    
+    stub_collection
     Feed.collect_all    
   end
   
   def test_collect_all_creates_new_collection_summary
-    Feed.any_instance.stubs(:collect)
+    stub_collection
     assert_difference(CollectionSummary, :count) do
       assert_instance_of(CollectionSummary, Feed.collect_all)
     end
   end
   
   def test_collect_all_sums_up_collection_count
-    Feed.any_instance.stubs(:collect).returns(2, 4)
+    stub_collection([2, 4])
     summary = Feed.collect_all
     assert_equal(6, summary.item_count)
   end
   
   def test_collect_all_links_collection_errors_to_summary
-    FeedTools::Feed.stubs(:open).raises(REXML::ParseException, "ParseException")
+    FeedTools::Feed.stub!(:open).and_raise(REXML::ParseException.new("ParseException"))
     summary = nil
     assert_nothing_raised(RuntimeError) { summary = Feed.collect_all }
     assert_equal(2, summary.collection_errors.size)
@@ -91,7 +105,7 @@ class FeedTest < Test::Unit::TestCase
   end
   
   def test_collect_all_logs_fatal_error_in_summary
-    Feed.any_instance.expects(:collect).raises(ActiveRecord::ActiveRecordError, "Error message")
+    stub_collection(ActiveRecord::ActiveRecordError.new("Error message"))
     summary = nil
     assert_nothing_raised(ActiveRecord::ActiveRecordError) { summary = Feed.collect_all }
     assert_equal("ActiveRecord::ActiveRecordError", summary.fatal_error_type)
@@ -100,17 +114,17 @@ class FeedTest < Test::Unit::TestCase
   
   def test_collect_opens_feed_and_calls_add_from_feed
     test_feed_url = "http://test"
-    mock_feed = mock
-    FeedTools::Feed.expects(:open).with(test_feed_url).returns(mock_feed)
+    mock_feed = mock('feed')
+    FeedTools::Feed.should_receive(:open).with(test_feed_url).and_return(mock_feed)
     feed = Feed.create(:url => test_feed_url)
-    feed.expects(:add_from_feed).with(mock_feed)
+    feed.should_receive(:add_from_feed).with(mock_feed)
     feed.collect
   end
   
   def test_max_feed_items_overrides_and_randomizes_feed_items
     feed = Feed.find(1)
     feed_items = feed.feed_items
-    feed.feed_items.stubs(:sort_by).returns(feed_items)
+    feed.feed_items.stub!(:sort_by).and_return(feed_items)
     
     assert_equal 3, feed.feed_items.length
     feed.max_items_to_return = 2
@@ -121,20 +135,20 @@ class FeedTest < Test::Unit::TestCase
   
   def test_to_xml_with_feed_items_with_max
     feed = Feed.find(1)
-    feed.expects(:feed_items_with_max).returns(feed.feed_items).times(2)
+    feed.should_receive(:feed_items_with_max).exactly(2).and_return(feed.feed_items)
     assert feed.to_xml(:methods => :feed_items_with_max)
   end
   
   def test_to_xml_with_feed_items
     feed = Feed.find(1)
     feed_items = feed.feed_items
-    feed.stubs(:feed_items).returns(feed_items)
+    feed.stub!(:feed_items).and_return(feed_items)
     assert feed.to_xml(:include => :feed_items)
   end
   
   def test_access_error_should_be_logged
     feed = Feed.find(1)
-    FeedTools::Feed.expects(:open).raises(FeedTools::FeedAccessError)
+    FeedTools::Feed.should_receive(:open).and_raise(FeedTools::FeedAccessError)
     assert_nothing_raised(FeedTools::FeedAccessError) { feed.collect }
     assert e = feed.collection_errors.first
     assert_equal('FeedTools::FeedAccessError', e.error_type)
@@ -142,7 +156,7 @@ class FeedTest < Test::Unit::TestCase
   
   def test_parse_exception_should_be_logged
     feed = Feed.find(1)
-    FeedTools::Feed.expects(:open).raises(REXML::ParseException, "ParseException")
+    FeedTools::Feed.should_receive(:open).and_raise(REXML::ParseException.new("ParseException"))
     assert_nothing_raised(REXML::ParseException) { feed.collect }
     assert e = feed.collection_errors.first
     assert_equal('REXML::ParseException', e.error_type)
@@ -151,7 +165,7 @@ class FeedTest < Test::Unit::TestCase
   # Sometimes a parse exception causes a RuntimeException  
   def test_parse_exception_with_runtime_exception_should_be_logged
     feed = Feed.find(1)
-    FeedTools::Feed.expects(:open).raises(RuntimeError, "ParseException")
+    FeedTools::Feed.should_receive(:open).and_raise(RuntimeError.new("RuntimeError"))
     assert_nothing_raised(RuntimeError) { feed.collect }
     assert e = feed.collection_errors.first
     assert_equal('RuntimeError', e.error_type)
@@ -160,7 +174,7 @@ class FeedTest < Test::Unit::TestCase
   def test_collection_exception_increments_count
     feed = Feed.find(1)
     cec = feed.collection_errors_count
-    FeedTools::Feed.stubs(:open).raises(RuntimeError, "ParseException")
+    FeedTools::Feed.stub!(:open).and_raise(RuntimeError)
     assert_nothing_raised(RuntimeError) { feed.collect }
     feed.reload
     assert_equal(cec + 1, feed.collection_errors_count)
@@ -169,7 +183,7 @@ class FeedTest < Test::Unit::TestCase
   def test_collect_all_collection_exception_increments_count
     feed = Feed.find(1)
     cec = feed.collection_errors_count
-    FeedTools::Feed.stubs(:open).raises(RuntimeError, "ParseException")
+    FeedTools::Feed.stub!(:open).and_raise(RuntimeError)
     assert_nothing_raised(RuntimeError) { Feed.collect_all }
     feed.reload
     assert_equal(cec + 1, feed.collection_errors_count)
@@ -281,14 +295,14 @@ class FeedTest < Test::Unit::TestCase
   
   def mock_response(url, feed_url)
     html_response = Net::HTTPSuccess.new(nil, nil, nil)
-    html_response.expects(:each_header).yields("Content-Type", "text/html")
-    html_response.expects(:body).returns(File.read(File.join(RAILS_ROOT, 'spec', 'fixtures', 'slashdot.html')))
+    html_response.should_receive(:each_header).and_yield("Content-Type", "text/html")
+    html_response.should_receive(:body).and_return(File.read(File.join(RAILS_ROOT, 'spec', 'fixtures', 'slashdot.html')))
     
     feed_response = Net::HTTPSuccess.new(nil, nil, nil)
-    feed_response.expects(:each_header)
-    feed_response.expects(:body).returns(File.read(File.join(RAILS_ROOT, 'spec', 'fixtures', 'slashdot.rss')))
+    feed_response.should_receive(:each_header)
+    feed_response.should_receive(:body).and_return(File.read(File.join(RAILS_ROOT, 'spec', 'fixtures', 'slashdot.rss')))
     
-    FeedTools::RetrievalHelper.expects(:http_get).with(url, anything).returns(html_response)
-    FeedTools::RetrievalHelper.expects(:http_get).with(feed_url, anything).returns(feed_response)
+    FeedTools::RetrievalHelper.should_receive(:http_get).with(url, anything).and_return(html_response)
+    FeedTools::RetrievalHelper.should_receive(:http_get).with(feed_url, anything).and_return(feed_response)
   end
 end

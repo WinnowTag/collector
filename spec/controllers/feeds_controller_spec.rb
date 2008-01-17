@@ -20,7 +20,7 @@ class FeedsControllerTest < Test::Unit::TestCase
   end
   
   def test_create_doesnt_require_login_if_request_is_local
-    @controller.stubs(:local_request?).returns(true)
+    @controller.stub!(:local_request?).and_return(true)
     @request.session[:user] = nil
     assert_difference(Feed, :count) do
       post :create, :feed => {:url => "http://newfeed"}

@@ -14,6 +14,6 @@ class BaseScraperTest < Test::Unit::TestCase
   end
         
   def test_base_scraper_returns_nil_for_handle
-    assert_nil(@scraper.scrape("url", mock))
+    assert_nil(@scraper.scrape("url", mock('content')))
   end
 end

@@ -35,11 +35,11 @@ class FeedTest < Test::Unit::TestCase
   
   def test_feed_with_non_utf8_encoding_via_http
     response = Net::HTTPSuccess.new(nil, nil, nil)
-    response.expects(:body).returns(File.read(File.join(File.expand_path(RAILS_ROOT), 'spec', 'fixtures', 'non_utf8_feed.rss')))
-    response.expects(:each_header).yields('Content-Type', 'application/atom+xml; charset=iso-8859-1')
-    FeedTools::RetrievalHelper.expects(:http_get).
-                               with('http://test/', instance_of(Hash)).
-                               returns(response)
+    response.should_receive(:body).and_return(File.read(File.join(File.expand_path(RAILS_ROOT), 'spec', 'fixtures', 'non_utf8_feed.rss')))
+    response.should_receive(:each_header).and_yield('Content-Type', 'application/atom+xml; charset=iso-8859-1')
+    FeedTools::RetrievalHelper.should_receive(:http_get).
+                               with('http://test/', an_instance_of(Hash)).
+                               and_return(response)
     feed = nil
     assert_nothing_raised(REXML::ParseException) { feed = FeedTools::Feed.open('http://test/') }
     assert_not_nil(feed.feed_data)

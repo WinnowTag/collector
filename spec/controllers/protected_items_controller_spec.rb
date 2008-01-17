@@ -19,7 +19,7 @@ class ProtectedItemsControllerTest < Test::Unit::TestCase
     @controller = ProtectedItemsController.new
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new
-    @controller.stubs(:local_request?).returns(true)
+    @controller.stub!(:local_request?).and_return(true)
   end
 
   def test_routing
