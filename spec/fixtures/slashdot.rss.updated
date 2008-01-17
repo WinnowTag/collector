@@ -5,98 +5,32 @@
 <title>Slashdot</title>
 <link>http://slashdot.org/</link>
 <description>News for nerds, stuff that matters</description>
-<dc:language>en-us</dc:language>
-<dc:rights>Copyright 1997-2006, OSTG - Open Source Technology Group, Inc.  All Rights Reserved.</dc:rights>
-<dc:date>2006-08-11T02:21:22+00:00</dc:date>
-<dc:publisher>OSTG</dc:publisher>
-<dc:creator>pater@slashdot.org</dc:creator>
-<dc:subject>Technology</dc:subject>
-<syn:updatePeriod>hourly</syn:updatePeriod>
-<syn:updateFrequency>1</syn:updateFrequency>
-<syn:updateBase>1970-01-01T00:00+00:00</syn:updateBase>
-<items>
- <rdf:Seq>
-  <rdf:li rdf:resource="http://hardware.slashdot.org/article.pl?sid=06/08/10/2352247&amp;from=rss" />
-  <rdf:li rdf:resource="http://ask.slashdot.org/article.pl?sid=06/08/11/0059222&amp;from=rss" />
-  <rdf:li rdf:resource="http://yro.slashdot.org/article.pl?sid=06/08/10/2337259&amp;from=rss" />
-  <rdf:li rdf:resource="http://slashdot.org/article.pl?sid=06/08/10/2141258&amp;from=rss" />
-  <rdf:li rdf:resource="http://games.slashdot.org/article.pl?sid=06/08/10/1859252&amp;from=rss" />
-  <rdf:li rdf:resource="http://backslash.slashdot.org/article.pl?sid=06/08/10/1940201&amp;from=rss" />
-  <rdf:li rdf:resource="http://slashdot.org/article.pl?sid=06/08/10/1748208&amp;from=rss" />
-  <rdf:li rdf:resource="http://science.slashdot.org/article.pl?sid=06/08/10/1711224&amp;from=rss" />
-  <rdf:li rdf:resource="http://science.slashdot.org/article.pl?sid=06/08/10/1649213&amp;from=rss" />
-  <rdf:li rdf:resource="http://science.slashdot.org/article.pl?sid=06/08/10/1645259&amp;from=rss" />
-  <rdf:li rdf:resource="http://apple.slashdot.org/article.pl?sid=06/08/10/151245&amp;from=rss" />
-  <rdf:li rdf:resource="http://slashdot.org/article.pl?sid=06/08/10/1626238&amp;from=rss" />
-  <rdf:li rdf:resource="http://developers.slashdot.org/article.pl?sid=06/08/10/1520240&amp;from=rss" />
-  <rdf:li rdf:resource="http://it.slashdot.org/article.pl?sid=06/08/10/1414204&amp;from=rss" />
-  <rdf:li rdf:resource="http://yro.slashdot.org/article.pl?sid=06/08/10/1323244&amp;from=rss" />
- </rdf:Seq>
-</items>
-<image rdf:resource="http://images.slashdot.org/topics/topicslashdot.gif" />
-<textinput rdf:resource="http://slashdot.org/search.pl" />
-</channel>
-
-<image rdf:about="http://images.slashdot.org/topics/topicslashdot.gif">
-<title>Slashdot</title>
-<url>http://images.slashdot.org/topics/topicslashdot.gif</url>
-<link>http://slashdot.org/</link>
-</image>
-
 <item rdf:about="http://hardware.slashdot.org/article.pl?sid=06/08/10/2352247&amp;from=rss">
 <title>Cray Wins $52 Million Supercomputer Contract</title>
 <link>http://rss.slashdot.org/~r/Slashdot/slashdot/~3/11135649/article.pl</link>
 <description>The Interfacer writes "Cray and the U.S. Department of Energy (DOE) Office of Science announced that Cray has won the contract to install a next-generation supercomputer at the DOE's National Energy Research Scientific Computing Center (NERSC). The systems and multi-year services contract, valued at over $52 million, includes delivery of a Cray massively parallel processor supercomputer, code-named 'Hood.'"
 &lt;p&gt;&lt;a href="http://rss.slashdot.org/~a/Slashdot/slashdot?a=9W8IoI"&gt;&lt;img src="http://rss.slashdot.org/~a/Slashdot/slashdot?i=9W8IoI" border="0"&gt;&lt;/img&gt;&lt;/a&gt;&lt;/p&gt;&lt;img src="http://rss.slashdot.org/~r/Slashdot/slashdot/~4/11135649"/&gt;</description>
-<dc:creator>CowboyNeal</dc:creator>
-<dc:date>2006-08-11T01:41:00+00:00</dc:date>
-<dc:subject>supercomputing</dc:subject>
-<slash:department>next-big-thing</slash:department>
-<slash:section>hardware</slash:section>
-<slash:comments>18</slash:comments>
-<slash:hit_parade>18,16,13,10,3,3,1</slash:hit_parade>
-<feedburner:origLink>http://hardware.slashdot.org/article.pl?sid=06/08/10/2352247&amp;from=rss</feedburner:origLink></item>
+</item>
 
 <item rdf:about="http://ask.slashdot.org/article.pl?sid=06/08/11/0059222&amp;from=rss">
 <title>Charter Flight Websites / Services?</title>
 <link>http://rss.slashdot.org/~r/Slashdot/slashdot/~3/11125418/article.pl</link>
 <description>X86Daddy asks: "TSA's latest announcement banning all fluids (toothpaste even) from carry-on luggage is the icing on a very sour cake. Many passengers are growing tired of the invasive security screenings, the increasing prices, lost and stolen luggage, and the decreasing quality of service with commercial flights in the United States. However, given the geographical size of this country and the lack of rail options, flight remains the only practical method of travel for most destinations. Can anyone suggest alternative flight services? Are there websites that connect Cessna or other small scale air charter services with interested passengers? I've found CharterX and CharterHub but they seem more geared toward executives looking for jets. Does anyone have experience traveling this way? Is the price point a lot higher, making this a dumb idea (just resign myself to buying toiletries at every destination and prepare for the mandatory anal probes in '07)?"
 &lt;p&gt;&lt;a href="http://rss.slashdot.org/~a/Slashdot/slashdot?a=0RBEN1"&gt;&lt;img src="http://rss.slashdot.org/~a/Slashdot/slashdot?i=0RBEN1" border="0"&gt;&lt;/img&gt;&lt;/a&gt;&lt;/p&gt;&lt;img src="http://rss.slashdot.org/~r/Slashdot/slashdot/~4/11125418"/&gt;</description>
-<dc:creator>Cliff</dc:creator>
-<dc:date>2006-08-11T01:30:00+00:00</dc:date>
-<dc:subject>usa</dc:subject>
-<slash:department>alternative-travel-desperately-needed</slash:department>
-<slash:section>askslashdot</slash:section>
-<slash:comments>117</slash:comments>
-<slash:hit_parade>117,115,92,73,14,5,3</slash:hit_parade>
-<feedburner:origLink>http://ask.slashdot.org/article.pl?sid=06/08/11/0059222&amp;from=rss</feedburner:origLink></item>
+</item>
 
 <item rdf:about="http://yro.slashdot.org/article.pl?sid=06/08/10/2337259&amp;from=rss">
 <title>Tracking Your Cell Phone for Traffic Reports</title>
 <link>http://rss.slashdot.org/~r/Slashdot/slashdot/~3/11103254/article.pl</link>
 <description>BostonBTS writes "IntelliOne Technologies has just launched a real-world test of Need4Speed, a real-time traffic-monitoring system that tracks drivers' cell phones. From their website: 'Unlike any other solution available today, the IntelliOne Roadway Speed Measurement System produces live roadway speeds for all highways and surface streets where mobile phone coverage exists, accurate to within three miles per hour.' Of course, any compulsory phone-tracking system raises privacy concerns. According to an article on LiveScience, 'the personal identification data of users will be stripped from cell phone signals before they are processed by IntelliOne's software.' The cell phone companies have this data, but IntelliOne says they won't be keeping their copy."
 &lt;p&gt;&lt;a href="http://rss.slashdot.org/~a/Slashdot/slashdot?a=DGzCj8"&gt;&lt;img src="http://rss.slashdot.org/~a/Slashdot/slashdot?i=DGzCj8" border="0"&gt;&lt;/img&gt;&lt;/a&gt;&lt;/p&gt;&lt;img src="http://rss.slashdot.org/~r/Slashdot/slashdot/~4/11103254"/&gt;</description>
-<dc:creator>CowboyNeal</dc:creator>
-<dc:date>2006-08-11T00:16:00+00:00</dc:date>
-<dc:subject>privacy</dc:subject>
-<slash:department>experiencing-high-call-volume</slash:department>
-<slash:section>yro</slash:section>
-<slash:comments>58</slash:comments>
-<slash:hit_parade>58,55,49,42,13,4,3</slash:hit_parade>
-<feedburner:origLink>http://yro.slashdot.org/article.pl?sid=06/08/10/2337259&amp;from=rss</feedburner:origLink></item>
+</item>
 
 <item rdf:about="http://slashdot.org/article.pl?sid=06/08/10/2141258&amp;from=rss">
 <title>Hoarders vs. Deleters- What Your Inbox Says</title>
 <link>http://rss.slashdot.org/~r/Slashdot/slashdot/~3/11085112/article.pl</link>
 <description>BlueCup writes "You are your inbox. Take a clear-eyed look at how you answer or file each email. Notice what you choose to keep or delete. Consider your anxiety when your inbox is jammed with unanswered messages. The makeup and tidiness of your inbox is a reflection of your habits, your mental health and, yes, even the way Mom and Dad raised you." I always knew my obsessive packratting said something important about me as a human being.
 &lt;p&gt;&lt;a href="http://rss.slashdot.org/~a/Slashdot/slashdot?a=1j9E75"&gt;&lt;img src="http://rss.slashdot.org/~a/Slashdot/slashdot?i=1j9E75" border="0"&gt;&lt;/img&gt;&lt;/a&gt;&lt;/p&gt;&lt;img src="http://rss.slashdot.org/~r/Slashdot/slashdot/~4/11085112"/&gt;</description>
-<dc:creator>CmdrTaco</dc:creator>
-<dc:date>2006-08-10T23:11:00+00:00</dc:date>
-<dc:subject>ed</dc:subject>
-<slash:department>it's-all-so-simple-sometimes</slash:department>
-<slash:section>mainpage</slash:section>
-<slash:comments>176</slash:comments>
-<slash:hit_parade>176,173,140,100,26,13,10</slash:hit_parade>
-<feedburner:origLink>http://slashdot.org/article.pl?sid=06/08/10/2141258&amp;from=rss</feedburner:origLink></item>
+</item>
 
 </rdf:RDF>
