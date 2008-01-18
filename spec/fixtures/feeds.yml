@@ -43,3 +43,4 @@ duplicate_feed:
   url: http://duplicate
   duplicate_id: 1
   is_duplicate: true
+  title: Duplicate
