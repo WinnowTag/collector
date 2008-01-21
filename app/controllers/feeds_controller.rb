@@ -101,6 +101,9 @@ class FeedsController < ApplicationController
           @title = (@feed.title or "Uncollected Feed")
           render :action => 'show'
         end
+        wants.atom do
+          @feed_items = @feed.feed_items.paginate(:order => 'time desc', :page => params[:page])
+        end
         wants.xml { render :xml => @feed.to_xml }
       end
     end

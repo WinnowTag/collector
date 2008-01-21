@@ -212,6 +212,12 @@ class FeedsControllerTest < Test::Unit::TestCase
     assert_match(/application\/xml/, @response.content_type)
   end
   
+  it "should return atom" do
+    accept("application/atom+xml")
+    get :show, :id => 1
+    @response.content_type.should match(/application\/atom\+xml/)
+  end
+  
   def test_show_assigns_feed
     get :show, :id => 1
     assert_response :success
