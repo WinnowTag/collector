@@ -1,0 +1,49 @@
+Story: Atom Client Access
+
+  As another system
+  I want to be able to access feeds and items using atom
+  So that I can cache feeds and items in my own format
+  
+  Scenario: Accessing the service description
+
+    Given existing feeds in the system    
+    And a base url
+    
+    When I fetch the service document    
+    
+    Then the document should have a workspace
+    And  the workspace should have a title
+    And  the workspace should have a collection for each feed
+    And  the collections should have hrefs pointing to the feeds
+    And  the collections should have titles for each of the feeds
+  
+  Scenario: Accessing a feed
+    Given feed 1 in the system
+    And a base url
+    
+    When I fetch the service document
+    And  I fetch the feed for the first collection
+    
+    Then the feed contains the title
+    And  the feed self link points to self
+    And  the feed alternate link points to source html
+    And  the first link matches self
+    And  the last link matches self
+    And  the prev link is missing
+    And  the next link is missing
+    And  the id fragment matches the feed id
+  
+  Scenario: Accessing an item for a feed
+    Given feed 1 in the system
+    And a base url
+    And item 1 of the feed
+    
+    When I fetch the service document
+    And I fetch the feed for the first collection
+    And item 1 of the feed
+    
+    Then the feed contains the items
+    And then the first item matches the first item of the first feed
+    And  the item's alternate link points to the atom representation for the item
+    And  the item's spider link points to the spider URL for the item
+    And  the id fragment matches the system id
