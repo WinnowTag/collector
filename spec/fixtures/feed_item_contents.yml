@@ -20,22 +20,25 @@
   title: This is a test
   author: author1
   description: description1
-  encoded_content: this is a test
+  encoded_content: "<p>this is a test</p>"
 2:
   id: 2
   feed_item_id: 2
   title: This is another test
   author: author2
   description: description2
+  encoded_content: "<p>this is a test2</p>"
 3:
   id: 3
   feed_item_id: 3
   title: Yet another test
   author: author3
   description: description3
+  encoded_content: "<p>this is a test3</p>"
 4:
   id: 4
   feed_item_id: 4
   title: test 4
   author: author4
   description: description4
+  encoded_content: "<p>this is a test4</p>"

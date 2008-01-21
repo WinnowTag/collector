@@ -43,7 +43,6 @@ Story: Atom Client Access
     And item 1 of the feed
     
     Then the feed contains the items
-    And then the first item matches the first item of the first feed
-    And  the item's alternate link points to the atom representation for the item
+    And  the item matches item 1 of the feed
     And  the item's spider link points to the spider URL for the item
-    And  the id fragment matches the system id
+    And  the id fragment matches the item id

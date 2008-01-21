@@ -37,7 +37,7 @@ class FeedItemCorpusExporterTest < Test::Unit::TestCase
            
     feed = elements('//feeds/feed')[0]
     assert_not_nil feed
-    assert_equal "Ruby Language", feed.search('title').text
+    assert_equal "Ruby Language", feed.search('title').first.inner_html
     assert feed.search('id').empty?
     assert !feed.search('feed-items').empty?
     assert_equal 3, feed.search('feed-items/feed-item').size
@@ -47,7 +47,7 @@ class FeedItemCorpusExporterTest < Test::Unit::TestCase
    
     feed = elements('//feeds/feed')[1]
     assert_not_nil feed 
-    assert_equal "Ruby Documentation", feed.search('title').text
+    assert_equal "Ruby Documentation", feed.search('title').first.inner_html
     assert feed.search('id').empty?
     assert !feed.search('feed-items').empty?
     assert_equal 1, feed.search('feed-items/feed-item').size
@@ -70,7 +70,7 @@ class FeedItemCorpusExporterTest < Test::Unit::TestCase
         
     feed = elements('//feeds/feed')[0]
     assert_not_nil feed
-    assert_equal "Ruby Language", feed.search('title').text
+    assert_equal "Ruby Language", feed.search('title').first.inner_html
     assert feed.search('id').empty?
     assert !feed.search('feed-items').empty?
     assert_equal 2, feed.search('feed-items/feed-item').size
@@ -78,7 +78,7 @@ class FeedItemCorpusExporterTest < Test::Unit::TestCase
     
     feed = elements('//feeds/feed')[1]
     assert_not_nil feed 
-    assert_equal "Ruby Documentation", feed.search('title').text
+    assert_equal "Ruby Documentation", feed.search('title').first.inner_html
     assert feed.search('id').empty?
     assert !feed.search('feed-items').empty?
     assert_equal 1, feed.search('feed-items/feed-item').size
@@ -103,7 +103,7 @@ class FeedItemCorpusExporterTest < Test::Unit::TestCase
     
     feed = element('//feeds/feed')
     assert_not_nil feed
-    assert_equal "Ruby Language", feed.search('title').text
+    assert_equal "Ruby Language", feed.search('title').first.inner_html
     assert feed.search('id').empty?
     assert !feed.search('feed-items').empty?
     assert_equal 2, feed.search('feed-items/feed-item').size
@@ -125,13 +125,13 @@ class FeedItemCorpusExporterTest < Test::Unit::TestCase
     assert_equal 2, elements('//feeds/feed').size
     feed = elements('//feeds/feed')[0]
     assert_not_nil feed
-    assert_equal "Ruby Language", feed.search('title').text
+    assert_equal "Ruby Language", feed.search('title').first.inner_html
     assert !feed.search('feed-items').empty?
     assert_equal 1, feed.search('feed-items/feed-item').size
     
     feed = elements('//feeds/feed')[1]
     assert_not_nil feed 
-    assert_equal "Ruby Documentation", feed.search('title').text
+    assert_equal "Ruby Documentation", feed.search('title').first.inner_html
     assert !feed.search('feed-items').empty?
     assert_equal 1, feed.search('feed-items/feed-item').size
   end

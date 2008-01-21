@@ -52,11 +52,17 @@ describe "show.atom.builder" do
     response.should have_tag('feed id', "urn:peerworks.org:feed##{@feed.id}")
   end
   
+  it "should render an updated date" do
+    render '/feeds/show.atom.builder'
+    response.should have_tag('feed updated', @feed.updated_on.xmlschema)
+  end
+  
   describe 'single page feed' do
     before(:each) do
-      item = mock_model(FeedItem, valid_feed_item_attributes)
+      @item = mock_model(FeedItem, valid_feed_item_attributes(:author => 'John Doe', 
+                  :content => mock('content', :encoded_content => '<p>encoded content</p>') ))
       assigns[:feed_items] = WillPaginate::Collection.create(1, 40) do |pager|
-        pager.replace([item])
+        pager.replace([@item])
       end
     end
     
@@ -79,6 +85,54 @@ describe "show.atom.builder" do
       render '/feeds/show.atom.builder'
       response.should_not have_tag('feed link[rel = "next"]')
     end
+    
+    describe 'item rendering' do
+      it "should have 1 entry" do
+        render '/feeds/show.atom.builder'
+        response.should have_tag('feed entry', 1)
+      end
+      
+      it "should have an id for the entry" do
+        render '/feeds/show.atom.builder'
+        response.should have_tag('feed entry id', "urn:peerworks.org:entry##{@item.id}")
+      end
+      
+      it "should have a title" do
+        render '/feeds/show.atom.builder'
+        response.should have_tag('feed entry title', @item.title)
+      end
+      
+      it "should have an updated date" do
+        render '/feeds/show.atom.builder'
+        response.should have_tag('feed entry updated', @item.time.xmlschema)
+      end
+      
+      it "should have an author" do
+        render '/feeds/show.atom.builder'
+        response.should have_tag('feed entry author name', @item.author)
+      end
+      
+      it "should have content encoded as HTML" do
+        render '/feeds/show.atom.builder'
+        response.should have_tag('feed entry content[type="html"]', escape_once(@item.content.encoded_content), response.body)
+      end
+      
+      it "should have http://collector.wizztag.org/rel/spider pointing the spider url" do
+        render '/feeds/show.atom.builder'
+        response.should have_tag("feed entry link[rel = 'http://peerworks.org/rel/spider']" +
+                                 "[href = '#{spider_feed_item_url(@item)}']")
+      end
+      
+      it "should have self pointing to the entry document" do
+        render '/feeds/show.atom.builder'
+        response.should have_tag("feed entry link[rel = 'self'][href = '#{feed_item_url(@item)}.atom']")
+      end
+      
+      it "should have an alternate pointing to source alternate" do
+        render '/feeds/show.atom.builder'
+        response.should have_tag("feed entry link[rel = 'alternate'][href = '#{@item.link}']")
+      end
+    end
   end
   
   describe "multi page feed" do
@@ -86,7 +140,7 @@ describe "show.atom.builder" do
       assigns[:feed_items] = WillPaginate::Collection.create(2, 40) do |pager|
         items = []
         40.times do
-          items << mock_model(FeedItem, valid_feed_item_attributes)
+          items << mock_model(FeedItem, valid_feed_item_attributes(:author => 'author', :content => nil))
         end
         
         pager.replace(items)
@@ -112,6 +166,11 @@ describe "show.atom.builder" do
     it "should render a next link pointing to page 3" do
       render '/feeds/show.atom.builder'
       response.should have_tag("feed link[href = '#{feed_url(@feed)}.atom?page=3'][rel = 'next']")
+    end
+    
+    it "should have all the entries" do
+      render '/feeds/show.atom.builder'
+      response.should have_tag('feed entry', 40)
     end
   end
 end

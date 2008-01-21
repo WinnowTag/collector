@@ -30,6 +30,7 @@ steps_for(:atom_service_interation) do
   
   When("item $i of the feed") do |i|
     @item = @fetched_feed.entries[i.to_i - 1]
+    @dbitem = @feed.feed_items.find(:all, :order => 'time desc')[i.to_i - 1]
   end
   
   # Thens
@@ -85,6 +86,22 @@ steps_for(:atom_service_interation) do
   
   Then("the id fragment matches the feed id") do
     URI.parse(@fetched_feed.id).fragment.to_i.should == @feed.id
+  end
+  
+  Then("the item matches item $i of the feed") do |i|    
+    @item.title.should == @dbitem.title
+    @item.updated.should == @dbitem.time
+    @item.alternate.href.should == @dbitem.link
+    URI.parse(@item.id).fragment.to_i.should == @dbitem.id
+    @item.content.should == @dbitem.content.encoded_content
+  end
+  
+  Then("the id fragment matches the item id") do
+    URI.parse(@item.id).fragment.to_i.should == @dbitem.id
+  end
+  
+  Then("the item's spider link points to the spider URL for the item") do
+    @item.links.detect {|l| l.rel == 'http://peerworks.org/rel/spider' }.href.should == "#{@base}/feed_items/#{@dbitem.id}/spider"
   end
 end
 

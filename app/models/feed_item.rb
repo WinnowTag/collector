@@ -88,6 +88,10 @@ class FeedItem < ActiveRecord::Base
     self.feed_item_content(force)
   end
   
+  def author
+    self.content and self.content.author
+  end
+  
   # Gets the tokens with frequency counts for the feed_item.
   # 
   # This return a hash with token => freqency entries.

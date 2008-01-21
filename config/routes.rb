@@ -10,7 +10,10 @@ ActionController::Routing::Routes.draw do |map|
                 } do |feeds|
     feeds.resources :collection_jobs
     feeds.resources :collection_errors
-  end  
+  end
+  map.resources :feed_items, :member => {
+                  :spider => :get
+                }
   map.resources :protectors do |protectors|
     protectors.resources :protected_items,
                 :collection => {
