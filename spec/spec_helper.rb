@@ -37,6 +37,13 @@ Spec::Runner.configure do |config|
   # config.mock_with :flexmock
   # config.mock_with :rr
   
+  def login_as(user_id_or_fixture_name)
+    @request.session[:user] = case user_id_or_fixture_name
+      when Numeric; user_id_or_fixture_name
+      when Symbol; users(user_id_or_fixture_name).id
+    end
+  end
+  
   def valid_feed_item_attributes(attributes = {})
     unique_id = rand(10000)
     { :link => "http://#{unique_id}.example.com", 

@@ -1,4 +1,5 @@
 ActionController::Routing::Routes.draw do |map|
+
   map.resources :archival_histories              
   map.resources :collection_summaries
   map.resources :collection_jobs
@@ -14,6 +15,7 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :feed_items, :member => {
                   :spider => :get
                 }
+  map.resources :item_caches, :singular => 'item_cache'
   map.resources :protectors do |protectors|
     protectors.resources :protected_items,
                 :collection => {
