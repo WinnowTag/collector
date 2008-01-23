@@ -92,6 +92,21 @@ class FeedItem < ActiveRecord::Base
     self.content and self.content.author
   end
   
+  def to_atom(options = {})
+    Atom::Entry.new do |entry|
+      entry.title = self.title
+      entry.id = "urn:peerworks.org:entry##{self.id}"
+      entry.updated = self.time
+      entry.authors << Atom::Person.new(:name => self.author)
+      entry.content = Atom::Content::Html.new(self.content.encoded_content) if self.content
+      entry.links << Atom::Link.new(:rel => 'self', 
+                                    :href => "#{options[:base]}/feed_items/#{self.id}.atom")
+      entry.links << Atom::Link.new(:rel => 'alternate', :href => self.link)
+      entry.links << Atom::Link.new(:rel => 'http://peerworks.org/rel/spider', 
+                                    :href => "#{options[:base]}/spider/item/#{self.id}")
+    end
+  end
+  
   # Gets the tokens with frequency counts for the feed_item.
   # 
   # This return a hash with token => freqency entries.

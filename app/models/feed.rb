@@ -251,4 +251,41 @@ class Feed < ActiveRecord::Base
   def latest_items
     self.feed_items.find(:all, :conditions => ['created_on >= ?', self.updated_on.ago(1.second)])
   end
+  
+  def to_atom(options = {})
+    self_link = "#{options[:base]}/feeds/#{self.id}.atom"
+    
+    Atom::Feed.new do |feed|
+      feed.title = self.title
+      feed.updated = self.updated_on
+      feed.published = self.created_on
+      feed.id = "urn:peerworks.org:feed##{self.id}"
+      feed.links << Atom::Link.new(:rel => 'via', :href => self.url)
+      feed.links << Atom::Link.new(:rel => 'self', :href => self_link)
+      feed.links << Atom::Link.new(:rel => 'alternate', :href => self.link)
+      
+      if options[:include_entries]
+        feed_items = self.feed_items.paginate(:order => 'time desc', :page => options[:page])
+        feed.links << Atom::Link.new(:rel => 'first', :href => self_link)
+        
+        if feed_items.page_count == 1
+          feed.links << Atom::Link.new(:rel => 'last', :href => self_link)
+        else
+          feed.links << Atom::Link.new(:rel => 'last', :href => "#{self_link}?page=#{feed_items.page_count}")          
+          
+          if feed_items.previous_page
+            feed.links << Atom::Link.new(:rel => 'prev', :href => "#{self_link}?page=#{feed_items.previous_page}")
+          end
+          
+          if feed_items.next_page
+            feed.links << Atom::Link.new(:rel => 'next', :href => "#{self_link}?page=#{feed_items.next_page}")
+          end
+        end        
+        
+        feed_items.each do |feed_item|
+          feed.entries << feed_item.to_atom(options)
+        end
+      end      
+    end
+  end
 end

@@ -324,25 +324,148 @@ describe Feed do
     end
   end
   
-  describe 'to_atom without items' do
+  describe 'to_atom' do
     before(:each) do
       @feed = Feed.find(:first)
-      #@atom = Atom::Feed.load_feed(@feed.to_atom)
     end
     
-    it "should output the title"
-    it "should output the collector url as the self link"
-    it "should output the link as the via link"
-    it "should output the feed url as the alternate"
-    it "should output the updated date"
-    it "should output the published date"
-    it "should output the id"
-  end
-  
-  describe 'to_atom with items' do
-    before(:each) do
-      @feed = Feed.find(:first)
-      #@feed = Atom::Feed.load_feed(@feed.to_atom(:include_entries => true))
+    describe 'without items' do
+      before(:each) do
+      
+        @atom = Atom::Feed.load_feed(@feed.to_atom(:base => 'http://collector.wizztag.org').to_xml)
+      end
+    
+      it "should output the title" do
+        @atom.title.should == @feed.title
+      end
+    
+      it "should output the collector url as the self link" do
+        @atom.self.href.should == "http://collector.wizztag.org/feeds/#{@feed.id}.atom"
+      end
+    
+      it "should output the url as the via link" do
+        @atom.links.detect {|l| l.rel == 'via'}.href.should == @feed.url
+      end
+    
+      it "should output the link as the alternate" do
+        @atom.alternate.href.should == @feed.link
+      end
+    
+      it "should output the updated date" do
+        @atom.updated.should == @feed.updated_on
+      end
+    
+      it "should output the published date" do
+        @atom.published.should == @feed.created_on
+      end
+    
+      it "should output the id" do
+        @atom.id.should == "urn:peerworks.org:feed##{@feed.id}"
+      end
     end
-  end
+  
+    describe 'with 1 page of items' do
+      before(:each) do
+        @atom = Atom::Feed.load_feed(@feed.to_atom(:include_entries => true, 
+                                                   :base => 'http://collector.wizztag.org').to_xml)
+      end
+      
+      it "should render a first link pointing to self" do
+        @atom.first_page.href.should == @atom.self.href
+      end
+      
+      it "should render a last link pointing to self" do
+        @atom.last_page.href.should == @atom.self.href
+      end
+      
+      it "should not render a next" do
+        @atom.next_page.should be_nil
+      end
+      
+      it "should not render a prev" do
+        @atom.prev_page.should be_nil
+      end
+      
+      it "should have entries" do
+        @atom.should have(@feed.feed_items.size).entries
+      end
+      
+      describe "the item" do
+        before(:each) do
+          @item = @feed.feed_items.paginate(:order => 'time desc', :page => nil).first
+          @atom_item = @atom.entries.first
+        end
+        
+        it "should have an id" do
+          @atom_item.id.should == "urn:peerworks.org:entry##{@item.id}"
+        end
+        
+        it "should have a title" do
+          @atom_item.title.should == @item.title
+        end
+        
+        it "should have an updated date" do
+          @atom_item.updated.should == @item.time
+        end
+          
+        it "should have an author" do
+          @atom_item.authors.first.name.should == @item.author
+        end
+        
+        it "should have content encoded as HTML" do
+          @atom_item.content.should == @item.content.encoded_content
+        end
+        
+        it "should have a spider link" do
+          @atom_item.links.detect {|l| l.rel == 'http://peerworks.org/rel/spider'}.href.should == "http://collector.wizztag.org/spider/item/#{@item.id}"
+        end
+        
+        it "should have a self link pointing to the entry document" do
+          @atom_item.self.href.should == "http://collector.wizztag.org/feed_items/#{@item.id}.atom"
+        end
+        
+        it "should have an alternate point to source alternate" do
+          @atom_item.alternate.href.should == @item.link
+        end
+      end
+    end
+    
+    describe 'multiple pages of items' do
+      before(:each) do        
+        paginated = WillPaginate::Collection.create(2, 40) do |pager|
+          items = []
+          40.times do |n|
+            items << FeedItem.new(:title => "Temp #{n}", :link => "http://example.org/#{n}", :unique_id => "temp:#{n}")
+          end
+
+          pager.replace(items)
+          pager.total_entries = 135
+        end
+        
+        @feed.stub!(:feed_items).and_return(mock('items', :paginate => paginated))
+        @atom = Atom::Feed.load_feed(@feed.to_atom(:include_entries => true, :page => 2,
+                                                   :base => 'http://collector.wizztag.org').to_xml)
+      end
+      
+      it "should render a first link without a page number" do
+        @atom.first_page.href.should == "http://collector.wizztag.org/feeds/#{@feed.id}.atom"
+      end
+      
+      it "should render a last link pointing to the last page" do
+        @atom.last_page.href.should == "http://collector.wizztag.org/feeds/#{@feed.id}.atom?page=4"
+      end
+
+      it "should render a prev link pointing page 1" do
+        @atom.prev_page.href.should == "http://collector.wizztag.org/feeds/#{@feed.id}.atom?page=1"
+      end
+
+      it "should render a next link pointing to page 3" do
+        @atom.next_page.href.should == "http://collector.wizztag.org/feeds/#{@feed.id}.atom?page=3"
+      end
+
+      it "should have all the entries" do
+        @atom.should have(40).entries
+      end
+    end
+  end  
 end

@@ -101,7 +101,7 @@ steps_for(:atom_service_interation) do
   end
   
   Then("the item's spider link points to the spider URL for the item") do
-    @item.links.detect {|l| l.rel == 'http://peerworks.org/rel/spider' }.href.should == "#{@base}/feed_items/#{@dbitem.id}/spider"
+    @item.links.detect {|l| l.rel == 'http://peerworks.org/rel/spider' }.href.should == "#{@base}/spider/item/#{@dbitem.id}"
   end
 end
 

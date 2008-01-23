@@ -243,3 +243,44 @@ end
 class MockFeedItem 
   attr_accessor :time, :feed, :feed_data, :author, :title, :link, :description, :content, :id
 end
+
+describe FeedItem do
+  describe 'to_atom' do
+    before(:each) do
+      @item = FeedItem.find(:first)
+      @entry = @item.to_atom(:base => 'http://collector.wizztag.org')
+    end
+    
+    it "should return an Atom:Entry" do
+      @entry.should be_an_instance_of(Atom::Entry)
+    end
+    
+    it "should have the title" do
+      @entry.title.should == @item.title
+    end
+    
+    it "should have the id" do
+      @entry.id.should == "urn:peerworks.org:entry##{@item.id}"
+    end
+    
+    it "should have the updated date" do
+      @entry.updated.should == @item.time
+    end
+    
+    it "should have the author's name" do
+      @entry.authors.first.name.should == @item.author
+    end
+    
+    it "should have the content" do
+      @entry.content.should == @item.content.encoded_content
+    end
+    
+    it "should have the content type" do
+      @entry.content.type.should == 'html'
+    end
+    
+    it "should have the alternate link pointing to link" do
+      @entry.alternate.href.should == @item.link
+    end
+  end
+end

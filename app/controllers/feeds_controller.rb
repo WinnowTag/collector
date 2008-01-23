@@ -102,7 +102,9 @@ class FeedsController < ApplicationController
           render :action => 'show'
         end
         wants.atom do
-          @feed_items = @feed.feed_items.paginate(:order => 'time desc', :page => params[:page])
+           render :xml => @feed.to_atom(:base => "http://#{request.host}:#{request.port}",
+                                        :include_entries => true,
+                                        :page => params[:page])                                            
         end
         wants.xml { render :xml => @feed.to_xml }
       end
@@ -186,7 +188,7 @@ class FeedsController < ApplicationController
       end
       
       flash[:notice] = pluralize(created_feeds.size, 'new feed') + ' added'
-            
+                    
       unless failed_urls.empty?
         flash.now[:error] = failure_messages.inject([]) do |arr, msg_entry|
           arr << pluralize(msg_entry[1], msg_entry[0])
