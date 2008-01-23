@@ -10,6 +10,36 @@ class ItemCache < ActiveRecord::Base
   validates_uniqueness_of :base_uri
   validates_format_of :base_uri, :with => /^http:\/\/.*/, :message => 'must be a HTTP uri'
     
+  def self.publish(feed_or_item)
+    self.find(:all).each do |cache|
+      begin
+        cache.publish(feed_or_item)
+      rescue
+        # Do something smart here!!
+      end
+    end
+  end
+  
+  def self.update(feed_or_item)
+    self.find(:all).each do |cache|
+      begin
+        cache.update(feed_or_item)
+      rescue
+        # Do something smart here!!
+      end
+    end
+  end
+  
+  def self.delete(feed_or_item)
+    self.find(:all).each do |cache|
+      begin
+        cache.delete(feed_or_item)
+      rescue
+        # Do something smart here!!
+      end
+    end
+  end
+  
   def base_uri=(v)
     if v.respond_to?(:sub)
       # Trim any trailing slashes
@@ -19,14 +49,15 @@ class ItemCache < ActiveRecord::Base
     write_attribute(:base_uri, v)
   end
   
-  def publish_feed(feed)
-    feed_collection.publish(feed.to_atom_entry)
+  def publish(feed_or_item)
+    case feed_or_item
+    when Feed
+      feed_collection.publish(feed_or_item.to_atom_entry)
+    when FeedItem
+      feed_collection(feed_or_item.feed_id).publish(feed_or_item.to_atom)      
+    end
   end
-  
-  def publish_item(item)
-    feed_collection(item.feed_id).publish(item.to_atom)
-  end
-  
+    
   private
   def feed_collection(feed = :all)
     if feed == :all

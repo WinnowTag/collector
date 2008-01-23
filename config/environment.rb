@@ -53,7 +53,7 @@ Rails::Initializer.run do |config|
   config.active_record.schema_format = :sql
 
   # Activate observers that should always be running
-  #config.active_record.observers = :user_observer
+  config.active_record.observers = :item_cache_observer
 
   # Make Active Record use UTC-base instead of local time
   config.active_record.default_timezone = :utc
