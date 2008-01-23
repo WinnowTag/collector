@@ -14,7 +14,6 @@ Story: Atom Client Access
     Then the document should have a workspace
     And  the workspace should have a title
     And  the workspace should have a collection for each feed
-    And  the collections should have hrefs pointing to the feeds
     And  the collections should have titles for each of the feeds
   
   Scenario: Accessing a feed
@@ -24,14 +23,10 @@ Story: Atom Client Access
     When I fetch the service document
     And  I fetch the feed for the first collection
     
-    Then the feed contains the title
-    And  the feed self link points to self
-    And  the feed alternate link points to source html
-    And  the first link matches self
-    And  the last link matches self
-    And  the prev link is missing
-    And  the next link is missing
+    Then the feed contains the items
+    And  it contains the title
     And  the id fragment matches the feed id
+    And  fetching self returns an Atom::Feed
   
   Scenario: Accessing an item for a feed
     Given feed 1 in the system
@@ -41,8 +36,7 @@ Story: Atom Client Access
     When I fetch the service document
     And I fetch the feed for the first collection
     And item 1 of the feed
-    
-    Then the feed contains the items
-    And  the item matches item 1 of the feed
-    And  the item's spider link points to the spider URL for the item
-    And  the id fragment matches the item id
+        
+    Then  it contains the title        
+    And the id fragment matches the item id
+    And fetching self returns an Atom::Entry

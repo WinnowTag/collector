@@ -8,11 +8,11 @@ steps_for(:atom_service_interation) do
   end
   
   Given("feed $id in the system") do |id|
-    @feed = Feed.find(id)
+    @test_object = Feed.find(id)
   end
   
   Given("item $i of the feed") do |i|
-    @item = @feed.feed_items[i.to_i - 1]
+    @test_object = @test_object.feed_items.find(:all, :order => 'time desc')[i.to_i - 1]
   end
   
   Given("a base url") do
@@ -25,12 +25,11 @@ steps_for(:atom_service_interation) do
   end
   
   When("I fetch the feed for the first collection") do
-    @fetched_feed = @service.workspaces.first.collections.first.feed
+    @atom = @service.workspaces.first.collections.first.feed
   end
   
   When("item $i of the feed") do |i|
-    @item = @fetched_feed.entries[i.to_i - 1]
-    @dbitem = @feed.feed_items.find(:all, :order => 'time desc')[i.to_i - 1]
+    @atom = @atom.entries[i.to_i - 1]
   end
   
   # Thens
@@ -43,13 +42,7 @@ steps_for(:atom_service_interation) do
   end
   
   Then("the workspace should have a collection for each feed") do
-    @service.workspaces.first.collections.size.should == @feeds.size
-  end
-  
-  Then("the collections should have hrefs pointing to the feeds") do
-    @feeds.each_with_index do |feed, index|
-      @service.workspaces.first.collections[index].href.should == "#{@base}/feeds/#{feed.id}.atom"
-    end
+    @service.workspaces.first.should have(@feeds.size).collections
   end
   
   Then("the collections should have titles for each of the feeds") do
@@ -58,50 +51,20 @@ steps_for(:atom_service_interation) do
     end
   end
   
-  Then("the feed contains the title") do
-    @fetched_feed.title.should == @feed.title
+  Then("it contains the title") do
+    @atom.title.should == @test_object.title
   end
   
   Then("the feed contains the items") do
-    @fetched_feed.entries.size.should == @feed.feed_items.size
+    @atom.should have(@test_object.feed_items.size).entries
   end
   
-  Then("the feed self link points to self") do
-    @fetched_feed.links.self.href.should == "#{@base}/feeds/#{@feed.id}.atom"
+  Then("the id fragment matches the $db id") do |db|
+    URI.parse(@atom.id).fragment.to_i.should == @test_object.id
   end
   
-  Then("the feed alternate link points to source html") do
-    @fetched_feed.links.alternate.href.should == @feed.link
-  end
-  
-  Then("the $link link matches $link") do |link1_rel, link2_rel|
-    link2 = @fetched_feed.links.detect {|link| link.rel == link2_rel }
-    link2.should_not be_nil
-    @fetched_feed.links.detect {|link| link.rel == link1_rel}.should == link2
-  end
-  
-  Then("the $link link is missing") do |link_rel|
-    @fetched_feed.links.detect{|l| l.rel == link_rel}.should be_nil
-  end
-  
-  Then("the id fragment matches the feed id") do
-    URI.parse(@fetched_feed.id).fragment.to_i.should == @feed.id
-  end
-  
-  Then("the item matches item $i of the feed") do |i|    
-    @item.title.should == @dbitem.title
-    @item.updated.should == @dbitem.time
-    @item.alternate.href.should == @dbitem.link
-    URI.parse(@item.id).fragment.to_i.should == @dbitem.id
-    @item.content.should == @dbitem.content.encoded_content
-  end
-  
-  Then("the id fragment matches the item id") do
-    URI.parse(@item.id).fragment.to_i.should == @dbitem.id
-  end
-  
-  Then("the item's spider link points to the spider URL for the item") do
-    @item.links.detect {|l| l.rel == 'http://peerworks.org/rel/spider' }.href.should == "#{@base}/spider/item/#{@dbitem.id}"
+  Then("fetching self returns an $klass") do |klass|
+    @atom.reload!.should be_an_instance_of(klass.constantize)
   end
 end
 
