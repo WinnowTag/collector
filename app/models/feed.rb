@@ -288,4 +288,17 @@ class Feed < ActiveRecord::Base
       end      
     end
   end
+  
+  # This allows us to coerce a Feed into an Atom::Entry so we can publish them
+  def to_atom_entry(options = {})
+    Atom::Entry.new do |entry|
+      entry.title = self.title
+      entry.updated = self.updated_on
+      entry.published = self.created_on
+      entry.id = "urn:peerworks.org:feed##{self.id}"
+      entry.links << Atom::Link.new(:rel => 'via', :href => self.url)
+      entry.links << Atom::Link.new(:rel => 'self', :href => "#{options[:base]}/feeds/#{self.id}.atom")
+      entry.links << Atom::Link.new(:rel => 'alternate', :href => self.link)
+    end
+  end
 end

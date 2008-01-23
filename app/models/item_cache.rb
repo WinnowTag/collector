@@ -18,4 +18,21 @@ class ItemCache < ActiveRecord::Base
     
     write_attribute(:base_uri, v)
   end
+  
+  def publish_feed(feed)
+    feed_collection.publish(feed.to_atom_entry)
+  end
+  
+  def publish_item(item)
+    feed_collection(item.feed_id).publish(item.to_atom)
+  end
+  
+  private
+  def feed_collection(feed = :all)
+    if feed == :all
+      Atom::Pub::Collection.new(:href => "#{self.base_uri}/feeds")
+    elsif feed.is_a?(Integer)
+      Atom::Pub::Collection.new(:href => "#{self.base_uri}/feeds/#{feed}")
+    end
+  end
 end

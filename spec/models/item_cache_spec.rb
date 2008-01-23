@@ -41,4 +41,28 @@ describe ItemCache do
     @item_cache.save!
     @item_cache.base_uri.should == 'http://example.com/this/is/a/path'
   end
+  
+  it "should send a POST request to base_uri/feeds to add a feed" do
+    feed = Feed.find(1)
+    response = mock_response(Net::HTTPCreated, feed.to_atom_entry.to_xml)
+    
+    http = mock('http')
+    http.should_receive(:post).with('/feeds', feed.to_atom_entry.to_xml, an_instance_of(Hash)).and_return(response)
+    Net::HTTP.should_receive(:start).with('example.com', 80).and_yield(http)
+    
+    @item_cache.publish_feed(feed)
+  end
+  
+  it "should send a DELETE request to base_uri/feeds/:feed_id to delete a feed"
+  
+  it "should send a POST request to base_uri/feeds/:feed_id to add an item to a feed" do
+    item = FeedItem.find(1)
+    response = mock_response(Net::HTTPCreated, item.to_atom.to_xml)
+    
+    http = mock('http')
+    http.should_receive(:post).with('/feeds/1', item.to_atom.to_xml, an_instance_of(Hash)).and_return(response)
+    Net::HTTP.should_receive(:start).with('example.com', 80).and_yield(http)
+    
+    @item_cache.publish_item(item)
+  end
 end

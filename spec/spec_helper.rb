@@ -62,4 +62,15 @@ Spec::Runner.configure do |config|
       :updated_on => Time.now
     }.merge(attributes)
   end
+  
+  def mock_response(klass, body, headers = {})
+    response = klass.new(nil, nil, nil)
+    response.stub!(:body).and_return(body)
+    
+    headers.each do |k, v|
+      response.stub!(:[]).with(k).and_return(v)
+    end
+    
+    response
+  end
 end

@@ -324,6 +324,41 @@ describe Feed do
     end
   end
   
+  describe 'to_atom_entry' do
+    before(:each) do
+      @feed = Feed.find(:first)
+      @atom = Atom::Entry.load_entry(@feed.to_atom_entry(:base => 'http://collector.wizztag.org').to_xml)
+    end
+    
+    it "should output the title" do
+      @atom.title.should == @feed.title
+    end
+  
+    it "should output the collector url as the self link" do
+      @atom.self.href.should == "http://collector.wizztag.org/feeds/#{@feed.id}.atom"
+    end
+  
+    it "should output the url as the via link" do
+      @atom.links.detect {|l| l.rel == 'via'}.href.should == @feed.url
+    end
+  
+    it "should output the link as the alternate" do
+      @atom.alternate.href.should == @feed.link
+    end
+  
+    it "should output the updated date" do
+      @atom.updated.should == @feed.updated_on
+    end
+  
+    it "should output the published date" do
+      @atom.published.should == @feed.created_on
+    end
+  
+    it "should output the id" do
+      @atom.id.should == "urn:peerworks.org:feed##{@feed.id}"
+    end
+  end
+  
   describe 'to_atom' do
     before(:each) do
       @feed = Feed.find(:first)
