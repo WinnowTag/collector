@@ -1,4 +1,4 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
 
 one:
-  base_uri: 'http://example.com'
+  base_uri: 'http://example.org'

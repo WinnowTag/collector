@@ -11,4 +11,12 @@ class ItemCacheObserver < ActiveRecord::Observer
   def after_create(record)
     ItemCache.publish(record)
   end
+  
+  def after_save(record)
+    ItemCache.update(record)
+  end
+  
+  def after_destroy(record)
+    ItemCache.delete(record)
+  end
 end

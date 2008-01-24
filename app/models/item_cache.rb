@@ -5,6 +5,9 @@
 # Please contact info@peerworks.org for further information.
 #
 
+require 'atom'
+require 'atom/pub'
+
 class ItemCache < ActiveRecord::Base
   validates_presence_of :base_uri
   validates_uniqueness_of :base_uri
@@ -14,8 +17,9 @@ class ItemCache < ActiveRecord::Base
     self.find(:all).each do |cache|
       begin
         cache.publish(feed_or_item)
-      rescue
+      rescue Exception => e
         # Do something smart here!!
+        ActiveRecord::Base.logger.warn("Error publishing #{feed_or_item.title} to #{cache.base_uri}: #{e.message}")
       end
     end
   end
@@ -34,7 +38,7 @@ class ItemCache < ActiveRecord::Base
     self.find(:all).each do |cache|
       begin
         cache.delete(feed_or_item)
-      rescue
+      rescue Exception => e
         # Do something smart here!!
       end
     end
@@ -56,6 +60,32 @@ class ItemCache < ActiveRecord::Base
     when FeedItem
       feed_collection(feed_or_item.feed_id).publish(feed_or_item.to_atom)      
     end
+  end
+  
+  def update(feed_or_item)
+    atom = if feed_or_item.is_a?(Feed)
+      feed_or_item.to_atom_entry
+    else
+      feed_or_item.to_atom
+    end
+    
+    path = feed_or_item.is_a?(Feed) ? 'feeds' : 'feed_items'
+        
+    atom.links << Atom::Link.new(:rel => 'edit', :href => "#{self.base_uri}/#{path}/#{feed_or_item.id}")
+    atom.save!
+  end
+  
+  def delete(feed_or_item)
+    atom = if feed_or_item.is_a?(Feed)
+      feed_or_item.to_atom_entry
+    else
+      feed_or_item.to_atom
+    end
+    
+    path = feed_or_item.is_a?(Feed) ? 'feeds' : 'feed_items'
+    
+    atom.links << Atom::Link.new(:rel => 'edit', :href => "#{self.base_uri}/#{path}/#{feed_or_item.id}")
+    atom.destroy!
   end
     
   private

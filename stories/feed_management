@@ -8,17 +8,18 @@ Story: Feed Management
     
         Given no feeds
         And no item caches
+        And I am a logged in user
     
-        When I add the feed 'http://slashdot.org
+        When I add the feed http://example.org
     
         Then there is another feed in the system
-        And I am redirected to the feed
         
     Scenario: Adding a feed to an item cache
     
         Given no feeds
         And 1 item cache
+        And the item cache expects a POST
         
-        When I add the feed 'http://slashdot.org'
+        When I add the feed http://example.org
         
         Then the feed is published to the item cache
