@@ -5,7 +5,7 @@
 # Please contact info@peerworks.org for further information.
 #
 
-require 'atom'
+#require 'atom'
 require 'atom/pub'
 
 class ItemCache < ActiveRecord::Base

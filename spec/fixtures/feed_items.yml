@@ -54,7 +54,7 @@ forth:
   id: 4
   feed_id: 2
   time_source: <%= FeedItem::FeedCollectionTime %>
-  time: <%= Time.now.utc.ago(31.days).to_formatted_s(:db)%>
+  time: <%= Time.now.utc.ago(181.days).to_formatted_s(:db)%>
   unique_id: forth
   xml_data_size: 20
   content_length: 10

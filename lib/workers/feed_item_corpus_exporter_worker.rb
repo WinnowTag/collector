@@ -11,7 +11,7 @@ class FeedItemCorpusExporterWorker < BackgrounDRb::Worker::RailsBase
   
   def do_work(args)
     args = {
-      :start_date => Time.now.utc.ago(32.days).to_date,
+      :start_date => Time.now.utc.ago(182.days).to_date,
       :end_date => Time.now.utc.to_date,
       :min_content_length => 1,
       :item_target => 5000,

@@ -26,7 +26,7 @@ class Archiver
     end
   
     private
-      def archive(cutoff = Time.now.utc.ago(30.days))
+      def archive(cutoff = Time.now.utc.ago(180.days))
         # We can do this is pure SQL mostly, so it is much faster than using ActiveRecord
         ActiveRecord::Base.transaction do        
           ex <<-END

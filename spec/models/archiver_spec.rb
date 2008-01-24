@@ -36,12 +36,12 @@ class ArchiverTest < Test::Unit::TestCase
     assert_equal(FeedItem.count(older_than), Archiver.run.item_count)
   end
   
-  def test_archiver_removes_feed_items_older_than_30_days
+  def test_archiver_removes_feed_items_older_than_180_days
     older = FeedItem.count(older_than)
     assert_difference(FeedItem, :count, -older) do
       Archiver.run
     end
-    assert_equal(FeedItem.count, FeedItem.count(:conditions => ['time > ?', Time.now.utc.ago(30.days)]))
+    assert_equal(FeedItem.count, FeedItem.count(:conditions => ['time > ?', Time.now.utc.ago(180.days)]))
   end
   
   def test_duplicates_are_ignored
@@ -169,7 +169,7 @@ class ArchiverTest < Test::Unit::TestCase
     end
   end
   
-  def older_than(days = 30)
+  def older_than(days = 180)
     {:conditions => ['feed_items.time < ?', Time.now.utc.ago(days.days)]}
   end
 end
