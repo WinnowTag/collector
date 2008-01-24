@@ -477,7 +477,7 @@ describe Feed do
           pager.total_entries = 135
         end
         
-        @feed.stub!(:feed_items).and_return(mock('items', :paginate => paginated))
+        @feed.stub!(:feed_items).and_return(mock('items', :paginate => paginated, :size => 135))
         @atom = Atom::Feed.load_feed(@feed.to_atom(:include_entries => true, :page => 2,
                                                    :base => 'http://collector.wizztag.org').to_xml)
       end

@@ -265,7 +265,10 @@ class Feed < ActiveRecord::Base
       feed.links << Atom::Link.new(:rel => 'alternate', :href => self.link)
       
       if options[:include_entries]
-        feed_items = self.feed_items.paginate(:order => 'time desc', :page => options[:page])
+        feed_items = self.feed_items.paginate(:order => 'time desc', 
+                                              :page => options[:page], 
+                                              :total_entries => self.feed_items.size,
+                                              :include => :feed_item_content)
         feed.links << Atom::Link.new(:rel => 'first', :href => self_link)
         
         if feed_items.page_count == 1

@@ -33,7 +33,7 @@ class ApplicationController < ActionController::Base
   
   private
   def flash_completed_collections
-    if current_user
+    if current_user and params[:format] != 'atom'
       jobs = CollectionJob.completed_jobs_for_user(current_user.login)
     
       if jobs.any?
