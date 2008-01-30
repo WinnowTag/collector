@@ -58,7 +58,9 @@ class ItemCache < ActiveRecord::Base
     when Feed
       feed_collection.publish(feed_or_item.to_atom_entry)
     when FeedItem
-      feed_collection(feed_or_item.feed_id).publish(feed_or_item.to_atom)      
+      collection = feed_collection(feed_or_item.feed_id)
+      logger.info("publishing item(#{feed_or_item.id}) to #{collection.href}")
+      collection.publish(feed_or_item.to_atom)      
     end
   end
   
@@ -93,7 +95,7 @@ class ItemCache < ActiveRecord::Base
     if feed == :all
       Atom::Pub::Collection.new(:href => "#{self.base_uri}/feeds")
     elsif feed.is_a?(Integer)
-      Atom::Pub::Collection.new(:href => "#{self.base_uri}/feeds/#{feed}")
+      Atom::Pub::Collection.new(:href => "#{self.base_uri}/feeds/#{feed}/feed_items")
     end
   end
 end

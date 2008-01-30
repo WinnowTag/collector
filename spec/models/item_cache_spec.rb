@@ -84,12 +84,12 @@ describe ItemCache do
       @item_cache.publish(feed)
     end
   
-    it "should send a POST request to base_uri/feeds/:feed_id to add an item to a feed" do
+    it "should send a POST request to base_uri/feeds/:feed_id/feed_items to add an item to a feed" do
       item = FeedItem.find(1)
       response = mock_response(Net::HTTPCreated, item.to_atom.to_xml)
     
       http = mock('http')
-      http.should_receive(:post).with('/feeds/1', item.to_atom.to_xml, an_instance_of(Hash)).and_return(response)
+      http.should_receive(:post).with('/feeds/1/feed_items', item.to_atom.to_xml, an_instance_of(Hash)).and_return(response)
       Net::HTTP.should_receive(:start).with('example.com', 80).and_yield(http)
     
       @item_cache.publish(item)
