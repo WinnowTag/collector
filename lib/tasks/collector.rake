@@ -4,7 +4,6 @@
 # to use, modify, or create derivate works.
 # Please contact info@peerworks.org for further information.
 #
-require 'spec/rake/spectask'
 
 directory "tmp/imported_corpus"
 
