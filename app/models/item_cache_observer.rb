@@ -10,10 +10,11 @@ class ItemCacheObserver < ActiveRecord::Observer
   
   def after_create(record)
     ItemCache.publish(record)
+    record.just_published = true
   end
   
   def after_save(record)
-    ItemCache.update(record)
+    ItemCache.update(record) unless record.just_published
   end
   
   def after_destroy(record)

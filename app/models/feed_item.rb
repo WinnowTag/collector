@@ -53,7 +53,7 @@ load_without_new_constant_marking File.join(RAILS_ROOT, 'vendor', 'plugins', 'wi
 class FeedItem < ActiveRecord::Base
   cattr_reader :per_page
   @@per_page = 40
-  attr_accessor :tokens_with_counts
+  attr_accessor :tokens_with_counts, :just_published
   has_one :spider_result, :dependent => :delete
   after_save :save_tokens
 

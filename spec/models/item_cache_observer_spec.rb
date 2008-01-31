@@ -13,6 +13,7 @@ describe ItemCacheObserver do
     Feed.with_observers(:item_cache_observer) do
       feed = Feed.new(:url => 'http://example.com')
       ItemCache.should_receive(:publish).with(feed)
+      ItemCache.should_receive(:update).never
       feed.save!
     end
   end
@@ -22,6 +23,7 @@ describe ItemCacheObserver do
       feed = Feed.find(1)
       fi = feed.feed_items.build(:link => 'http://example.com/test', :title => 'test', :unique_id => 'test')
       ItemCache.should_receive(:publish).with(fi)
+      ItemCache.should_receive(:update).never
       fi.save!
     end
   end

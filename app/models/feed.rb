@@ -39,6 +39,7 @@ load_without_new_constant_marking File.join(RAILS_ROOT, 'vendor', 'plugins', 'wi
 #
 
 class Feed < ActiveRecord::Base
+  attr_accessor :just_published
   has_many :spider_results,    :dependent => :delete_all, :order => 'created_at desc'
   has_many :collection_jobs,   :dependent => :delete_all, :order => 'created_at desc'
   has_many :collection_errors, :dependent => :delete_all, :order => 'created_on desc'
