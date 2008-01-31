@@ -9,6 +9,7 @@ require File.dirname(__FILE__) + '/../test_helper'
 require File.dirname(__FILE__) + '/../spec_helper'
 
 class RandomBackgroundTest < Test::Unit::TestCase
+  fixtures :feed_items
   # Replace this with your real tests
   def test_generate_respects_limit
     RandomBackground.generate(2)
