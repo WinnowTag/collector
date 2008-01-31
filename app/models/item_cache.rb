@@ -15,62 +15,23 @@ class ItemCache < ActiveRecord::Base
     
   class << self
     def publish(feed_or_item)
-      begin
-        if cache = MiddleMan.worker(:item_cache)
-          cache.enqueue(:publish, feed_or_item.class, feed_or_item.id)
-        end
-      rescue Exception => e
-        logger.warn("Could not access BackgroundRB from ItemCache: #{e.message}")
-      end
+      ItemCacheOperation.create!(:action => 'publish', :actionable => feed_or_item)
     end
     
     def update(feed_or_item)
-      begin
-        if cache = MiddleMan.worker(:item_cache)
-          cache.enqueue(:update, feed_or_item.class, feed_or_item.id)
-        end
-      rescue Exception => e
-        logger.warn("Could not access BackgroundRB from ItemCache: #{e.message}")
-      end
+      ItemCacheOperation.create!(:action => 'update', :actionable => feed_or_item)
     end
     
     def delete(feed_or_item)
-      begin
-        if cache = MiddleMan.worker(:item_cache)
-          cache.enqueue(:delete, feed_or_item.class, feed_or_item.id)
-        end
-      rescue Exception => e
-        logger.warn("Could not access BackgroundRB from ItemCache: #{e.message}")
-      end      
-    end
+      ItemCacheOperation.create!(:action => 'delete', :actionable => feed_or_item)
+    end    
     
-    def publish_without_backgroundrb(feed_or_item)
-      find(:all).each do |cache|
+    def process_operation(op)
+      find(:all).each do |item_cache|
         begin
-          cache.publish(feed_or_item)
+          item_cache.process_operation(op)
         rescue Exception => e
-          # Do something smart here!!
-          ActiveRecord::Base.logger.warn("Error publishing #{feed_or_item.title} to #{cache.base_uri}: #{e.message}")
-        end
-      end
-    end
-  
-    def update_without_backgroundrb(feed_or_item)
-      find(:all).each do |cache|
-        begin
-          cache.update(feed_or_item)
-        rescue
-          # Do something smart here!!
-        end
-      end
-    end
-  
-    def delete_without_backgroundrb(feed_or_item)
-      find(:all).each do |cache|
-        begin
-          cache.delete(feed_or_item)
-        rescue Exception => e
-          # Do something smart here!!
+          logger.warn("Error processing cache operation: #{op.inspect}: #{e}")
         end
       end
     end
@@ -85,6 +46,19 @@ class ItemCache < ActiveRecord::Base
     write_attribute(:base_uri, v)
   end
   
+  def process_operation(op)
+    logger.info("sending #{op.inspect} to #{base_uri}")
+    case op.action
+    when 'publish'
+      publish(op.actionable)
+    when 'update'
+      update(op.actionable)
+    when 'delete'
+      delete(op.actionable_type, op.actionable_id)
+    end
+  end
+  
+  private
   def publish(feed_or_item)
     case feed_or_item
     when Feed
@@ -109,20 +83,12 @@ class ItemCache < ActiveRecord::Base
     atom.save!
   end
   
-  def delete(feed_or_item)
-    atom = if feed_or_item.is_a?(Feed)
-      feed_or_item.to_atom_entry
-    else
-      feed_or_item.to_atom
-    end
-    
-    path = feed_or_item.is_a?(Feed) ? 'feeds' : 'feed_items'
-    
-    atom.links << Atom::Link.new(:rel => 'edit', :href => "#{self.base_uri}/#{path}/#{feed_or_item.id}")
-    atom.destroy!
+  def delete(type, id)
+    atom = Atom::Entry.new do |atom|
+      atom.links << Atom::Link.new(:rel => 'edit', :href => "#{self.base_uri}/#{type.underscore.pluralize}/#{id}")      
+    end.destroy!
   end
     
-  private
   def feed_collection(feed = :all)
     if feed == :all
       Atom::Pub::Collection.new(:href => "#{self.base_uri}/feeds")

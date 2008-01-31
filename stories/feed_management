@@ -19,8 +19,6 @@ Story: Feed Management
     
         Given no feeds
         And 1 item cache
-        And the item cache expects a POST
-        And item cache enabled
         
         When I add the feed http://example.org
         

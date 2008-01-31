@@ -8,9 +8,19 @@
 
 require File.dirname(__FILE__) + '/../spec_helper'
 
-# Stub out BackgroundRB
-class Object;  remove_const :MiddleMan; end
-MiddleMan = Object.new
+shared_examples_for("an ItemCacheOperation creator") do
+  it "should create a new ItemCacheOperation" do
+    ItemCacheOperation.count.should == (@before_count + 1)
+  end
+  
+  it "should have actionable's class as the actionable_type" do
+    @operation.actionable_type.should == @actionable.class.name
+  end
+  
+  it "should have the actionable's id as the actionable_id" do
+    @operation.actionable_id.should == @actionable.id
+  end
+end
 
 describe ItemCache do
   fixtures :item_caches
@@ -50,125 +60,165 @@ describe ItemCache do
   
   describe 'class methods' do
     before(:each) do
-      @ic1 = mock_model(ItemCache)
-      @ic2 = mock_model(ItemCache)
-      ItemCache.stub!(:find).with(:all).and_return([@ic1, @ic2])
+      @before_count = ItemCacheOperation.count
     end
-
-    describe "using backgroundrb" do
+    
+    describe "publish a feed" do
+      before(:each) do        
+        @actionable = Feed.find(:first)
+        @operation = ItemCache.publish(@actionable)
+      end
+      
+      it_should_behave_like "an ItemCacheOperation creator"
+      it "should have publish as the action" do
+        @operation.action.should == 'publish'
+      end
+    end
+    
+    describe "publish a feed item" do
       before(:each) do
-        @feed = mock_model(Feed)
-        @worker = mock('item_cache_worker')  
-        MiddleMan.stub!(:worker).with(:item_cache).and_return(@worker)
+        @actionable = FeedItem.find(:first)
+        @operation = ItemCache.publish(@actionable)
       end
       
-      it "publish should create a job in the ItemCacheWorker" do      
-        @worker.should_receive(:enqueue).with(:publish, Feed, @feed.id)
-        ItemCache.publish(@feed)
-      end
-    
-      it "update should create a job in the ItemCacheWorker" do
-        @worker.should_receive(:enqueue).with(:update, Feed, @feed.id)
-        ItemCache.update(@feed)
-      end
-      
-      it "delete should create a job in the ItemCacheWorker" do
-        @worker.should_receive(:enqueue).with(:delete, Feed, @feed.id)
-        ItemCache.delete(@feed)
+      it_should_behave_like "an ItemCacheOperation creator"
+      it "should have publish as the action" do
+        @operation.action.should == 'publish'
       end
     end
     
-    it "publish_without_backgroundrb should call publish for each ItemCache" do
-      feed = mock('feed')
-      @ic1.should_receive(:publish).with(feed)
-      @ic2.should_receive(:publish).with(feed)
-      ItemCache.publish_without_backgroundrb(feed)
+    describe "update a feed" do
+      before(:each) do
+        @actionable = Feed.find(:first)
+        @operation = ItemCache.update(@actionable)
+      end
+
+      it_should_behave_like "an ItemCacheOperation creator"
+      it "should have update as the action" do
+        @operation.action.should == 'update'
+      end
+    end
+
+    describe "update a feed item" do
+      before(:each) do
+        @actionable = FeedItem.find(:first)
+        @operation = ItemCache.update(@actionable)
+      end
+
+      it_should_behave_like "an ItemCacheOperation creator"
+      it "should have update as the action" do
+        @operation.action.should == 'update'
+      end
     end
     
-    it "update_without_backgroundrb should call update for each ItemCache" do
-      feed = mock('feed')
-      @ic1.should_receive(:update).with(feed)
-      @ic2.should_receive(:update).with(feed)
-      ItemCache.update_without_backgroundrb(feed)
+    describe "delete a feed" do
+      before(:each) do
+        @actionable = Feed.find(:first)
+        @operation = ItemCache.delete(@actionable)
+      end
+
+      it_should_behave_like "an ItemCacheOperation creator"
+      it "should have delete as the action" do
+        @operation.action.should == 'delete'
+      end
     end
-    
-    it "delete_without_backgroundrb should call delete for each ItemCache" do
-      feed = mock('feed')
-      @ic1.should_receive(:delete).with(feed)
-      @ic2.should_receive(:delete).with(feed)
-      ItemCache.delete_without_backgroundrb(feed)
+
+    describe "delete a feed item" do
+      before(:each) do
+        @actionable = FeedItem.find(:first)
+        @operation = ItemCache.delete(@actionable)
+      end
+
+      it_should_behave_like "an ItemCacheOperation creator"
+      it "should have delete as the action"  do
+        @operation.action.should == 'delete'
+      end
     end
   end
 
-  describe "#publish" do  
-    it "should send a POST request to base_uri/feeds to add a feed" do
-      feed = Feed.find(1)
-      response = mock_response(Net::HTTPCreated, feed.to_atom_entry.to_xml)
+  describe "process_operation" do
+    describe "#publish" do  
+      it "should send a POST request to base_uri/feeds to add a feed" do
+        feed = Feed.find(1)
+        op = ItemCacheOperation.create!(:action => 'publish', :actionable => feed)
+        
+        response = mock_response(Net::HTTPCreated, feed.to_atom_entry.to_xml)
     
-      http = mock('http')
-      http.should_receive(:post).with('/feeds', feed.to_atom_entry.to_xml, an_instance_of(Hash)).and_return(response)
-      Net::HTTP.should_receive(:start).with('example.com', 80).and_yield(http)
+        http = mock('http')
+        http.should_receive(:post).with('/feeds', feed.to_atom_entry.to_xml, an_instance_of(Hash)).and_return(response)
+        Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
     
-      @item_cache.publish(feed)
+        ItemCache.process_operation(op)
+      end
+  
+      it "should send a POST request to base_uri/feeds/:feed_id/feed_items to add an item to a feed" do
+        item = FeedItem.find(1)
+        op = ItemCacheOperation.create!(:action => 'publish', :actionable => item)
+        
+        response = mock_response(Net::HTTPCreated, item.to_atom.to_xml)
+    
+        http = mock('http')
+        http.should_receive(:post).with('/feeds/1/feed_items', item.to_atom.to_xml, an_instance_of(Hash)).and_return(response)
+        Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
+    
+        ItemCache.process_operation(op)
+      end
     end
   
-    it "should send a POST request to base_uri/feeds/:feed_id/feed_items to add an item to a feed" do
-      item = FeedItem.find(1)
-      response = mock_response(Net::HTTPCreated, item.to_atom.to_xml)
+    describe '#update' do
+      it "should send a PUT request to base_uri/feeds/:feed_id to update a feed" do
+        feed = Feed.find(1)
+        op = ItemCacheOperation.create!(:action => 'update', :actionable => feed)
+        
+        response = mock_response(Net::HTTPSuccess, nil)
+      
+        http = mock('http')
+        http.should_receive(:put).with('/feeds/1', an_instance_of(String), an_instance_of(Hash)).and_return(response)
+        Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
+      
+        ItemCache.process_operation(op)
+      end
     
-      http = mock('http')
-      http.should_receive(:post).with('/feeds/1/feed_items', item.to_atom.to_xml, an_instance_of(Hash)).and_return(response)
-      Net::HTTP.should_receive(:start).with('example.com', 80).and_yield(http)
-    
-      @item_cache.publish(item)
+      it "should send a PUT request to base_uri/feed_items/:feed_item_id to update a feed item" do
+        item = FeedItem.find(:first)
+        op = ItemCacheOperation.create!(:action => 'update', :actionable => item)
+        
+        response = mock_response(Net::HTTPSuccess, nil)
+      
+        http = mock('http')
+        http.should_receive(:put).with("/feed_items/#{item.id}", an_instance_of(String), an_instance_of(Hash)).and_return(response)
+        Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
+      
+        ItemCache.process_operation(op)
+      end
     end
-  end
   
-  describe '#update' do
-    it "should send a PUT request to base_uri/feeds/:feed_id to update a feed" do
-      feed = Feed.find(1)
-      response = mock_response(Net::HTTPSuccess, nil)
+    describe '#delete' do
+      it "should send a DELETE request to base_uri/feeds/:feed_id to delete a feed" do
+        feed = mock_model(Feed) # use a mock for deletion since it won't actually exist in the DB
+        op = ItemCacheOperation.create!(:action => 'delete', :actionable_type => Feed.name, :actionable_id => feed.id)
+        
+        response = mock_response(Net::HTTPSuccess, nil)
       
-      http = mock('http')
-      http.should_receive(:put).with('/feeds/1', an_instance_of(String), an_instance_of(Hash)).and_return(response)
-      Net::HTTP.should_receive(:start).with('example.com', 80).and_yield(http)
+        http = mock('http')
+        http.should_receive(:delete).with("/feeds/#{feed.id}", an_instance_of(Hash)).and_return(response)
+        Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
       
-      @item_cache.update(feed)
-    end
+        ItemCache.process_operation(op)
+      end
     
-    it "should send a PUT request to base_uri/feed_items/:feed_item_id to update a feed item" do
-      item = FeedItem.find(:first)
-      response = mock_response(Net::HTTPSuccess, nil)
+      it "should send a DELETE request to base_uri/feed_items/:feed_item_id to delete a feed item" do
+        item = mock_model(FeedItem)
+        op = ItemCacheOperation.create!(:action => 'delete', :actionable_type => FeedItem.name, :actionable_id => item.id)
+        
+        response = mock_response(Net::HTTPSuccess, nil)
       
-      http = mock('http')
-      http.should_receive(:put).with("/feed_items/#{item.id}", an_instance_of(String), an_instance_of(Hash)).and_return(response)
-      Net::HTTP.should_receive(:start).with('example.com', 80).and_yield(http)
+        http = mock('http')
+        http.should_receive(:delete).with("/feed_items/#{item.id}", an_instance_of(Hash)).and_return(response)
+        Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
       
-      @item_cache.update(item)
+        ItemCache.process_operation(op)
+      end    
     end
-  end
-  
-  describe '#delete' do
-    it "should send a DELETE request to base_uri/feeds/:feed_id to delete a feed" do
-      feed = Feed.find(1)
-      response = mock_response(Net::HTTPSuccess, nil)
-      
-      http = mock('http')
-      http.should_receive(:delete).with('/feeds/1', an_instance_of(Hash)).and_return(response)
-      Net::HTTP.should_receive(:start).with('example.com', 80).and_yield(http)
-      
-      @item_cache.delete(feed)
-    end
-    
-    it "should send a DELETE request to base_uri/feed_items/:feed_item_id to delete a feed item" do
-      item = FeedItem.find(1)
-      response = mock_response(Net::HTTPSuccess, nil)
-      
-      http = mock('http')
-      http.should_receive(:delete).with('/feed_items/1', an_instance_of(Hash)).and_return(response)
-      Net::HTTP.should_receive(:start).with('example.com', 80).and_yield(http)
-      
-      @item_cache.delete(item)
-    end    
   end
 end

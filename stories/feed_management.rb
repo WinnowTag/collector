@@ -19,23 +19,15 @@ steps_for(:feed_management) do
     elsif n == "1"
       ItemCache.delete_all
       @item_cache = ItemCache.create!(:base_uri => 'http://example.org')
+      Feed.old_add_observer(ItemCacheObserver.instance)
+      @old_item_cache_operation_count = ItemCacheOperation.count
     end
   end
   
   Given('I am a logged in user') do
     post '/account/login', :login => 'admin', :password => 'test'
   end
-  
-  Given('the item cache expects a POST') do
-    @item_cache = Object.new
-    @item_cache.should_receive(:enqueue)
-    MiddleMan.should_receive(:worker).with(:item_cache).and_return(@item_cache)
-  end
-  
-  Given("item cache enabled") do
-    Feed.old_add_observer(ItemCacheObserver.instance)
-  end
-  
+      
   When('I add the feed $url') do |url|
     post '/feeds', :feed => {:url => url}    
   end
@@ -49,7 +41,7 @@ steps_for(:feed_management) do
   end
   
   Then('the feed is published to the item cache') do
-    @item_cache.rspec_verify
+    ItemCacheOperation.count.should == (@old_item_cache_operation_count + 1)
   end
 end
 

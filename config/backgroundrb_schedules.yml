@@ -3,6 +3,11 @@ token_atomizer:
   :job_key: 'token_atomizer'
   :trigger_args:
     :start: <%= Time.now + 5.seconds %>
+item_cache:
+  :class: :item_cache_worker
+  :job_key: 'item_cache'
+  :trigger_args:
+    :start: <%= Time.now + 5.seconds %>
 collector:
   :class: :collector_worker
   :job_key: 'collector'
