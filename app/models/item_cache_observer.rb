@@ -9,6 +9,7 @@ class ItemCacheObserver < ActiveRecord::Observer
   observe :feed, :feed_item
   
   def after_create(record)
+    ActiveRecord::Base.logger.info("after_create: #{record}")
     ItemCache.publish(record)
     record.just_published = true
   end

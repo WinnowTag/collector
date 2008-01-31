@@ -7,7 +7,9 @@
 
 require File.dirname(__FILE__) + '/helper'
 
-steps_for(:feed_management) do
+MiddleMan = Object.new
+
+steps_for(:feed_management) do  
   Given('no feeds') do
     Feed.delete_all    
   end
@@ -25,20 +27,30 @@ steps_for(:feed_management) do
   end
   
   Given('the item cache expects a POST') do
-    response = Net::HTTPSuccess.new(nil,nil,nil)
-    response.should_receive(:body).and_return("")
-    http = Object.new
-    http.should_receive(:post)
-    Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
+    @item_cache = Object.new
+    @item_cache.should_receive(:enqueue)
+    MiddleMan.should_receive(:worker).with(:item_cache).and_return(@item_cache)
+  end
+  
+  Given("item cache enabled") do
+    Feed.old_add_observer(ItemCacheObserver.instance)
   end
   
   When('I add the feed $url') do |url|
-    post '/feeds', :feed => {:url => url}
+    post '/feeds', :feed => {:url => url}    
+  end
+  
+  Then("I'm redirected to the feed") do
+    follow_redirect!
   end
   
   Then('there is another feed in the system') do
     Feed.count.should == 1
-  end  
+  end
+  
+  Then('the feed is published to the item cache') do
+    @item_cache.rspec_verify
+  end
 end
 
 with_steps_for(:feed_management) do

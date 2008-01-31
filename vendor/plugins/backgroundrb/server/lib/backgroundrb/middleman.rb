@@ -393,8 +393,12 @@ module BackgrounDRb
     end  
 
     def worker(key)
-      worker = ex { @jobs[key].object }
-      WorkerProxy.new(worker)
+      worker = ex { 
+        if @jobs[key]
+          @jobs[key].object 
+        end
+      }
+      WorkerProxy.new(worker) if worker
     end  
 
     def [](key)

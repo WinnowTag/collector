@@ -13,36 +13,68 @@ class ItemCache < ActiveRecord::Base
   validates_uniqueness_of :base_uri
   validates_format_of :base_uri, :with => /^http:\/\/.*/, :message => 'must be a HTTP uri'
     
-  def self.publish(feed_or_item)
-    self.find(:all).each do |cache|
+  class << self
+    def publish(feed_or_item)
       begin
-        cache.publish(feed_or_item)
+        if cache = MiddleMan.worker(:item_cache)
+          cache.enqueue(:publish, feed_or_item.class, feed_or_item.id)
+        end
       rescue Exception => e
-        # Do something smart here!!
-        ActiveRecord::Base.logger.warn("Error publishing #{feed_or_item.title} to #{cache.base_uri}: #{e.message}")
+        logger.warn("Could not access BackgroundRB from ItemCache: #{e.message}")
       end
     end
-  end
-  
-  def self.update(feed_or_item)
-    self.find(:all).each do |cache|
+    
+    def update(feed_or_item)
       begin
-        cache.update(feed_or_item)
-      rescue
-        # Do something smart here!!
-      end
-    end
-  end
-  
-  def self.delete(feed_or_item)
-    self.find(:all).each do |cache|
-      begin
-        cache.delete(feed_or_item)
+        if cache = MiddleMan.worker(:item_cache)
+          cache.enqueue(:update, feed_or_item.class, feed_or_item.id)
+        end
       rescue Exception => e
-        # Do something smart here!!
+        logger.warn("Could not access BackgroundRB from ItemCache: #{e.message}")
       end
     end
-  end
+    
+    def delete(feed_or_item)
+      begin
+        if cache = MiddleMan.worker(:item_cache)
+          cache.enqueue(:delete, feed_or_item.class, feed_or_item.id)
+        end
+      rescue Exception => e
+        logger.warn("Could not access BackgroundRB from ItemCache: #{e.message}")
+      end      
+    end
+    
+    def publish_without_backgroundrb(feed_or_item)
+      find(:all).each do |cache|
+        begin
+          cache.publish(feed_or_item)
+        rescue Exception => e
+          # Do something smart here!!
+          ActiveRecord::Base.logger.warn("Error publishing #{feed_or_item.title} to #{cache.base_uri}: #{e.message}")
+        end
+      end
+    end
+  
+    def update_without_backgroundrb(feed_or_item)
+      find(:all).each do |cache|
+        begin
+          cache.update(feed_or_item)
+        rescue
+          # Do something smart here!!
+        end
+      end
+    end
+  
+    def delete_without_backgroundrb(feed_or_item)
+      find(:all).each do |cache|
+        begin
+          cache.delete(feed_or_item)
+        rescue Exception => e
+          # Do something smart here!!
+        end
+      end
+    end
+  end  
   
   def base_uri=(v)
     if v.respond_to?(:sub)

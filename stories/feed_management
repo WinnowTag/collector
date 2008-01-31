@@ -12,14 +12,18 @@ Story: Feed Management
     
         When I add the feed http://example.org
     
-        Then there is another feed in the system
+        Then I'm redirected to the feed
+        And there is another feed in the system
         
     Scenario: Adding a feed to an item cache
     
         Given no feeds
         And 1 item cache
         And the item cache expects a POST
+        And item cache enabled
         
         When I add the feed http://example.org
         
-        Then the feed is published to the item cache
+        Then I'm redirected to the feed
+        And there is another feed in the system
+        And the feed is published to the item cache

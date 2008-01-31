@@ -4,12 +4,23 @@
 # to use, modify, or create derivate works.
 # Please contact info@peerworks.org for further information.
 #
+require 'spec/rake/spectask'
 
 directory "tmp/imported_corpus"
-task :test => ['test:pw_plugins', 'test:classifier']
 
-namespace :test do
-  task :functionals => "tmp/imported_corpus"
+Rake::Task[:default].prerequisites.clear
+
+task :default do
+  Rake::Task['spec'].invoke
+  Rake::Task['test:integration'].invoke
+  Rake::Task['test:stories'].invoke
+end
+
+namespace :test do  
+  desc "Run stories"
+  task :stories do
+    system("ruby stories/all.rb")
+  end
   
   desc 'Test the classifier.'
   task :classifier do

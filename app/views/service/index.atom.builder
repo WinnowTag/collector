@@ -1,3 +1,6 @@
+require 'atom'
+require 'atom/pub'
+
 xml.instruct! :xml, :version => '1.0'
 xml.service :xmlns => Atom::Pub::NAMESPACE, :'xmlns:atom' => Atom::NAMESPACE do
   xml.workspace do

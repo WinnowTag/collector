@@ -1,6 +1,9 @@
 require File.dirname(__FILE__) + '/helper'
 require File.dirname(__FILE__) + '/server'
 
+require 'atom'
+require 'atom/pub'
+
 steps_for(:atom_service_interation) do
   # Givens
   Given("existing feeds in the system") do 

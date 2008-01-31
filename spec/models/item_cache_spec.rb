@@ -5,7 +5,12 @@
 # Please contact info@peerworks.org for further information.
 #
 
+
 require File.dirname(__FILE__) + '/../spec_helper'
+
+# Stub out BackgroundRB
+class Object;  remove_const :MiddleMan; end
+MiddleMan = Object.new
 
 describe ItemCache do
   fixtures :item_caches
@@ -49,26 +54,49 @@ describe ItemCache do
       @ic2 = mock_model(ItemCache)
       ItemCache.stub!(:find).with(:all).and_return([@ic1, @ic2])
     end
+
+    describe "using backgroundrb" do
+      before(:each) do
+        @feed = mock_model(Feed)
+        @worker = mock('item_cache_worker')  
+        MiddleMan.stub!(:worker).with(:item_cache).and_return(@worker)
+      end
+      
+      it "publish should create a job in the ItemCacheWorker" do      
+        @worker.should_receive(:enqueue).with(:publish, Feed, @feed.id)
+        ItemCache.publish(@feed)
+      end
     
-    it "publish should call publish for each ItemCache" do
+      it "update should create a job in the ItemCacheWorker" do
+        @worker.should_receive(:enqueue).with(:update, Feed, @feed.id)
+        ItemCache.update(@feed)
+      end
+      
+      it "delete should create a job in the ItemCacheWorker" do
+        @worker.should_receive(:enqueue).with(:delete, Feed, @feed.id)
+        ItemCache.delete(@feed)
+      end
+    end
+    
+    it "publish_without_backgroundrb should call publish for each ItemCache" do
       feed = mock('feed')
       @ic1.should_receive(:publish).with(feed)
       @ic2.should_receive(:publish).with(feed)
-      ItemCache.publish(feed)
+      ItemCache.publish_without_backgroundrb(feed)
     end
     
-    it "update should call update for each ItemCache" do
+    it "update_without_backgroundrb should call update for each ItemCache" do
       feed = mock('feed')
       @ic1.should_receive(:update).with(feed)
       @ic2.should_receive(:update).with(feed)
-      ItemCache.update(feed)
+      ItemCache.update_without_backgroundrb(feed)
     end
     
-    it "delete should call delete for each ItemCache" do
+    it "delete_without_backgroundrb should call delete for each ItemCache" do
       feed = mock('feed')
       @ic1.should_receive(:delete).with(feed)
       @ic2.should_receive(:delete).with(feed)
-      ItemCache.delete(feed)
+      ItemCache.delete_without_backgroundrb(feed)
     end
   end
 
