@@ -10,14 +10,16 @@ class ItemCacheOperation < ActiveRecord::Base
   validates_inclusion_of :action, :in => %w(publish update delete)
   
   def self.next_job
-    self.find(:first, :conditions => ['done = ?', false], :order => 'created_at asc, id asc')
+    self.silence do
+      self.find(:first, :conditions => ['done = ?', false], :order => 'created_at asc, id asc')
+    end
   end
   
   def execute
     begin
       ItemCache.process_operation(self)
     ensure
-      self.done
+      self.done = true
       self.save
     end
   end
