@@ -282,5 +282,16 @@ describe FeedItem do
     it "should have the alternate link pointing to link" do
       @entry.alternate.href.should == @item.link
     end
+    
+    describe 'without author' do
+      before(:each) do
+        @item.content.author = nil
+        @entry = @item.to_atom
+      end
+      
+      it "should be have no authors" do
+        @entry.should have(0).authors
+      end
+    end
   end
 end

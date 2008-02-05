@@ -97,7 +97,7 @@ class FeedItem < ActiveRecord::Base
       entry.title = self.title
       entry.id = "urn:peerworks.org:entry##{self.id}"
       entry.updated = self.time
-      entry.authors << Atom::Person.new(:name => self.author)
+      entry.authors << Atom::Person.new(:name => self.author) if self.author
       entry.content = Atom::Content::Html.new(self.content.encoded_content) if self.content
       entry.links << Atom::Link.new(:rel => 'self', 
                                     :href => "#{options[:base]}/feed_items/#{self.id}.atom")
