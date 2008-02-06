@@ -24,16 +24,17 @@ namespace :test do
   desc 'Test the classifier.'
   task :classifier do
     sh "cd vendor/bayes && rake"
-  end
-  
-  desc 'Test all custom plugins'
-  task :pw_plugins do
-    %w(winnow_feed).each do |plugin|
-      cd "vendor/plugins/#{plugin}" do
-        sh "rake"
-      end
-    end
-  end
+  end 
+end
+
+require File.dirname(__FILE__) + '/../../vendor/plugins/rspec/lib/spec/rake/spectask'
+
+desc "Run all examples with RCov"
+Spec::Rake::SpecTask.new('rcov_for_cc') do |t|
+  t.spec_files = FileList['spec/controllers/**/*.rb', 'spec/helpers/*.rb', 'spec/models/*.rb', 'spec/views/*.rb']
+  t.rcov = true
+  t.rcov_opts = ['--exclude', 'spec']
+  t.rcov_dir = ENV['CC_BUILD_ARTIFACTS']
 end
 
 desc "Task for CruiseControl.rb"
@@ -47,9 +48,6 @@ task :cruise do
   
   Rake::Task['db:migrate'].invoke
   Rake::Task['db:test:prepare'].invoke
-  Rake::Task['test:classifier'].invoke
-  Rake::Task['test:pw_plugins'].invoke
-  Rake::Task['spec'].invoke
+  Rake::Task['rcov_for_cc'].invoke
   Rake::Task['test:integration'].invoke
-  Rake::Task['spec:rcov'].invoke
 end
