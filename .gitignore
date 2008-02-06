@@ -1,0 +1,4 @@
+.ruby_inline
+config/database.yml
+db/development_structure.sql
+log
