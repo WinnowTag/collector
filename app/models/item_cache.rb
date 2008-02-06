@@ -9,6 +9,7 @@
 require 'atom/pub'
 
 class ItemCache < ActiveRecord::Base
+  has_many :failed_operations, :order => 'created_at asc'
   validates_presence_of :base_uri
   validates_uniqueness_of :base_uri
   validates_format_of :base_uri, :with => /^http:\/\/.*/, :message => 'must be a HTTP uri'
@@ -48,13 +49,17 @@ class ItemCache < ActiveRecord::Base
   
   def process_operation(op)
     logger.info("sending #{op.inspect} to #{base_uri}")
-    case op.action
-    when 'publish'
-      publish(op.actionable)
-    when 'update'
-      update(op.actionable)
-    when 'delete'
-      delete(op.actionable_type, op.actionable_id)
+    begin
+      case op.action
+      when 'publish'
+        publish(op.actionable)
+      when 'update'
+        update(op.actionable)
+      when 'delete'
+        delete(op.actionable_type, op.actionable_id)
+      end
+    rescue Atom::Pub::ProtocolError => e
+      self.failed_operations.create(:item_cache_operation => op, :response => e.response)
     end
   end
   

@@ -22,6 +22,32 @@ shared_examples_for("an ItemCacheOperation creator") do
   end
 end
 
+shared_examples_for("a recorder of failed operations") do  
+  it "should create a failed operation" do
+    @item_cache.should have(1).failed_operations
+  end
+  
+  it "should save the failed operation" do
+    @item_cache.failed_operations.first.should_not be_new_record
+  end
+  
+  it "should reference the operation from the failed operation" do
+    @item_cache.failed_operations.first.item_cache_operation.should == @operation
+  end
+  
+  it "should set the code for the failed operation" do
+    @item_cache.failed_operations.first.code.should == @response.code.to_i
+  end
+  
+  it "should set the message for the failed operation" do
+    @item_cache.failed_operations.first.message.should == @response.message
+  end
+  
+  it "should set the content for the failed operation" do
+    @item_cache.failed_operations.first.content.should == @response.body
+  end
+end
+
 describe ItemCache do
   fixtures :item_caches
   before(:each) do
@@ -219,6 +245,62 @@ describe ItemCache do
       
         ItemCache.process_operation(op)
       end    
+    end
+  end
+  
+  describe "when things go wrong " do
+    describe "#publish" do
+      before(:each) do
+        @item_cache = ItemCache.find(:first)
+        @operation = ItemCacheOperation.create(:action => 'publish', :actionable => FeedItem.find(:first))
+        
+        @response = Net::HTTPForbidden.new('HTTP/1.1', '403', 'Forbidden')
+        @response.stub!(:body).and_return("<p>Forbidden</p>")
+      
+        http = mock('http')
+        http.stub!(:post).and_return(@response)
+        Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
+      
+        ItemCache.process_operation(@operation)
+      end
+      
+      it_should_behave_like "a recorder of failed operations"
+    end
+
+    describe "#update" do
+      before(:each) do
+        @item_cache = ItemCache.find(:first)
+        @operation = ItemCacheOperation.create(:action => 'update', :actionable => FeedItem.find(:first))
+        
+        @response = Net::HTTPNotFound.new('HTTP/1.1', '404', 'Not Found')
+        @response.stub!(:body).and_return("<p>Not Found</p>")
+      
+        http = mock('http')
+        http.stub!(:put).and_return(@response)
+        Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
+      
+        ItemCache.process_operation(@operation)
+      end
+      
+      it_should_behave_like "a recorder of failed operations"
+    end
+    
+    describe "#delete" do
+      before(:each) do
+        @item_cache = ItemCache.find(:first)
+        @operation = ItemCacheOperation.create(:action => 'delete', :actionable => FeedItem.find(:first))
+        
+        @response = Net::HTTPInternalServerError.new('HTTP/1.1', '500', 'Internal Server Error')
+        @response.stub!(:body).and_return("<p>Internal Server Error</p>")
+      
+        http = mock('http')
+        http.stub!(:delete).and_return(@response)
+        Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
+      
+        ItemCache.process_operation(@operation)
+      end
+      
+      it_should_behave_like "a recorder of failed operations"
     end
   end
 end
