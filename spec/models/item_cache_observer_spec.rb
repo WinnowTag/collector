@@ -8,7 +8,7 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
 describe ItemCacheObserver do  
-  fixtures :item_caches
+  fixtures :item_caches, :feed_items, :feeds
   it "should publish a feed when it is created" do
     Feed.with_observers(:item_cache_observer) do
       feed = Feed.new(:url => 'http://example.com')

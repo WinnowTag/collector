@@ -8,7 +8,7 @@ require File.dirname(__FILE__) + '/../test_helper'
 require File.dirname(__FILE__) + '/../spec_helper'
 
 describe Feed do
-  fixtures :feeds, :feed_items, :collection_errors, :feed_item_tokens
+  fixtures :feeds, :feed_items, :collection_errors, :feed_item_tokens, :feed_item_contents
   
   describe 'collection' do
     def setup
