@@ -9,11 +9,6 @@ require 'digest/sha1'
 require 'feed_tools'
 require 'hpricot'
 
-# Need to manually require feed, bypassing new constant marking, since the winnow_feed plugin
-# defines Feed the auto-require functionality of Rails doesn't try to load the Winnow 
-# additions to these classes.  Putting it here makes sure it works in all modes.
-load_without_new_constant_marking File.join(RAILS_ROOT, 'vendor', 'plugins', 'winnow_feed', 'lib', 'feed.rb')
-
 # Represents a Feed provided by an RSS/Atom source.
 #
 # A Feed mainly handles collection of new items through the
@@ -40,6 +35,12 @@ load_without_new_constant_marking File.join(RAILS_ROOT, 'vendor', 'plugins', 'wi
 
 class Feed < ActiveRecord::Base
   attr_accessor :just_published
+  belongs_to :duplicate, :class_name => 'Feed'
+  has_many	:feed_items, :dependent => :delete_all
+  has_one :xml_data_container, :class_name => "FeedXmlData", :foreign_key => "id", :dependent => :delete
+  validates_uniqueness_of :url, :message => 'Feed already exists'
+  attr_accessible :url, :active
+  before_save :update_duplicate
   has_many :spider_results,    :dependent => :delete_all, :order => 'created_at desc'
   has_many :collection_jobs,   :dependent => :delete_all, :order => 'created_at desc'
   has_many :collection_errors, :dependent => :delete_all, :order => 'created_on desc'
@@ -221,6 +222,43 @@ class Feed < ActiveRecord::Base
     return new_feed_items
   end
   
+  # Return a list of Feeds that are active.
+  def self.active_feeds
+    find(:all, :order => "title ASC",
+          :conditions => ['active = ? and is_duplicate = ?', true, false])
+  end
+
+  # url attribute is immutable once set
+  def url=(u)
+    if new_record?
+      write_attribute(:url, u)
+    end
+  end
+  
+  # Get the XML data retrieved from the last collection.
+  #
+  # Acts as a wrapper around the xml_data_container association.
+  #
+  def last_xml_data
+    self.xml_data_container ? self.xml_data_container.xml_data : nil
+  end
+
+  # Sets the last XML data.
+  #
+  # Acts as a wrapper around the xml_data_container association.
+  #
+  def last_xml_data=(xml)
+    unless self.xml_data_container
+      if self.new_record?
+        self.build_xml_data_container
+      else
+        self.create_xml_data_container
+      end
+    end
+
+    self.xml_data_container.xml_data = xml
+  end
+  
   # Sets the maximum number of items to return in calls to feed_items_with_max.
   #
   # After setting this, feed_items_with_max will return max_items_to_return
@@ -303,6 +341,32 @@ class Feed < ActiveRecord::Base
       entry.links << Atom::Link.new(:rel => 'via', :href => self.url)
       entry.links << Atom::Link.new(:rel => 'self', :href => "#{options[:base]}/feeds/#{self.id}.atom")
       entry.links << Atom::Link.new(:rel => 'alternate', :href => self.link)
+    end
+  end
+  
+  protected
+  # URL is only checked on create since it should be read only and we dont want 
+  # to do this every time we save.
+  def validate_on_create
+    begin
+      url = URI.parse(self.url)
+      # if we are not in test mode make sure it is a valid http url
+      if RAILS_ENV != 'test' and 'http' != url.scheme
+        self.errors.add(:url, 'must be a HTTP url')
+      end
+    rescue
+      self.errors.add(:url, 'is not a valid URL')
+    end
+  end
+  
+  # updated on is used to indicate when the feed was last collected - so set it to nil on create
+  def before_create
+    write_attribute('updated_on', nil)
+  end
+  
+  def update_duplicate
+    if self.duplicate_id
+      self.is_duplicate = true
     end
   end
 end

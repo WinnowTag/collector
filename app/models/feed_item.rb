@@ -8,11 +8,6 @@
 require 'digest/sha1'
 require 'feed_tools'
 
-# Need to manually require feed_item since the winnow_feed plugin  defines
-# these classes the auto-require functionality of Rails doesn't try to load the Winnow 
-# additions to these classes.
-load_without_new_constant_marking File.join(RAILS_ROOT, 'vendor', 'plugins', 'winnow_feed', 'lib', 'feed_item.rb')
-
 # Provides a representation of an item from an RSS/Atom feed.
 #
 # This class includes methods for:
@@ -51,11 +46,33 @@ load_without_new_constant_marking File.join(RAILS_ROOT, 'vendor', 'plugins', 'wi
 #
 
 class FeedItem < ActiveRecord::Base
+  validates_presence_of :link
+  validates_uniqueness_of :unique_id, :link
+  
+  belongs_to :feed, :counter_cache => true
+  # Dont use this association directly since it may need to be generated,
+  # use the content method instead
+  has_one :feed_item_content, :dependent => :delete
+  has_one :xml_data_container, :class_name => "FeedItemXmlData", :foreign_key => "id", :dependent => :delete
   cattr_reader :per_page
   @@per_page = 40
   attr_accessor :tokens_with_counts, :just_published
   has_one :spider_result, :dependent => :delete
   after_save :save_tokens
+
+  
+  # Coptures the different sources for feed item time
+  module TimeSources
+    # When we don't know where the time came from
+    UnknownTimeSource = 'unknown' unless defined?(UnknownTimeSource)
+    # When the time was copied from the feed publication time
+    FeedPublicationTime = 'feed_publication_time' unless defined?(FeedPublicationTime)
+    # When the time was the item was collected in used
+    FeedCollectionTime = 'feed_collection_time' unless defined?(FeedCollectionTime)
+    # When the feed properly records the publication time for each item
+    FeedItemTime = 'feed_item_time' unless defined?(FeedItemTime)
+  end   
+  include TimeSources
 
   # Finds some random items with their tokens.  
   #
@@ -146,6 +163,25 @@ class FeedItem < ActiveRecord::Base
     self.tokens_with_counts.keys
   end
 
+  # Short cuts to the xml_data_container model
+  def xml_data
+    unless self.xml_data_container.nil?
+      self.xml_data_container.xml_data
+    end
+  end
+
+  def xml_data=(xml)
+    if self.xml_data_container.nil?
+      if self.new_record?
+        self.build_xml_data_container
+      else
+        self.create_xml_data_container
+      end
+    end
+
+    self.xml_data_container.xml_data = xml
+  end
+    
 private
   def save_tokens
     if @tokens_with_counts && !new_record?

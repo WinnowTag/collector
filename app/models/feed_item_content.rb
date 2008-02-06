@@ -5,9 +5,9 @@
 # Please contact info@peerworks.org for further information.
 #
 
-load_without_new_constant_marking File.join(RAILS_ROOT, 'vendor', 'plugins', 'winnow_feed', 'lib', 'feed_item_content.rb')
-
 class FeedItemContent < ActiveRecord::Base
+  belongs_to :feed_item
+  
   def self.index_new_items
     connection.execute <<-END
       INSERT IGNORE INTO 
