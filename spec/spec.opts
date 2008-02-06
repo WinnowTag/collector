@@ -4,5 +4,4 @@ profile
 --loadby
 mtime
 --reverse
---backtrace
 -X
