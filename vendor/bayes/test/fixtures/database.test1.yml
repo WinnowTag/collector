@@ -1,0 +1,19 @@
+# This is a test database configuration file
+
+development:
+  adapter: mysql
+  database: development
+  host: localhost
+  username: winnow
+  password: winnow
+
+# It doesn't get used.	  
+
+test:
+  adapter: mysql
+  database: test
+  username: winnow
+  password: winnow
+  host: localhost
+
+# But these comments should remain intact
