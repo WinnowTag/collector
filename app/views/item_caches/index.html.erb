@@ -5,6 +5,7 @@
 <table class="data_table">
   <tr>
       <th>Cache URI</th>
+      <th>Errors</th>
       <th>&nbsp;</th>
       <th>&nbsp;</th>
   </tr>
@@ -12,6 +13,7 @@
 <% for item_cache in @item_caches %>
   <tr class="<%= cycle('odd', 'even') %>">
     <td><%= link_to item_cache.base_uri, item_cache.base_uri %></td>
+    <td><%= link_to item_cache.failed_operations.size, item_cache_failed_operations_path(item_cache) %></td>
     <td><%= link_to 'Edit', edit_item_cache_path(item_cache) %></td>
     <td><%= link_to 'Destroy', item_cache, :confirm => 'Are you sure?', :method => :delete %></td>
   </tr>

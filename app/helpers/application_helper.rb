@@ -24,13 +24,6 @@ module ApplicationHelper
   
   # Permit methods in the ApplicationController to be called from views.
 
-  def method_missing(method, *args, &block)
-    if ApplicationController.instance_methods.include? method.to_s
-      controller.send(method, *args, &block)
-    else
-      super
-    end
-  end
   
   def show_flash
     [:notice, :warning, :message, :error].map do |name|

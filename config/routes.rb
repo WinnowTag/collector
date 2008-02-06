@@ -15,7 +15,10 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :feed_items, :member => {
                   :spider => :get
                 }
-  map.resources :item_caches, :singular => 'item_cache'
+  map.resources :item_caches, :singular => 'item_cache' do |c|
+    c.resources :failed_operations
+  end
+  
   map.resources :protectors do |protectors|
     protectors.resources :protected_items,
                 :collection => {
