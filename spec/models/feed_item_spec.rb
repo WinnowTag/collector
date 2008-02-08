@@ -89,22 +89,35 @@ class FeedItemTest < Test::Unit::TestCase
     # stub to bypass token filtering in build_from_feed_item
     tokenizer = stub('tokenizer', :tokens_with_counts => stub('tokens', :size => 50))
     last_retrieved = Time.now
+    
     feed = FeedTools::Feed.new
-    feed.last_retrieved = last_retrieved
+    feed.published = last_retrieved
+    
     ft_feed_item = MockFeedItem.new
     ft_feed_item.feed = feed
     ft_feed_item.time = Time.now.tomorrow.tomorrow
     feed_item = FeedItem.build_from_feed_item(ft_feed_item, tokenizer)
-    assert feed_item.time < ft_feed_item.time
     
-    # check a reasonable time
-    time = Time.now.yesterday
+    assert feed_item.time < ft_feed_item.time    
+    assert_equal FeedItem::FeedPublicationTime, feed_item.time_source
+  end
+  
+  def test_item_and_feed_time_more_than_a_day_in_the_future_set_to_retrieval_time
+    # stub to bypass token filtering in build_from_feed_item
+    tokenizer = stub('tokenizer', :tokens_with_counts => stub('tokens', :size => 50))
+    last_retrieved = Time.now
+    
+    feed = FeedTools::Feed.new
+    feed.published = Time.now.tomorrow.tomorrow
+    feed.last_retrieved = last_retrieved
+    
     ft_feed_item = MockFeedItem.new
     ft_feed_item.feed = feed
-    ft_feed_item.time = time
+    ft_feed_item.time = Time.now.tomorrow.tomorrow
     feed_item = FeedItem.build_from_feed_item(ft_feed_item, tokenizer)
-    assert_equal time, feed_item.time
-    assert_equal FeedItem::FeedItemTime, feed_item.time_source
+    
+    feed_item.time.should == last_retrieved
+    feed_item.time_source.should == FeedItem::FeedCollectionTime
   end
   
   def test_nil_feed_times_uses_collection_time
@@ -136,7 +149,7 @@ class FeedItemTest < Test::Unit::TestCase
     assert_equal feed.published, feed_item.time
     assert_equal FeedItem::FeedPublicationTime, feed_item.time_source
   end
-  
+    
   def test_feed_item_content_extracts_encoded_content
     # stub to bypass token filtering in build_from_feed_item
     tokenizer = stub('tokenizer', :tokens_with_counts => stub('tokens', :size => 50))

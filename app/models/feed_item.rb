@@ -273,11 +273,11 @@ public
   
   def self.extract_time(feed_item)
     if feed_item.time and (feed_item.time.getutc < (Time.now.getutc.tomorrow))
-      [feed_item.time.utc, FeedItemTime]
-    elsif feed_item.feed and feed_item.feed.published
-      [feed_item.feed.published.utc, FeedPublicationTime]
+      [feed_item.time.getutc, FeedItemTime]
+    elsif feed_item.feed and feed_item.feed.published and (feed_item.feed.published.getutc < Time.now.getutc.tomorrow)
+      [feed_item.feed.published.getutc, FeedPublicationTime]
     elsif feed_item.feed and feed_item.feed.last_retrieved
-      [feed_item.feed.last_retrieved.utc, FeedCollectionTime]
+      [feed_item.feed.last_retrieved.getutc, FeedCollectionTime]
     else
       [Time.now.utc, FeedCollectionTime]
     end    
