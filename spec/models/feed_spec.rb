@@ -240,8 +240,16 @@ describe Feed do
       feed.collect!
       assert_equal 'http://rss.slashdot.org/Slashdot/slashdot', feed.url
     end
+  end
   
-    def test_autodiscovery_resulting_in_duplicate_by_url_removes_feed
+  describe 'collect! duplicate detection' do
+    before(:each) do
+      # stub to bypass token filtering in build_from_feed_item
+      tokenizer = stub('tokenizer', :tokens_with_counts => stub('tokens', :size => 50))
+      FeedItemTokenizer.stub!(:new).and_return(tokenizer)
+    end
+    
+    it "should detect duplicates by URL through autodiscovery" do
       item = mock('item', :title => 'title', :id => 'uid', 
                           :content => 'item', :link => 'http://example', :description => 'item',
                           :feed_data => 'data',
@@ -262,12 +270,12 @@ describe Feed do
       dup = Feed.find(dup.id)
       assert dup.is_duplicate?    
       assert_equal target, dup.duplicate
-    
+      assert_equal('http://www.slashdot.org/', dup.url)
       #assert 0 < target.feed_items.length, "Feed2's feed_items was empty"
       assert_equal [], dup.feed_items
     end  
-  
-    def test_autodiscovery_resulting_in_duplicate_by_link_removes_feed
+
+    it "should detect duplicates by link through auto discovery" do
       item = mock('item', :title => 'title', :id => 'uid', 
                           :content => 'item', :link => 'http://example', :description => 'item',
                           :feed_data => 'data',
@@ -292,9 +300,31 @@ describe Feed do
       assert_equal target, dup.duplicate
       assert 0 < target.feed_items.length, "Feed2's feed_items was empty"
       assert [], dup.feed_items
+      assert_equal dup.url, 'http://www.slashdot.org/'
+    end
+    
+    it "should detect two feeds of different formats from the same site as duplicates" do
+      feed = mock('feed', :items => [], 
+                          :href => 'http://www.example.org/feeds/rss', 
+                          :title => 'example',
+                          :feed_data => 'data',
+                          :link => 'http://example.org',
+                          :http_headers => {})
+      FeedTools::Feed.should_receive(:open).and_return(feed)
+      
+      target = Feed.create!(:url => 'http://www.example.org/feeds/atom')
+      target.link = 'http://example.org'
+      target.save!
+      dup = Feed.create!(:url => 'http://www.example.org/feeds/rss')
+      dup.collect!
+      
+      dup = Feed.find(dup.id)
+      dup.should be_is_duplicate
+      dup.duplicate.should == target
+      dup.url.should == 'http://www.example.org/feeds/rss' # keep the duplicate url for later detection
     end
   
-    def test_autodiscovery_resulting_in_duplicate_by_link_once_removed
+    it "should detect a chain of duplicates" do
       item = mock('item', :title => 'title', :id => 'uid', 
                           :content => 'item', :link => 'http://example', :description => 'item',
                           :feed_data => 'data',

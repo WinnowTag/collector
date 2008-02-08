@@ -151,6 +151,18 @@ class Feed < ActiveRecord::Base
     duplicate
   end
   
+  def resolve_duplicate!
+    if dup = self.find_duplicate
+      logger.info "Feed(#{self.id}) found to be " +
+                  "a duplicate of #{dup.url} (#{dup.id}) and removed"
+      feed_items.each do |fi|
+        fi.feed = dup
+        fi.save
+      end
+      self.duplicate = dup      
+    end
+  end
+  
   # Same as collect but raises exceptions
   def collect!
     logger.info("\ncollecting: #{self.url}")
@@ -158,22 +170,18 @@ class Feed < ActiveRecord::Base
     
     new_feed_items = self.add_from_feed(f)
 
-    # We may have auto-discovered a URL so update the record
+    # We may have auto-discovered a URL so update the record and check for a duplicate
     if f.href != self.url
       original_url = self.url
       self.write_attribute(:url, f.href)
-      
-      # check if this results in a duplicate
-      if dup = self.find_duplicate
-        logger.info "#{original_url} (#{self.id}) found to be " +
-                    "a duplicate of #{dup.url} (#{dup.id}) and removed"
-        new_feed_items.each do |fi|
-          fi.feed = dup
-          fi.save
-        end
-        self.duplicate = dup
+      if resolve_duplicate!
         self.write_attribute(:url, original_url)
       end
+    end
+    
+    # if this the first collection - then check for duplicates
+    if self.updated_on.nil?
+      resolve_duplicate!
     end      
     
     self.save!
