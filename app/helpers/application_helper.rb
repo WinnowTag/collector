@@ -22,6 +22,14 @@ module ApplicationHelper
     end
   end
   
+  def unescape(value)
+    value.gsub(/&lt;/,   "<"). 
+          gsub(/&gt;/,   ">"). 
+          gsub(/&quot;/, '"'). 
+          gsub(/&apos;/, "'"). 
+          gsub(/&amp;/,  "&") 
+  end
+  
   # Permit methods in the ApplicationController to be called from views.
 
   

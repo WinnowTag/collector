@@ -36,7 +36,7 @@
 	<nobr>
 		<%= link_to image_tag('delete.png'), feed_path(feed), 
 				:method => :delete, 
-				:confirm => "Do you really want to delete #{feed.title}?",
+				:confirm => "Do you really want to delete #{unescape(feed.title)}?",
 				:title => "Destroy '#{feed.title or feed.url}'" %>
 	</nobr>
 	</td>
