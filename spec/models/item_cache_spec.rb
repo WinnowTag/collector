@@ -303,4 +303,41 @@ describe ItemCache do
       it_should_behave_like "a recorder of failed operations"
     end
   end
+  
+  describe "#redo_failed_operations" do
+    before(:each) do
+      @item_cache = ItemCache.find(:first)
+    end
+    
+    it "should redo failed publish operation" do
+      feed = Feed.find(1)
+      op = ItemCacheOperation.create!(:action => 'publish', :actionable => feed)
+      @item_cache.failed_operations.create!(:item_cache_operation => op)
+      
+      response = mock_response(Net::HTTPCreated, feed.to_atom_entry.to_xml)
+  
+      http = mock('http')
+      http.should_receive(:post).with('/feeds', feed.to_atom_entry.to_xml, an_instance_of(Hash)).and_return(response)
+      Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
+      
+      @item_cache.redo_failed_operations
+      @item_cache.should have(0).failed_operations
+    end
+    
+    it "should redo failed publish operation and create a new one when it fails again" do
+      feed = Feed.find(1)
+      op = ItemCacheOperation.create!(:action => 'publish', :actionable => feed)
+      @item_cache.failed_operations.create!(:item_cache_operation => op)
+      
+      response = Net::HTTPInternalServerError.new('HTTP/1.1', '500', 'Internal Server Error')
+      response.stub!(:body).and_return("<p>Internal Server Error</p>")
+  
+      http = mock('http')
+      http.should_receive(:post).with('/feeds', feed.to_atom_entry.to_xml, an_instance_of(Hash)).and_return(response)
+      Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
+      
+      @item_cache.redo_failed_operations
+      @item_cache.should have(1).failed_operations
+    end
+  end
 end
