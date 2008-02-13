@@ -52,11 +52,11 @@ class ItemCache < ActiveRecord::Base
     begin
       case op.action
       when 'publish'
-        publish(op.actionable)
+        do_publish(op.actionable)
       when 'update'
-        update(op.actionable)
+        do_update(op.actionable)
       when 'delete'
-        delete(op.actionable_type, op.actionable_id)
+        do_delete(op.actionable_type, op.actionable_id)
       end
     rescue Atom::Pub::ProtocolError => e
       self.failed_operations.create(:item_cache_operation => op, :response => e.response)
@@ -64,7 +64,7 @@ class ItemCache < ActiveRecord::Base
   end
   
   private
-  def publish(feed_or_item)
+  def do_publish(feed_or_item)
     case feed_or_item
     when Feed
       feed_collection.publish(feed_or_item.to_atom_entry)
@@ -75,7 +75,7 @@ class ItemCache < ActiveRecord::Base
     end
   end
   
-  def update(feed_or_item)
+  def do_update(feed_or_item)
     atom = if feed_or_item.is_a?(Feed)
       feed_or_item.to_atom_entry
     else
@@ -88,7 +88,7 @@ class ItemCache < ActiveRecord::Base
     atom.save!
   end
   
-  def delete(type, id)
+  def do_delete(type, id)
     atom = Atom::Entry.new do |atom|
       atom.links << Atom::Link.new(:rel => 'edit', :href => "#{self.base_uri}/#{type.underscore.pluralize}/#{id}")      
     end.destroy!
