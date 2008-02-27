@@ -9,7 +9,7 @@ class ServiceController < ApplicationController
   skip_before_filter :login_required
   
   def index
-    @feeds = Feed.find(:all)
+    @feeds = Feed.find(:all, :conditions => ['duplicate_id is null'])
     respond_to do |wants|
       wants.atom
     end
