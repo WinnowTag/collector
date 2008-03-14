@@ -7,7 +7,7 @@ require 'atom/pub'
 steps_for(:atom_service_interation) do
   # Givens
   Given("existing feeds in the system") do 
-    @feeds = Feed.find(:all)
+    @feeds = Feed.find(:all, :conditions => 'duplicate_id is null')
   end
   
   Given("feed $id in the system") do |id|
