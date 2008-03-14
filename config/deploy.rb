@@ -13,7 +13,6 @@ require 'mongrel_cluster/recipes'
 
 set :application, "collector"
 set :use_sudo, false
-set :checkout, "checkout"
 
 # =============================================================================
 # ROLES
@@ -24,16 +23,20 @@ set :checkout, "checkout"
 # be used to single out a specific subset of boxes in a particular role, like
 # :primary => true.
 
+default_run_options[:pty] = true
 set :domain, "collector.wizztag.org"
-set :repository, "http://svn.winnow.peerworks.org/trunk/collector"
+set :repository, "git@github.com:seangeo/collector.git"
+set :branch, "origin/master"
+set :scm, "git"
+set :user, "winnow"
+set :deploy_to, "/home/winnow/www/collector.deploy"
+set :mongrel_conf, "#{current_path}/config/mongrel_cluster.yml"
+set :deploy_via, :remote_cache
+
 role :web, domain
 role :app, domain
 role :db,  domain, :primary => true
-set :deploy_to, "/home/winnow/www/collector.deploy"
-set :user, 'winnow'
 
-
-set :mongrel_conf, "#{current_path}/config/mongrel_cluster.yml"
 
 # =============================================================================
 # OPTIONAL VARIABLES
@@ -45,6 +48,7 @@ set :mongrel_conf, "#{current_path}/config/mongrel_cluster.yml"
 # set :darcs, "/path/to/darcs"   # defaults to searching the PATH
 # set :cvs, "/path/to/cvs"       # defaults to searching the PATH
 # set :gateway, "gate.host.com"  # default to no gateway
+# set :git, "/usr/local/bin/git"
 
 # =============================================================================
 # SSH OPTIONS
@@ -88,24 +92,25 @@ task :package_assets, :role => :web do
   run "cd #{release_path} && rake RAILS_ENV=production asset:packager:build_all"
 end
 
-task :after_update_code do
+task :copy_config do
   run "ln -s #{shared_path}/tmp #{release_path}/tmp"
   run "ln -s #{shared_path}/database.yml #{release_path}/config/database.yml"
   run "ln -s #{shared_path}/mongrel_cluster.yml #{release_path}/config/mongrel_cluster.yml"
 end
 
-task :before_symlink do
-  package_assets
-end
-
-task :after_restart do
+task :restart_background_rb do
   run "#{current_path}/script/backgroundrb stop"
   run "#{current_path}/script/backgroundrb start"
 end
 
 desc "Notify the list of deployment"
-task :after_deploy do
+task :send_nofication do
   mail_comment = comment rescue mail_comment = "None provided."
   # Run it on the server so we know we have a good email configuration
   run %Q(cd #{current_path} && script/runner 'Notifier.deliver_deployed("http://#{domain}", "#{repository}", "#{revision}", "#{ENV['USER']}", "#{mail_comment}")')
 end
+
+after :'deploy:update_code', :package_assets
+after :'deploy:update_code', :copy_config
+after :'deploy:restart', :restart_background_rb
+after :deploy, :send_nofication
