@@ -79,7 +79,7 @@ class ItemCache < ActiveRecord::Base
     when FeedItem
       collection = feed_collection(feed_or_item.feed_id)
       logger.info("publishing item(#{feed_or_item.id}) to #{collection.href}")
-      collection.publish(feed_or_item.to_atom)      
+      collection.publish(feed_or_item.to_atom(:base => self.class.collector_url))      
     end
   end
   
@@ -87,17 +87,19 @@ class ItemCache < ActiveRecord::Base
     atom = if feed_or_item.is_a?(Feed)
       feed_or_item.to_atom_entry
     else
-      feed_or_item.to_atom
+      feed_or_item.to_atom(:base => self.class.collector_url)
     end
     
     path = feed_or_item.is_a?(Feed) ? 'feeds' : 'feed_items'
         
+    # Create an edit link so the Atom library know where to send the update    
     atom.links << Atom::Link.new(:rel => 'edit', :href => "#{self.base_uri}/#{path}/#{feed_or_item.id}")
     atom.save!
   end
   
   def do_delete(type, id)
     atom = Atom::Entry.new do |atom|
+      # Create an edit link so the Atom library knows where send the delete
       atom.links << Atom::Link.new(:rel => 'edit', :href => "#{self.base_uri}/#{type.underscore.pluralize}/#{id}")      
     end.destroy!
   end
@@ -107,6 +109,14 @@ class ItemCache < ActiveRecord::Base
       Atom::Pub::Collection.new(:href => "#{self.base_uri}/feeds")
     elsif feed.is_a?(Integer)
       Atom::Pub::Collection.new(:href => "#{self.base_uri}/feeds/#{feed}/feed_items")
+    end
+  end
+  
+  def self.collector_url
+    if RAILS_ENV == 'production' || RAILS_ENV == 'test'
+      'http://collector.mindloom.org'
+    else
+      'http://localhost:3000'
     end
   end
 end

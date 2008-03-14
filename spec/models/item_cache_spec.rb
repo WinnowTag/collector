@@ -184,7 +184,7 @@ describe ItemCache do
         response = mock_response(Net::HTTPCreated, item.to_atom.to_xml)
     
         http = mock('http')
-        http.should_receive(:post).with('/feeds/1/feed_items', item.to_atom.to_xml, an_instance_of(Hash)).and_return(response)
+        http.should_receive(:post).with('/feeds/1/feed_items', item.to_atom(:base => 'http://collector.mindloom.org').to_xml, an_instance_of(Hash)).and_return(response)
         Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
     
         ItemCache.process_operation(op)

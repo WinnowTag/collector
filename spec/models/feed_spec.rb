@@ -432,7 +432,7 @@ describe Feed do
     describe 'with 1 page of items' do
       before(:each) do
         @atom = Atom::Feed.load_feed(@feed.to_atom(:include_entries => true, 
-                                                   :base => 'http://collector.wizztag.org').to_xml)
+                                                   :base => 'http://collector.mindloom.org').to_xml)
       end
       
       it "should render a first link pointing to self" do
@@ -482,11 +482,11 @@ describe Feed do
         end
         
         it "should have a spider link" do
-          @atom_item.links.detect {|l| l.rel == 'http://peerworks.org/rel/spider'}.href.should == "http://collector.wizztag.org/spider/item/#{@item.id}"
+          @atom_item.links.detect {|l| l.rel == 'http://peerworks.org/rel/spider'}.href.should == "http://collector.mindloom.org/feed_items/#{@item.id}/spider"
         end
         
         it "should have a self link pointing to the entry document" do
-          @atom_item.self.href.should == "http://collector.wizztag.org/feed_items/#{@item.id}.atom"
+          @atom_item.self.href.should == "http://collector.mindloom.org/feed_items/#{@item.id}.atom"
         end
         
         it "should have an alternate point to source alternate" do

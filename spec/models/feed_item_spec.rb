@@ -261,7 +261,7 @@ describe FeedItem do
   describe 'to_atom' do
     before(:each) do
       @item = FeedItem.find(:first)
-      @entry = @item.to_atom(:base => 'http://collector.wizztag.org')
+      @entry = @item.to_atom(:base => 'http://collector.mindloom.org')
     end
     
     it "should return an Atom:Entry" do
@@ -294,6 +294,15 @@ describe FeedItem do
     
     it "should have the alternate link pointing to link" do
       @entry.alternate.href.should == @item.link
+    end
+
+    it "should have a spider link" do
+      @entry.links.select {|l| l.rel == 'http://peerworks.org/rel/spider'}.should_not be_empty
+    end
+    
+    it "should have the spider link pointing to http://base/feed_items/:id/spider" do
+      @entry.links.select {|l| l.rel == 'http://peerworks.org/rel/spider'}.first.href.should == 
+          "http://collector.mindloom.org/feed_items/#{@item.id}/spider"
     end
     
     describe 'without author' do

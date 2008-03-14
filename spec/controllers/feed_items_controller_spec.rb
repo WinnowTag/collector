@@ -14,7 +14,6 @@ describe FeedItemsController do
     controller.should be_an_instance_of(FeedItemsController)
   end
 
-
   describe "GET 'show'" do
     before(:each) do
       @feed_item = mock_model(FeedItem)
@@ -30,6 +29,38 @@ describe FeedItemsController do
     it "should return atom" do
       get 'show', :id => "1"
       response.content_type.should == 'application/atom+xml'
+    end
+  end
+  
+  describe "GET 'spider'" do
+    before(:each) do
+      @feed_item = mock_model(FeedItem, valid_feed_item_attributes(:spider_result => nil))
+      FeedItem.should_receive(:find).with(@feed_item.id.to_s).and_return(@feed_item)
+    end
+    
+    it "should return the scraped spidered content for the item" do
+      result = mock_model(SpiderResult, :scraped_content => 'This is the scraped content')
+      Spider.should_receive(:spider).with(@feed_item.link).and_return(result)
+      
+      get 'spider', :id => @feed_item.id
+      response.body.should == result.scraped_content
+    end
+    
+    it "should return the scraped spidered content from the cached copy" do
+      result = mock_model(SpiderResult, :scraped_content => 'This is the scraped content')
+      @feed_item.stub!(:spider_result).and_return(result)
+      Spider.should_not_receive(:spider)
+      
+      get 'spider', :id => @feed_item.id
+      response.body.should == result.scraped_content
+    end
+    
+    it "should return 404 for unscrapable content" do
+      result = mock_model(SpiderResult, :scraped_content => nil)
+      Spider.should_receive(:spider).with(@feed_item.link).and_return(result)
+      
+      get 'spider', :id => @feed_item.id
+      response.code.should == '404'
     end
   end
 end

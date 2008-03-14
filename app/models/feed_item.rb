@@ -120,7 +120,7 @@ class FeedItem < ActiveRecord::Base
                                     :href => "#{options[:base]}/feed_items/#{self.id}.atom")
       entry.links << Atom::Link.new(:rel => 'alternate', :href => self.link)
       entry.links << Atom::Link.new(:rel => 'http://peerworks.org/rel/spider', 
-                                    :href => "#{options[:base]}/spider/item/#{self.id}")
+                                    :href => "#{options[:base]}/feed_items/#{self.id}/spider")
     end
   end
   
