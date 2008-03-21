@@ -24,7 +24,7 @@ class FeedItemsController < ApplicationController
     if spider_result.scraped_content
       render :text => spider_result.scraped_content
     else
-      render :status => :not_found
+      render :status => :not_found, :nothing => true
     end
   end
 end
