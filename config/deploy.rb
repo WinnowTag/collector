@@ -1,7 +1,6 @@
 # This defines a deployment "recipe" that you can feed to capistrano
 # (http://manuals.rubyonrails.com/read/book/17). It allows you to automate
 # (among other things) the deployment of your application.
-require 'mongrel_cluster/recipes'
 
 # =============================================================================
 # REQUIRED VARIABLES
@@ -32,6 +31,7 @@ set :user, "winnow"
 set :deploy_to, "/home/winnow/www/collector.deploy"
 set :mongrel_conf, "#{current_path}/config/mongrel_cluster.yml"
 set :deploy_via, :remote_cache
+set :group, "collector-mongrels"
 
 role :web, domain
 role :app, domain
@@ -114,3 +114,11 @@ after :'deploy:update_code', :package_assets
 after :'deploy:update_code', :copy_config
 after :'deploy:restart', :restart_background_rb
 after :deploy, :send_nofication
+
+namespace :deploy do
+  [:start, :stop, :restart, :status].each do |t|
+    task t do
+      sudo "god #{t.to_s} #{group}"
+    end
+  end
+end
