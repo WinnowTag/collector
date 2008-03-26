@@ -31,7 +31,7 @@ set :user, "winnow"
 set :deploy_to, "/home/winnow/www/collector.deploy"
 set :mongrel_conf, "#{current_path}/config/mongrel_cluster.yml"
 set :deploy_via, :remote_cache
-set :group, "collector-mongrels"
+set :group, "collector"
 
 role :web, domain
 role :app, domain
@@ -98,11 +98,6 @@ task :copy_config do
   run "ln -s #{shared_path}/mongrel_cluster.yml #{release_path}/config/mongrel_cluster.yml"
 end
 
-task :restart_background_rb do
-  run "#{current_path}/script/backgroundrb stop"
-  run "#{current_path}/script/backgroundrb start"
-end
-
 desc "Notify the list of deployment"
 task :send_nofication do
   mail_comment = comment rescue mail_comment = "None provided."
@@ -112,7 +107,6 @@ end
 
 after :'deploy:update_code', :package_assets
 after :'deploy:update_code', :copy_config
-after :'deploy:restart', :restart_background_rb
 after :deploy, :send_nofication
 
 namespace :deploy do
