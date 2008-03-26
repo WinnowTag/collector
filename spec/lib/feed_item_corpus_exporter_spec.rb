@@ -1,14 +1,6 @@
 require File.dirname(__FILE__) + '/../test_helper'
 require File.dirname(__FILE__) + '/../spec_helper'
-$: << RAILS_ROOT + '/vendor/plugins/backgroundrb/server/lib'
-require 'backgroundrb/middleman'
-require 'backgroundrb/worker_rails'
 require 'workers/feed_item_corpus_exporter_worker'
-
-# Stub out worker initialization
-class BackgrounDRb::Worker::RailsBase
-  def initialize(args = nil, jobkey = nil); end
-end
 
 class FeedItemCorpusExporterTest < Test::Unit::TestCase
   fixtures :feeds, :feed_items, :feed_xml_datas, :feed_item_xml_data

@@ -7,8 +7,7 @@
 
 require 'zlib'
 
-class FeedItemCorpusExporterWorker < BackgrounDRb::Worker::RailsBase
-  
+class FeedItemCorpusExporterWorker
   def do_work(args)
     args = {
       :start_date => Time.now.utc.ago(182.days).to_date,
@@ -17,7 +16,7 @@ class FeedItemCorpusExporterWorker < BackgrounDRb::Worker::RailsBase
       :item_target => 5000,
       :steepness => 50,
       :feeds => [],
-      :output => File.join(RAILS_ROOT, 'public', 'exported_corpus', "#{jobkey}.xml.gz")
+      :output => File.join(RAILS_ROOT, 'public', 'exported_corpus', "temp.xml.gz")
     }.merge(args)
     
     if args[:item_target] == 0

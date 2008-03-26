@@ -5,8 +5,7 @@
 # Please contact info@peerworks.org for further information.
 #
 
-class FeedItemCorpusImporterWorker < BackgrounDRb::Worker::RailsBase
-  
+class FeedItemCorpusImporterWorker
   def do_work(args)
     args = {
       :feeds => []      
