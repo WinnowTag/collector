@@ -1,0 +1,2 @@
+#!/usr/bin/env ruby
+load File.join(File.dirname(__FILE__), '/../lib/item_cacher.rb')
