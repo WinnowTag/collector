@@ -8,15 +8,9 @@ require File.dirname(__FILE__) + '/../test_helper'
 require File.dirname(__FILE__) + '/../spec_helper'
 
 describe Feed do
-  fixtures :feeds, :feed_items, :collection_errors, :feed_item_tokens, :feed_item_contents
+  fixtures :feeds, :feed_items, :collection_errors, :feed_item_contents
   
-  describe 'collection' do
-    def setup
-      # stub to bypass token filtering in build_from_feed_item
-      tokenizer = stub('tokenizer', :tokens_with_counts => stub('tokens', :size => 50))
-      FeedItemTokenizer.stub!(:new).and_return(tokenizer)
-    end
-  
+  describe 'collection' do  
     # Replace this with your real tests.
     def test_adding_items   
       feed = stub('feed', :title => 'A Feed', 
@@ -243,12 +237,6 @@ describe Feed do
   end
   
   describe 'collect! duplicate detection' do
-    before(:each) do
-      # stub to bypass token filtering in build_from_feed_item
-      tokenizer = stub('tokenizer', :tokens_with_counts => stub('tokens', :size => 50))
-      FeedItemTokenizer.stub!(:new).and_return(tokenizer)
-    end
-    
     it "should detect duplicates by URL through autodiscovery" do
       item = mock('item', :title => 'title', :id => 'uid', 
                           :content => 'item', :link => 'http://example', :description => 'item',

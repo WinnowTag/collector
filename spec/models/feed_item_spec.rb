@@ -10,36 +10,15 @@ require File.dirname(__FILE__) + '/../spec_helper'
 require 'feed_tools'
 
 class FeedItemTest < Test::Unit::TestCase
-  fixtures :feed_items, :feed_item_tokens
+  fixtures :feed_items
   
-  def test_tokens_set_and_get
-    tokens = {1 => 1, 2 => 2, 3 => 3}
-    fi = FeedItem.new :link => 'fakelink'
-    fi.tokens_with_counts = tokens
-    fi.save!
-    assert_equal tokens.keys, fi.tokens
-  end
-  
-  def test_tokens_retrieves_from_db
-    tokens = {1 => 3, 2 => 2, 3 => 1}
-    fi = FeedItem.find(1)
-    assert_equal tokens, fi.tokens_with_counts
-  end
-  
-  def test_tokens_when_no_tokens_exist
-    fi = FeedItem.find(2)
-    assert_equal({}, fi.tokens_with_counts)
-  end
-    
   # Replace this with your real tests.
   def test_build_from_feed_item
-    # stub to bypass token filtering in build_from_feed_item
-    tokenizer = stub('tokenizer', :tokens_with_counts => stub('tokens', :size => 50))
     test_feed_url = 'file:/' + File.join(File.expand_path(RAILS_ROOT), 'spec', 'fixtures', 'slashdot.rss')
     feed = FeedTools::Feed.open(URI.parse(test_feed_url))
     ft_item = feed.items.first
     ft_item.stub!(:time).and_return(Time.now)
-    feed_item = FeedItem.build_from_feed_item(ft_item, tokenizer)
+    feed_item = FeedItem.build_from_feed_item(ft_item)
     feed_item.save
 
     assert_equal ft_item.title, feed_item.content.title
@@ -61,33 +40,7 @@ class FeedItemTest < Test::Unit::TestCase
     assert_nil dup
   end
     
-  def test_build_from_feed_item_returns_item_with_at_least_than_50_tokens
-    tokenizer = stub('tokenizer', :tokens_with_counts => stub('tokens', :size => 50))
-    assert_not_nil(FeedItem.build_from_feed_item(stub('item', :null_object => true, :title => 'item', :id => 'id'), tokenizer))
-  end
-  
-  def test_build_from_feed_item_drops_item_with_less_than_50_tokens
-    tokenizer = stub('tokenizer', :tokens_with_counts => stub('tokens', :size => 49))
-    assert_nil(FeedItem.build_from_feed_item(stub('item', :null_object => true, :title => 'item', :id => 'id'), tokenizer))
-  end
-  
-  def test_dropped_item_is_added_to_discarded_items_table
-    assert_difference(DiscardedFeedItem, :count, 1) do
-      tokenizer = stub('tokenizer', :tokens_with_counts => stub('tokens', :size => 49))
-      item = stub('item', :null_object => true, :id => nil, :title => 'title', :description => 'description', :link => "http://foo")
-      assert_nil(FeedItem.build_from_feed_item(item, tokenizer))
-      assert_not_nil(DiscardedFeedItem.find_by_link("http://foo"))
-    end
-  end
-  
-  def test_build_from_item_drops_discarded_item
-    DiscardedFeedItem.should_receive(:discarded?).with("http://foo", 'uid').and_return(true)
-    assert_nil(FeedItem.build_from_feed_item(stub('item', :id => 'uid', :link => "http://foo")))
-  end
-  
   def test_time_more_than_a_day_in_the_future_set_to_feed_time
-    # stub to bypass token filtering in build_from_feed_item
-    tokenizer = stub('tokenizer', :tokens_with_counts => stub('tokens', :size => 50))
     last_retrieved = Time.now
     
     feed = FeedTools::Feed.new
@@ -96,15 +49,13 @@ class FeedItemTest < Test::Unit::TestCase
     ft_feed_item = MockFeedItem.new
     ft_feed_item.feed = feed
     ft_feed_item.time = Time.now.tomorrow.tomorrow
-    feed_item = FeedItem.build_from_feed_item(ft_feed_item, tokenizer)
+    feed_item = FeedItem.build_from_feed_item(ft_feed_item)
     
     assert feed_item.time < ft_feed_item.time    
     assert_equal FeedItem::FeedPublicationTime, feed_item.time_source
   end
   
   def test_item_and_feed_time_more_than_a_day_in_the_future_set_to_retrieval_time
-    # stub to bypass token filtering in build_from_feed_item
-    tokenizer = stub('tokenizer', :tokens_with_counts => stub('tokens', :size => 50))
     last_retrieved = Time.now
     
     feed = FeedTools::Feed.new
@@ -114,15 +65,13 @@ class FeedItemTest < Test::Unit::TestCase
     ft_feed_item = MockFeedItem.new
     ft_feed_item.feed = feed
     ft_feed_item.time = Time.now.tomorrow.tomorrow
-    feed_item = FeedItem.build_from_feed_item(ft_feed_item, tokenizer)
+    feed_item = FeedItem.build_from_feed_item(ft_feed_item)
     
     feed_item.time.should == last_retrieved
     feed_item.time_source.should == FeedItem::FeedCollectionTime
   end
   
   def test_nil_feed_times_uses_collection_time
-    # stub to bypass token filtering in build_from_feed_item
-    tokenizer = stub('tokenizer', :tokens_with_counts => stub('tokens', :size => 50))
     last_retrieved = Time.now
     feed = FeedTools::Feed.new
     feed.last_retrieved = last_retrieved
@@ -130,14 +79,12 @@ class FeedItemTest < Test::Unit::TestCase
     ft_feed_item = MockFeedItem.new
     ft_feed_item.feed = feed
     ft_feed_item.time = nil
-    feed_item = FeedItem.build_from_feed_item(ft_feed_item, tokenizer)
+    feed_item = FeedItem.build_from_feed_item(ft_feed_item)
     assert_equal feed.last_retrieved, feed_item.time
     assert_equal FeedItem::FeedCollectionTime, feed_item.time_source
   end
   
   def test_nil_feed_item_time_uses_feed_publication_time
-    # stub to bypass token filtering in build_from_feed_item
-    tokenizer = stub('tokenizer', :tokens_with_counts => stub('tokens', :size => 50))
     publication_time = Time.now.yesterday
     feed = FeedTools::Feed.new
     feed.last_retrieved = nil
@@ -145,19 +92,17 @@ class FeedItemTest < Test::Unit::TestCase
     ft_feed_item = MockFeedItem.new
     ft_feed_item.feed = feed
     ft_feed_item.time = nil
-    feed_item = FeedItem.build_from_feed_item(ft_feed_item, tokenizer)
+    feed_item = FeedItem.build_from_feed_item(ft_feed_item)
     assert_equal feed.published, feed_item.time
     assert_equal FeedItem::FeedPublicationTime, feed_item.time_source
   end
     
   def test_feed_item_content_extracts_encoded_content
-    # stub to bypass token filtering in build_from_feed_item
-    tokenizer = stub('tokenizer', :tokens_with_counts => stub('tokens', :size => 50))
     test_feed_url = 'file:/' + File.join(File.expand_path(RAILS_ROOT), 'spec', 'fixtures', 'item_with_content_encoded.rss')
     feed = FeedTools::Feed.open(URI.parse(test_feed_url))
     ft_item = feed.items.first
     ft_item.stub!(:time).and_return(Time.now)
-    feed_item = FeedItem.build_from_feed_item(ft_item, tokenizer)
+    feed_item = FeedItem.build_from_feed_item(ft_item)
     
     assert_equal ft_item.title, feed_item.content.title
     assert_equal ft_item.description, feed_item.content.description
@@ -165,7 +110,6 @@ class FeedItemTest < Test::Unit::TestCase
   end
   
   def test_extract_feed_item_title_out_of_strong_heading
-    tokenizer = stub('tokenizer', :tokens_with_counts => stub('tokens', :size => 50))
     content = <<-END
 <p><strong>AMERICAN POWER.</strong>  Responding to a relatively unobjectionable <strong>Tom Friedman</strong> <a href="http://select.nytimes.com/2006/10/11/opinion/11friedman.html">column</a> calling for "Russia and China [to] get over their ambivalence about U.S. power", <strong>Matt</strong> <a href="http://www.matthewyglesias.com/archives/2006/10/the_bus/">notes</a> that "ambivalence about U.S. power is a natural thing for Russia and China to feel."</p>
 
@@ -177,12 +121,11 @@ class FeedItemTest < Test::Unit::TestCase
     END
     ftitem = MockFeedItem.new
     ftitem.content = content
-    item = FeedItem.build_from_feed_item(ftitem, tokenizer)
+    item = FeedItem.build_from_feed_item(ftitem)
     assert_equal("AMERICAN POWER.", item.title)
   end
   
   def test_extract_feed_item_title_out_of_heading
-    tokenizer = stub('tokenizer', :tokens_with_counts => stub('tokens', :size => 50))
     content = <<-END
 <span style="font-weight:bold;">Short Term Death<br>&#xD;
 </span>&#xD;
@@ -194,27 +137,24 @@ class FeedItemTest < Test::Unit::TestCase
     END
     ftitem = MockFeedItem.new
     ftitem.content = content
-    item = FeedItem.build_from_feed_item(ftitem, tokenizer)
+    item = FeedItem.build_from_feed_item(ftitem)
     assert_equal("Short Term Death", item.title)
   end
   
   def test_extract_feed_item_title_out_of_bold_heading
-    tokenizer = stub('tokenizer', :tokens_with_counts => stub('tokens', :size => 50))
     content = <<-END
 <b>What Americans Have Sacrificed In Bush's "War On Terror"</b><br /><br />by tristero<br /><br />Many critics of the Bush administration have it wrong. They have repeatedly charged that while Bush has said the country is at war he has refused to call off the tax breaks for the rich or implement any measures that would require the American people to sacrifice. <br />
     END
     ftitem = MockFeedItem.new
     ftitem.content = content
-    item = FeedItem.build_from_feed_item(ftitem, tokenizer)
+    item = FeedItem.build_from_feed_item(ftitem)
     assert_equal(%Q(What Americans Have Sacrificed In Bush's "War On Terror"), item.title)
   end
   
   def test_sort_title_generation
-    # stub to bypass token filtering in build_from_feed_item
-    tokenizer = stub('tokenizer', :tokens_with_counts => stub('tokens', :size => 50))
     mock = MockFeedItem.new
     mock.title = 'THE title Of the FEEDITEM'
-    feed_item = FeedItem.build_from_feed_item(mock, tokenizer)
+    feed_item = FeedItem.build_from_feed_item(mock)
     assert_equal 'title of the feeditem', feed_item.sort_title
     assert_equal 'THE title Of the FEEDITEM', feed_item.title
   end

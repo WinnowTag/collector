@@ -213,7 +213,7 @@ class Feed < ActiveRecord::Base
     new_feed_items = nil
     
     new_feed_items = feed.items.map do |fi|
-      item = FeedItem.build_from_feed_item(fi, FeedItemTokenizer.new, self)
+      item = FeedItem.build_from_feed_item(fi, self)
       item if (item && item.save)
     end.compact
         

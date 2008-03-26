@@ -32,24 +32,21 @@ class Archiver
           ex <<-END
             INSERT IGNORE INTO feed_items_archives 
               SELECT feed_items.* FROM feed_items 
-                LEFT OUTER JOIN random_backgrounds rb ON feed_items.id = rb.feed_item_id
                 LEFT OUTER JOIN protected_items    pi ON feed_items.id = pi.feed_item_id
               WHERE 
-                time < #{conn.quote(cutoff)} and rb.feed_item_id is null and pi.id is null;
+                time < #{conn.quote(cutoff)} and pi.id is null;
           END
         
           ex(archive_sql(cutoff, 'feed_item_contents'))        
           ex(archive_sql(cutoff, 'feed_item_xml_data', 'id'))
-          ex(archive_sql(cutoff, 'feed_item_tokens'))
 
           # foreign keys cascade delete to content, xml and tokens tables
           ex <<-END
             DELETE FROM feed_items 
               USING feed_items 
-                LEFT OUTER JOIN random_backgrounds rb ON feed_items.id = rb.feed_item_id
                 LEFT OUTER JOIN protected_items pi on feed_items.id = pi.feed_item_id  
               WHERE 
-                time < #{conn.quote(cutoff)} and rb.feed_item_id is null and pi.id is null;
+                time < #{conn.quote(cutoff)} and pi.id is null;
           END
           
           items_removed = conn.connection.affected_rows

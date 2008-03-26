@@ -56,9 +56,8 @@ class FeedItem < ActiveRecord::Base
   has_one :xml_data_container, :class_name => "FeedItemXmlData", :foreign_key => "id", :dependent => :delete
   cattr_reader :per_page
   @@per_page = 40
-  attr_accessor :tokens_with_counts, :just_published
+  attr_accessor :just_published
   has_one :spider_result, :dependent => :delete
-  after_save :save_tokens
 
   
   # Coptures the different sources for feed item time
@@ -73,27 +72,6 @@ class FeedItem < ActiveRecord::Base
     FeedItemTime = 'feed_item_time' unless defined?(FeedItemTime)
   end   
   include TimeSources
-
-  # Finds some random items with their tokens.  
-  #
-  # Instead of using order by rand(), which is very slow for large tables,
-  # we use a modified version of the method described at http://jan.kneschke.de/projects/mysql/order-by-rand/
-  # to get a random set of items. The trick here is to generate a list of random ids 
-  # by multiplying rand() and max(position). This list is then joined with the feed_items table
-  # to get the items.  Generating this list is very fast since MySQL can do it without accessing
-  # the tables or indexes at all.
-  #
-  # We use the position column to randomize since that is guarenteed to not have any holes
-  # and to have even distribution.
-  #
-  def self.find_random_items_with_tokens(size)
-    self.find(:all,
-      :select => "feed_items.id, fitc.tokens_with_counts as tokens_with_counts",
-      :joins => "inner join random_backgrounds as rnd on feed_items.id = rnd.feed_item_id " +
-                "inner join feed_item_tokens_containers as fitc on fitc.feed_item_id = feed_items.id" + 
-                " and fitc.tokenizer_version = #{FeedItemTokenizer::VERSION}",
-      :limit => size)
-  end
 
   # Gets a UID suitable for use within the classifier
   def uid 
@@ -123,45 +101,6 @@ class FeedItem < ActiveRecord::Base
                                     :href => "#{options[:base]}/feed_items/#{self.id}/spider")
     end
   end
-  
-  # Gets the tokens with frequency counts for the feed_item.
-  # 
-  # This return a hash with token => freqency entries.
-  #
-  # There are a number of different ways to get the tokens for an item:
-  # 
-  # The fastest, providing the token already exists, is to select out the 
-  # tokens field from the feed_item_tokens_containers table as a field of
-  # the feed item. In this case the tokens will be unmarshaled without type
-  # casting.
-  #
-  # You can also include the :latest_tokens association on a query for feed
-  # items which will get the tokens with the highest tokenizer version.  This
-  # method will require Rails to build the association so it is slower than the 
-  # previously described method.
-  #
-  # Finally, the slowest, but also the method that will create the tokens if the
-  # dont exists is to pass version and a block, if there are no tokens matching the 
-  # tokenizer version the block is called and a token container will be created
-  # using the result from the block as the tokens. This is the method used by
-  # FeedItemTokenizer#tokens.
-  #
-  def tokens_with_counts
-    return {} if new_record?
-    t = returning({}) do |tokens|
-      connection.select_all("select token_id, frequency from feed_item_tokens where feed_item_id = #{self.id}").each do |token|
-        tokens[token['token_id'].to_i] = token['frequency'].to_i
-      end   
-    end
-  end
-
-  # Gets the tokens without frequency counts.
-  #
-  # This method requires the tokens to have already been extracted and stored in the token_container.
-  # 
-  def tokens
-    self.tokens_with_counts.keys
-  end
 
   # Short cuts to the xml_data_container model
   def xml_data
@@ -182,21 +121,6 @@ class FeedItem < ActiveRecord::Base
     self.xml_data_container.xml_data = xml
   end
     
-private
-  def save_tokens
-    if @tokens_with_counts && !new_record?
-      rows = @tokens_with_counts.map do |token, frequency|
-        "(#{id}, #{token.to_i}, #{frequency.to_i})"
-      end
-
-      if rows.any?
-        connection.execute("INSERT INTO feed_item_tokens (feed_item_id, token_id, frequency) VALUES #{rows.join(", ")}")
-      end
-      
-      @tokens_with_counts = nil
-    end
-  end
-  
   #-------------------------------------------------------------------------------
   # Methods for extracting a FeedItem from FeedTools.
   #-------------------------------------------------------------------------------
@@ -213,12 +137,11 @@ public
   # The FeedItem is not saved in the database. It is not associated with a Feed,
   # it is up to the caller to do that.
   #
-  def self.build_from_feed_item(feed_item, tokenizer = FeedItemTokenizer.new, feed = nil)
+  def self.build_from_feed_item(feed_item, feed = nil)
     new_feed_item = nil
     unique_id = self.make_unique_id(feed_item)
     
     unless FeedItemsArchive.item_exists?(feed_item.link, unique_id) ||
-           DiscardedFeedItem.discarded?(feed_item.link, unique_id)  ||
            self.find_by_link_or_uid(feed_item.link, unique_id)
 
       time, time_source = extract_time(feed_item)
@@ -235,15 +158,7 @@ public
                                    :title => feed_item_content.title)
     
       # Strip articles and downcase the sort_title
-      new_feed_item.sort_title = new_feed_item.title.sub(/^(the|an|a) +/i, '').downcase
-    
-      # tokenize and discard if less than 50 tokens
-      tokens = tokenizer.tokens_with_counts(new_feed_item)
-      if tokens.size < 50
-        logger.info("discarded small item: #{tokens.size} tokens in #{new_feed_item.sort_title}")
-        DiscardedFeedItem.create(:link => new_feed_item.link, :unique_id => new_feed_item.unique_id)
-        new_feed_item = nil 
-      end
+      new_feed_item.sort_title = new_feed_item.title.sub(/^(the|an|a) +/i, '').downcase     
     end
     
     return new_feed_item
