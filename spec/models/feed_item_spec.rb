@@ -8,6 +8,8 @@
 require File.dirname(__FILE__) + '/../test_helper'
 require File.dirname(__FILE__) + '/../spec_helper'
 require 'feed_tools'
+gem 'ratom'
+require 'atom'
 
 class FeedItemTest < Test::Unit::TestCase
   fixtures :feed_items
@@ -254,6 +256,19 @@ describe FeedItem do
       it "should be have no authors" do
         @entry.should have(0).authors
       end
+    end
+  end
+  
+  describe 'to_atom with non-utf-8 content' do
+    before(:each) do
+      @item = FeedItem.find(:first)
+      @item.content.encoded_content = "This is not utf-8 because of this character: \225"
+      @entry = @item.to_atom(:base => 'http://collector.mindloom.org')
+    end
+    
+    it "should re-encode the content if it can" do
+      entry = Atom::Entry.load_entry(@entry.to_xml)
+      entry.content.to_s.should == Iconv.iconv('utf-8', 'LATIN1', "This is not utf-8 because of this character: \225").first
     end
   end
 end

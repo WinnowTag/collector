@@ -93,12 +93,20 @@ class FeedItem < ActiveRecord::Base
       entry.id = "urn:peerworks.org:entry##{self.id}"
       entry.updated = self.time
       entry.authors << Atom::Person.new(:name => self.author) if self.author
-      entry.content = Atom::Content::Html.new(self.content.encoded_content) if self.content
       entry.links << Atom::Link.new(:rel => 'self', 
                                     :href => "#{options[:base]}/feed_items/#{self.id}.atom")
       entry.links << Atom::Link.new(:rel => 'alternate', :href => self.link)
       entry.links << Atom::Link.new(:rel => 'http://peerworks.org/rel/spider', 
-                                    :href => "#{options[:base]}/feed_items/#{self.id}/spider")
+                                    :href => "#{options[:base]}/feed_items/#{self.id}/spider")     
+      # Content could be non-utf8 due to a FeedTools pre 0.2.29 bug
+      if self.content
+        begin
+          entry.content = Atom::Content::Html.new(Iconv.iconv('utf-8', 'utf-8', self.content.encoded_content).first)
+        rescue Iconv::IllegalSequence
+          # LATIN1 is the most likely, try that or fail
+          entry.content = Atom::Content::Html.new(Iconv.iconv('utf-8', 'LATIN1', self.content.encoded_content).first)
+        end
+      end
     end
   end
 
