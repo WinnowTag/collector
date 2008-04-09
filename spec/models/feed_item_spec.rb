@@ -271,4 +271,12 @@ describe FeedItem do
       entry.content.to_s.should == Iconv.iconv('utf-8', 'LATIN1', "This is not utf-8 because of this character: \225").first
     end
   end
+  
+  describe "to_atom with non-printable characters" do
+    it "should remove them" do
+      item = FeedItem.find(:first)
+      item.content.encoded_content = "This has a non\004-printable character"
+      item.to_atom.content.to_s.should == "This has a non-printable character"
+    end
+  end  
 end

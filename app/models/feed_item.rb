@@ -98,13 +98,14 @@ class FeedItem < ActiveRecord::Base
       entry.links << Atom::Link.new(:rel => 'alternate', :href => self.link)
       entry.links << Atom::Link.new(:rel => 'http://peerworks.org/rel/spider', 
                                     :href => "#{options[:base]}/feed_items/#{self.id}/spider")     
-      # Content could be non-utf8 due to a FeedTools pre 0.2.29 bug
+      # Content could be non-utf8 or contain non-printable characters due to a FeedTools pre 0.2.29 bug.
+      # LibXML chokes on this so try and fix it.
       if self.content
         begin
-          entry.content = Atom::Content::Html.new(Iconv.iconv('utf-8', 'utf-8', self.content.encoded_content).first)
+          entry.content = Atom::Content::Html.new(Iconv.iconv('utf-8', 'utf-8', self.content.encoded_content).first.tr("\000-\011", ""))
         rescue Iconv::IllegalSequence
           # LATIN1 is the most likely, try that or fail
-          entry.content = Atom::Content::Html.new(Iconv.iconv('utf-8', 'LATIN1', self.content.encoded_content).first)
+          entry.content = Atom::Content::Html.new(Iconv.iconv('utf-8', 'LATIN1', self.content.encoded_content).first.tr("\000-\011", ""))
         end
       end
     end
