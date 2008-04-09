@@ -324,6 +324,23 @@ describe ItemCache do
       @item_cache.should have(0).failed_operations
     end
     
+    it "should redo multiple failed publish operations" do
+      feed = Feed.find(1)
+      op1 = ItemCacheOperation.create!(:action => 'publish', :actionable => feed)
+      op2 = ItemCacheOperation.create!(:action => 'publish', :actionable => feed)
+      @item_cache.failed_operations.create!(:item_cache_operation => op1)
+      @item_cache.failed_operations.create!(:item_cache_operation => op2)
+      
+      response = mock_response(Net::HTTPCreated, feed.to_atom_entry.to_xml)
+  
+      http = mock('http')
+      http.should_receive(:post).with('/feeds', feed.to_atom_entry.to_xml, an_instance_of(Hash)).twice.and_return(response)
+      Net::HTTP.should_receive(:start).with('example.org', 80).twice.and_yield(http)
+      
+      @item_cache.redo_failed_operations
+      @item_cache.should have(0).failed_operations
+    end
+    
     it "should redo failed publish operation and create a new one when it fails again" do
       feed = Feed.find(1)
       op = ItemCacheOperation.create!(:action => 'publish', :actionable => feed)

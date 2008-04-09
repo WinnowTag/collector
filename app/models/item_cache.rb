@@ -64,7 +64,7 @@ class ItemCache < ActiveRecord::Base
   end
   
   def redo_failed_operations
-    self.failed_operations.to_a.each do |failed_operation|
+    self.failed_operations.to_a.dup.each do |failed_operation|
       # Delete the failed op, if it fails again a new one will be created
       self.failed_operations.delete(failed_operation)
       process_operation(failed_operation.item_cache_operation)
