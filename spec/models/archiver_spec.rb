@@ -12,7 +12,7 @@ class FeedItemXmlDataArchive < ActiveRecord::Base; set_table_name "feed_item_xml
 class FeedItemContentArchive < ActiveRecord::Base; set_table_name "feed_item_contents_archives"; end
 
 class ArchiverTest < Test::Unit::TestCase
-  fixtures :feed_items, :feed_item_xml_data, :feed_item_contents, :feeds, :feed_item_contents_full_text
+  fixtures :feed_items, :feed_item_xml_data, :feed_item_contents, :feeds
   
   def setup    
     ProtectedItem.delete_all

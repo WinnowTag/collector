@@ -49,15 +49,7 @@ class Archiver
                 time < #{conn.quote(cutoff)} and pi.id is null;
           END
           
-          items_removed = conn.connection.affected_rows
-          
-          # Delete archived entries from full text index table - MyISAM so no FKs
-          ex <<-END
-            DELETE FROM feed_item_contents_full_text
-              WHERE id NOT IN (SELECT id FROM feed_items);
-          END
-          
-          items_removed          
+          conn.connection.affected_rows
         end
       end
       

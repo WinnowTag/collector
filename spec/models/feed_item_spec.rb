@@ -12,7 +12,7 @@ gem 'ratom'
 require 'atom'
 
 class FeedItemTest < Test::Unit::TestCase
-  fixtures :feed_items
+  fixtures :feed_items, :feed_item_contents
   
   # Replace this with your real tests.
   def test_build_from_feed_item

@@ -8,19 +8,6 @@
 class FeedItemContent < ActiveRecord::Base
   belongs_to :feed_item
   
-  def self.index_new_items
-    connection.execute <<-END
-      INSERT IGNORE INTO 
-          feed_item_contents_full_text (id, content, created_on)
-        SELECT 
-          feed_item_id,
-          CONCAT_WS(' ', title, author, description),
-          UTC_TIMESTAMP()
-        FROM
-          feed_item_contents;        
-    END
-  end
-  
   # Class methods for handling feed item extraction.
   #
   class << self
