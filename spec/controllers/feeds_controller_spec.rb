@@ -61,6 +61,16 @@ describe FeedsController do
       assert_template 'index'
       assert_equal([feed, dup].sort_by{|a| a.id}, assigns(:feeds).sort_by{|a| a.id})
     end
+    
+    def test_duplicates_doesnt_show_duplicate_tombstones
+      feed = Feed.find(1)
+      dup = Feed.new(:url => 'http://foo')
+      dup.link = feed.link
+      dup.duplicate = feed
+      dup.save!
+      get :duplicates
+      assert_equal([], assigns[:feeds])
+    end
   
     def test_list_provides_text_format
       accept('text/plain')
@@ -68,7 +78,7 @@ describe FeedsController do
       assert_response :success
       assert_equal Feed.find(:all).map(&:url).join("\n"), @response.body
     end
-  
+
     def test_create_with_duplicate_url_redirects_to_duplicate
       post :create, :feed => {:url => Feed.find(1).url}
       assert_redirected_to feed_url(Feed.find(1))

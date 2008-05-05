@@ -76,7 +76,7 @@ class Feed < ActiveRecord::Base
                       :select => 'distinct feeds.*',
                       :joins => 'inner join feeds as f2 on ' +
                            '(feeds.title = f2.title or feeds.link = f2.link) ' +
-                           'and feeds.id <> f2.id'))
+                           'and feeds.id <> f2.id and feeds.duplicate_id is null and f2.duplicate_id is null'))
   end
   
   def self.find_by_url_or_link(url)
