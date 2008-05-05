@@ -408,10 +408,6 @@ describe Feed do
         @atom.updated.should == @feed.updated_on
       end
     
-      it "should output the published date" do
-        @atom.published.should == @feed.created_on
-      end
-    
       it "should output the id" do
         @atom.id.should == "urn:peerworks.org:feed##{@feed.id}"
       end

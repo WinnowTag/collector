@@ -305,7 +305,6 @@ class Feed < ActiveRecord::Base
     Atom::Feed.new do |feed|
       feed.title = self.title
       feed.updated = self.updated_on
-      feed.published = self.created_on
       feed.id = "urn:peerworks.org:feed##{self.id}"
       feed.links << Atom::Link.new(:rel => 'via', :href => self.url)
       feed.links << Atom::Link.new(:rel => 'self', :href => self_link)
