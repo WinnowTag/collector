@@ -19,7 +19,7 @@ class FeedItemsController < ApplicationController
   
   def spider
     @feed_item = FeedItem.find(params[:id])
-    spider_result = (@feed_item.spider_result or Spider.spider(@feed_item.link))
+    spider_result = (@feed_item.spider_result or @feed_item.spider_result = Spider.spider(@feed_item.link))
     
     if spider_result.scraped_content
       render :text => spider_result.scraped_content
