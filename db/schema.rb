@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 37) do
+ActiveRecord::Schema.define(:version => 38) do
 
   create_table "archival_histories", :force => true do |t|
     t.integer  "item_count"
@@ -223,6 +223,7 @@ ActiveRecord::Schema.define(:version => 37) do
 
   add_index "spider_results", ["feed_item_id"], :name => "index_spider_results_on_feed_item_id", :unique => true
   add_index "spider_results", ["feed_id"], :name => "index_spider_results_on_feed_id"
+  add_index "spider_results", ["created_at"], :name => "index_spider_results_on_created_at"
 
   create_table "users", :force => true do |t|
     t.string   "login",                                                      :null => false
