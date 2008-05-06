@@ -6,6 +6,7 @@
 #
 require File.dirname(__FILE__) + '/../test_helper'
 require File.dirname(__FILE__) + '/../spec_helper'
+require 'atom'
 
 describe Feed do
   fixtures :feeds, :feed_items, :collection_errors, :feed_item_contents
@@ -374,8 +375,19 @@ describe Feed do
   
     it "should output the id" do
       @atom.id.should == "urn:peerworks.org:feed##{@feed.id}"
-    end
+    end    
   end
+  
+  describe 'to_atom_entry for duplicate' do
+    before(:each) do
+      @feed = Feed.find(4)
+      @atom = @feed.to_atom_entry
+    end
+    
+    it "should encode the duplicate as a link" do
+      @atom.links.detect {|l| l.rel == "http://peerworks.org/duplicateOf"}.href.should == "urn:peerworks.org:feed##{@feed.duplicate_id}"
+    end
+  end 
   
   describe 'to_atom' do
     before(:each) do

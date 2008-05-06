@@ -348,6 +348,8 @@ class Feed < ActiveRecord::Base
       entry.links << Atom::Link.new(:rel => 'via', :href => self.url)
       entry.links << Atom::Link.new(:rel => 'self', :href => "#{options[:base]}/feeds/#{self.id}.atom")
       entry.links << Atom::Link.new(:rel => 'alternate', :href => self.link)
+      entry.links << Atom::Link.new(:rel => 'http://peerworks.org/duplicateOf', 
+                                    :href => "urn:peerworks.org:feed##{self.duplicate_id}") if self.duplicate_id      
     end
   end
   
