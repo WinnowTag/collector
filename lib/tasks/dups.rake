@@ -51,7 +51,7 @@ namespace :dup do
           puts "The survivor is #{survivor.url}"
           (feeds - [survivor]).each do |condemned|
             condemned.feed_items.each do |fi|
-              fi.feed = feeds[survivor]
+              fi.feed = survivor
               fi.save
             end
             condemned.duplicate_id = survivor.id
