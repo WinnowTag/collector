@@ -10,6 +10,18 @@ require File.join(File.dirname(__FILE__), '/../config/environment.rb')
 ActiveRecord::Base.logger = Logger.new(File.join(RAILS_ROOT, 'log', 'item_cache.log'), "daily")
 ActiveRecord::Base.logger.level = Logger::DEBUG
 
+FileUtils.touch("/tmp/item-cacher.lock")
+lockfile = File.new("/tmp/item-cacher.lock")
+
+unless lockfile.flock(File::LOCK_EX | File::LOCK_NB)
+  STDERR.puts "item cacher already running"
+  exit(1)
+end
+
+at_exit do
+  lockfile.flock(File::LOCK_UN)
+end
+
 puts "Started item cacher at #{Time.now}"
 loop do
   begin
