@@ -7,7 +7,7 @@
 require File.dirname(__FILE__) + '/../test_helper'
 require File.dirname(__FILE__) + '/../spec_helper'
 
-class FeedTest < Test::Unit::TestCase
+describe "Feed Parsing" do
   # def test_title_with_mixed_content
   #   test_feed_url = 'file:/' + File.join(File.expand_path(RAILS_ROOT), 'spec', 'fixtures', 'feed_with_mixed_content.xml')
   #   feed = FeedTools::Feed.open(test_feed_url)
@@ -46,5 +46,13 @@ class FeedTest < Test::Unit::TestCase
     assert_not_nil(feed.feed_data)
     feed.should have(1).items
     assert_instance_of(REXML::Document, feed.xml_document)
+  end
+  
+  it "should not escape object elements" do
+    url = 'file:/' + File.join(File.expand_path(RAILS_ROOT), 'spec', 'fixtures', 'feed_with_object_element.xml')
+    feed = FeedTools::Feed.open(url)
+    feed.entries.first.should_not be_nil
+    feed.entries.first.content.should match(/<object>/)
+    feed.entries.first.content.should match(/<param\/>/)
   end
 end

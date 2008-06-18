@@ -22,7 +22,7 @@ module HTML5
     ACCEPTABLE_ELEMENTS = %w[a abbr acronym address area b big blockquote br
       button caption center cite code col colgroup dd del dfn dir div dl dt
       em fieldset font form h1 h2 h3 h4 h5 h6 hr i img input ins kbd label
-      legend li map menu ol optgroup option p pre q s samp select small span
+      legend li map menu object ol optgroup option p param pre q s samp select small span
       strike strong sub sup table tbody td textarea tfoot th thead tr tt u
       ul var]
 
