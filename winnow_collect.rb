@@ -16,5 +16,4 @@ require File.join(File.dirname(__FILE__), '/config/environment')
 Spider.logger = Logger.new(File.join(RAILS_ROOT, "log", "winnow_collect-spider.log"), 'daily')
 
 Feed.collect_all
-FeedItemContent.index_new_items
 ActiveRecord::Base.connection.disconnect!
