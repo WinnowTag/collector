@@ -25,7 +25,7 @@ set :use_sudo, false
 default_run_options[:pty] = true
 set :domain, "collector.wizztag.org"
 set :repository, "git@github.com:seangeo/collector.git"
-set :branch, "origin/master"
+set :branch, "master"
 set :scm, "git"
 set :user, "winnow"
 set :deploy_to, "/home/winnow/www/collector.deploy"
