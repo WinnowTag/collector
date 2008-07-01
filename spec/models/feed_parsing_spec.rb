@@ -54,5 +54,6 @@ describe "Feed Parsing" do
     feed.entries.first.should_not be_nil
     feed.entries.first.content.should match(/<object>/)
     feed.entries.first.content.should match(/<param\/>/)
+    feed.entries.first.content.should match(/<embed\/>/)
   end
 end
