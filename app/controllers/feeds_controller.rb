@@ -76,7 +76,9 @@ class FeedsController < ApplicationController
       redirect_to feed_url(@feed)
     else
       respond_to do |wants|
-        if @feed.new_record? && @feed.save
+        @feed.created_by = params[:feed][:created_by]
+        
+        if @feed.save
           wants.html { redirect_to feeds_url }
           wants.xml do
             head :created, :location => feed_url(@feed)

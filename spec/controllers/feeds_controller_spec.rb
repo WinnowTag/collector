@@ -87,11 +87,16 @@ describe FeedsController do
     def test_create_with_duplicate_placeholder_url_redirects_to_duplicate
       post :create, :feed => {:url => feeds(:duplicate_feed).url}
       assert_redirected_to feed_url(feeds(:duplicate_feed).duplicate)
-    end
+    end    
   
     it "should fail when created with an invalid url" do
       post :create, :feed => {:url => '####'}
       response.should render_template('feeds/new')
+    end
+    
+    it "should set created_by on the feed if it is provided" do
+      post :create, :feed => {:url => 'http://test.feed', :created_by => 'quentin'}
+      Feed.find_by_url('http://test.feed').created_by.should == 'quentin'
     end
   
     def test_rest_create_with_duplicate_url_redirects_to_duplicate

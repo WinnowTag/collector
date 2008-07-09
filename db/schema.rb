@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 38) do
+ActiveRecord::Schema.define(:version => 39) do
 
   create_table "archival_histories", :force => true do |t|
     t.integer  "item_count"
@@ -159,6 +159,7 @@ ActiveRecord::Schema.define(:version => 38) do
     t.integer  "feed_items_count",        :default => 0
     t.integer  "duplicate_id"
     t.boolean  "is_duplicate",            :default => false
+    t.string   "created_by"
   end
 
   add_index "feeds", ["sort_title"], :name => "feeds_sort_title_index"
@@ -196,6 +197,11 @@ ActiveRecord::Schema.define(:version => 38) do
     t.datetime "created_on"
     t.datetime "updated_on"
   end
+
+  create_table "schema_migrations", :primary_key => "version", :force => true do |t|
+  end
+
+  add_index "schema_migrations", ["version"], :name => "unique_schema_migrations", :unique => true
 
   create_table "sessions", :force => true do |t|
     t.string   "session_id"

@@ -11,7 +11,7 @@ class CollectionJob < ActiveRecord::Base
   
   def self.completed_jobs_for_user(login)
     find(:all,
-         :conditions => ['completed_at is not null and created_by = ? and user_notified = ?', login, false],
+         :conditions => ['completed_at is not null and collection_jobs.created_by = ? and user_notified = ?', login, false],
          :order => 'completed_at desc',
          :include => :feed
       )

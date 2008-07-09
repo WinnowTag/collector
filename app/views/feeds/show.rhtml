@@ -15,6 +15,10 @@
 		<th>Active</th>
 		<td><%= activate_feed_control @feed%></td>
 	</tr>
+  <tr>
+    <th>Created by</th>
+    <td><%= @feed.created_by %></td>
+  </tr>
 </table>
 
 <h2>Scheduled Collection Jobs</h2>
