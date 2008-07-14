@@ -10,11 +10,9 @@ class SpidersController < ApplicationController
     respond_to do |wants|
       wants.html do
         @title = 'Spidering Results'
-        @spider_result_pages = Paginator.new(self, SpiderResult.count, 40, params[:page])
-        @spider_results = SpiderResult.find(:all, :select => 'id, url, failed, feed_item_id, scraper, created_at, feed_id',
-                                      :limit => @spider_result_pages.items_per_page,
-                                      :offset => @spider_result_pages.current.offset,
-                                      :order => 'created_at desc')
+        @spider_results = SpiderResult.paginate(:select => 'id, url, failed, feed_item_id, scraper, created_at, feed_id',
+                                                :per_page => 40, :page => params[:page],
+                                                :order => 'created_at desc')
       end
     end
   end

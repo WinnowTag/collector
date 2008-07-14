@@ -192,29 +192,13 @@ describe Feed do
       dup.save!
       assert_equal([feed, dup], Feed.find_duplicates(:order => 'id asc'))
     end
-
-    def test_count_suspected_duplicates_counts_feeds_with_same_title
-      feed = Feed.find(1)
-      dup = Feed.new(:url => 'http://foo')
-      dup.title = feed.title
-      dup.save!
-      assert_equal(2, Feed.count_duplicates)
-    end
-    
+        
     def test_find_suspected_duplicates_gets_feeds_with_same_link
       feed = Feed.find(1)
       dup = Feed.new(:url => 'http://foo')
       dup.link = feed.link
       dup.save!
       assert_equal([feed, dup], Feed.find_duplicates(:order => 'id asc'))
-    end
-  
-    def test_count_suspected_duplicates_counts_feeds_with_same_link
-      feed = Feed.find(1)
-      dup = Feed.new(:url => 'http://foo')
-      dup.link = feed.link
-      dup.save!
-      assert_equal(2, Feed.count_duplicates)
     end
   
     def test_find_suspected_duplicates_returns_one_of_each

@@ -10,9 +10,7 @@
     		(<%= link_to "Clear", {:controller => "feeds", :action => "index"}, :style => 'border: none;' %>)
     	<% end -%>
     </div>
-    <div class="pagination">
-    	Page: <%= pagination_links(@feed_pages, :window_size => 3) %>
-    </div>
+    <%= will_paginate(@feeds) %>
 </div>
 <table class="data_table">
   <tr>

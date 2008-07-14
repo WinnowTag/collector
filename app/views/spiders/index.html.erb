@@ -1,7 +1,5 @@
 <div class="control_bar">
-    <div class="pagination">
-    	Page: <%= pagination_links(@spider_result_pages, :window_size => 3) %>
-    </div>
+  <%= will_paginate(@spider_results) %>
 </div>
 
 <p>This table shows the spidering attempts performed by the collector. Spidering is triggered

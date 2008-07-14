@@ -18,15 +18,9 @@ class FeedsController < ApplicationController
     respond_to do |wants|
       wants.html do       
         @title = 'winnow feeds'    
-        @feed_pages = Paginator.new(self, Feed.count, 40, params[:page])
-        @feeds = Feed.find(:all, 
-                            :conditions => @conditions,
-                            :limit => @feed_pages.items_per_page, 
-                            :offset => @feed_pages.current.offset,
-                            :order => sortable_order('feeds', 
-                                                    :model => Feed, 
-                                                    :field => 'title', 
-                                                    :sort_direction => :asc))
+        @feeds = Feed.paginate(:conditions => @conditions,
+                               :per_page => 40, :page => params[:page],
+                               :order => sortable_order('feeds',  :model => Feed, :field => 'title', :sort_direction => :asc))
       end
       wants.text {render :text => Feed.find(:all, :order => 'feeds.id').map(&:url).join("\n")}
       wants.xml {render :xml => Feed.find(:all).to_xml}
@@ -37,13 +31,8 @@ class FeedsController < ApplicationController
     respond_to do |wants|
       wants.html do
         @title = "Problem Feeds"
-        @feed_pages = Paginator.new(self, Feed.count_with_recent_errors, 40, params[:page])
-        @feeds = Feed.find_with_recent_errors(:limit  => @feed_pages.items_per_page,
-                                          :offset => @feed_pages.current.offset,
-                                          :order  => sortable_order('feeds', 
-                                                                  :model => Feed, 
-                                                                  :field => 'title', 
-                                                                  :sort_direction => :asc))
+        @feeds = Feed.find_with_recent_errors(:per_page => 40, :page => params[:page],
+                                              :order  => sortable_order('feeds', :model => Feed, :field => 'title', :sort_direction => :asc))
         render :action => 'index'
       end
       wants.xml { render :xml => Feed.find_with_recent_errors.to_xml }
@@ -54,11 +43,8 @@ class FeedsController < ApplicationController
     respond_to do |wants|
       wants.html do
         @title = "Possible Duplicates"
-        @feed_pages = Paginator.new(self, Feed.count_duplicates, 40, params[:page])
-        @feeds = Feed.find_duplicates(:limit  => @feed_pages.items_per_page,
-                                      :offset => @feed_pages.current.offset,
-                                      :order  => sortable_order('feeds', :model => Feed,
-                                                                :field => 'title', :sort_direction => :asc))
+        @feeds = Feed.find_duplicates(:per_page => 40, :page => params[:page],
+                                      :order  => sortable_order('feeds', :model => Feed, :field => 'title', :sort_direction => :asc))
         render :action => 'index'
       end
       wants.xml { render :xml => Feed.find_duplicates.to_xml }

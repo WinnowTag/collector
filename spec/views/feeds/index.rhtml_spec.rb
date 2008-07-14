@@ -9,7 +9,6 @@ require File.dirname(__FILE__) + '/../../spec_helper'
 
 describe '/feeds/index.rhtml' do
   it "should escape titles in the confirm dialog for deletion" do
-    assigns[:feed_pages] = mock('feed_pages', :null_object => true)
     assigns[:feeds] = [mock_model(Feed, valid_feed_attributes(:title => "quote&apos;s"))]
     render '/feeds/index.rhtml'
     

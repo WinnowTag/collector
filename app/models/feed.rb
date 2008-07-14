@@ -43,36 +43,36 @@ class Feed < ActiveRecord::Base
     feed
   end
   
-  def self.count_duplicates
-    count(:joins => 'inner join feeds as f2 on ' +
-                       '(feeds.title = f2.title or feeds.link = f2.link) ' +
-                       'and feeds.id <> f2.id')    
-  end
-  
   def self.find_duplicates(options = {})
-    find(:all, options.merge(
-                      :select => 'distinct feeds.*',
-                      :joins => 'inner join feeds as f2 on ' +
-                           '(feeds.title = f2.title or feeds.link = f2.link) ' +
-                           'and feeds.id <> f2.id and feeds.duplicate_id is null and f2.duplicate_id is null'))
+    options_for_find = {
+      :select => 'DISTINCT feeds.*',
+      :joins => 'INNER JOIN feeds AS f2 on (feeds.title = f2.title OR feeds.link = f2.link) ' <<
+                'AND feeds.id <> f2.id AND feeds.duplicate_id IS NULL AND f2.duplicate_id IS NULL'
+    }.merge(options)
+
+    if options_for_find[:per_page]
+      paginate(options_for_find.merge(:count => { :select => "DISTINCT feeds.id" }))
+    else
+      find(:all, options_for_find)
+    end
   end
   
   def self.find_by_url_or_link(url)
     self.find(:first, :conditions => ['url = ? or link = ?', url, url])
   end
   
-  def self.count_with_recent_errors
-    count(:select    => 'distinct feeds.id',
-          :joins     => 'inner join collection_errors as ce on feeds.id = ce.feed_id',
-          :conditions => ['ce.created_on >= ?', Time.now.ago(2.days).utc])
-  end
-  
   def self.find_with_recent_errors(options = {})
-    opts = options.dup
-    opts.update(:select => 'distinct feeds.*',
-                :joins  => 'inner join collection_errors as ce on feeds.id = ce.feed_id',
-                :conditions => ['ce.created_on >= ?', Time.now.ago(2.days).utc])
-    find(:all, opts)
+    options_for_find = {
+      :select => 'DISTINCT feeds.*',
+      :joins  => 'INNER JOIN collection_errors AS ce ON feeds.id = ce.feed_id',
+      :conditions => ['ce.created_on >= ?', Time.now.ago(2.days).utc]
+    }.merge(options)
+
+    if options_for_find[:per_page]
+      paginate(options_for_find.merge(:count => { :select => "DISTINCT feeds.id" }))
+    else
+      find(:all, options_for_find)
+    end
   end
   
   def self.update_feed_item_counts

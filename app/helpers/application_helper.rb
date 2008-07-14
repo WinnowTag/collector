@@ -27,9 +27,6 @@ module ApplicationHelper
     end
   end
   
-  # Permit methods in the ApplicationController to be called from views.
-
-  
   def show_flash
     [:notice, :warning, :message, :error].map do |name|
       if flash[name]
@@ -49,36 +46,10 @@ module ApplicationHelper
     end.compact.join
   end
 
-  def appendable_url_for(options = {})
-    url = url_for(options)
-    
-    if url =~ /.*\?.*/
-      url += '&'
-    else
-      url += '?'
-    end
-  end
-
-  def pagination_links(paginator, options = {}, html_options = {})
-    options = options.merge :link_to_current_page => true
-    options[:params] ||= {}
-    
-    pagination_links_each(paginator, options) do |page|
-      if page == paginator.current_page.number
-        content_tag('span', page, :class => 'current_page')
-      else
-        content_tag('span', link_to(page, options[:params].merge(:page => page), html_options))
-      end
-    end
-  end
-      
   def format_date(date, when_nil = "Never")
     if date.nil?
       when_nil
     else
-      if current_user && current_user.tz
-        date = current_user.tz.utc_to_local(date)
-      end
       date.to_formatted_s(:short)
     end
   end  
