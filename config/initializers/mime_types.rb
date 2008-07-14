@@ -1,4 +1,8 @@
-Mime::Type.register "text/x-opml", :opml
+# Be sure to restart your server when you modify this file.
 
-ActionController::Base.param_parsers[Mime::Type.lookup("text/x-opml")] = Proc.new {|body| {:opml => Opml.parse(body)} }
-   
+# Add new mime types for use in respond_to blocks:
+# Mime::Type.register "text/richtext", :rtf
+# Mime::Type.register_alias "text/html", :iphone
+
+Mime::Type.register "text/x-opml", :opml
+ActionController::Base.param_parsers[Mime::Type.lookup("text/x-opml")] = Proc.new { |body| { :opml => Opml.parse(body) } }
