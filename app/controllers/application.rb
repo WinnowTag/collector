@@ -17,7 +17,7 @@ class ApplicationController < ActionController::Base
   
   include ExceptionNotifiable
   include AuthenticatedSystem
-  before_filter :login_from_cookie, :login_required, :flash_completed_collections
+  before_filter :login_from_cookie, :login_required, :flash_completed_collections, :set_time_zone
   
   SHOULD_BE_POST = {
         :text => 'Bad Request. Should be POST. ' +
@@ -51,5 +51,14 @@ private
     end
     
     return true
+  end
+
+  def set_time_zone
+    if current_user && !current_user.time_zone.blank?
+      Time.zone = current_user.time_zone
+    # elsif cookies[:tzoffset].any?
+    #   # current_user.update_attribute(:time_zone, browser_timezone.name) unless browser_timezone.name == current_user.time_zone
+    #   Time.zone = TimeZone[-cookies[:tzoffset].to_i.minutes]
+    end
   end
 end

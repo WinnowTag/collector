@@ -33,7 +33,6 @@ class User < ActiveRecord::Base
   SALT = "Things which are unimportant can seem important. Things which are important can seem unimportant." unless const_defined?(:SALT)
   attr_accessor :password
 
-  composed_of :tz, :class_name => 'TZInfo::Timezone', :mapping => %w(time_zone identifier)
   validates_presence_of     :login, :email, :firstname, :lastname, :time_zone
   validates_presence_of     :password,                   :if => :password_required?
   validates_presence_of     :password_confirmation,      :if => :password_required?
@@ -42,7 +41,6 @@ class User < ActiveRecord::Base
   validates_length_of       :login,    :within => 3..40
   validates_length_of       :email,    :within => 3..100
   validates_uniqueness_of   :login, :email, :case_sensitive => false
-  validates_inclusion_of    :time_zone, :in => TZInfo::Timezone.all_identifiers, :message => "is not a valid timezone"
   before_save               :encrypt_password
 
   # Authenticates a user by their login name and unencrypted password.  Returns the user or nil.

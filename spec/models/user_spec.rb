@@ -72,40 +72,18 @@ class UserTest < Test::Unit::TestCase
     users(:admin).forget_me
     assert_nil users(:admin).remember_token
   end
-  
-  def test_tz_returns_time_zone_object
-    user = create_user
-    user.time_zone = 'Australia/Adelaide'
-    assert_kind_of(TZInfo::Timezone, user.tz)
-  end
-  
-  def test_tz_returns_utc_as_default
-    user = create_user
-    assert_equal(TZInfo::Timezone.get('UTC'), user.tz)
-  end
-  
-  def test_create_user_with_timezone
-    user = create_user(:tz => TZInfo::Timezone.get('Australia/Adelaide'))
-    assert_equal(TZInfo::Timezone.get('Australia/Adelaide'), user.tz)
-  end
-  
+    
   def test_timezone_should_not_be_nil
     assert_invalid create_user(:time_zone => nil)
   end
-  
-  def test_timezone_must_be_valid
-    u = create_user
-    u.time_zone = 'INVALID'
-    assert_invalid u
+
+protected
+  def create_user(options = {})
+    User.create({ :login => 'quire', 
+                  :email => 'quire@example.com', 
+                  :password => 'quire', 
+                  :firstname => 'Qu', 
+                  :lastname => 'Ire',
+                  :password_confirmation => 'quire' }.merge(options))
   end
-  
-  protected
-    def create_user(options = {})
-      User.create({ :login => 'quire', 
-                    :email => 'quire@example.com', 
-                    :password => 'quire', 
-                    :firstname => 'Qu', 
-                    :lastname => 'Ire',
-                    :password_confirmation => 'quire' }.merge(options))
-    end
 end
