@@ -1,5 +1,4 @@
 ActionController::Routing::Routes.draw do |map|
-
   map.resources :archival_histories              
   map.resources :collection_summaries
   map.resources :collection_jobs
@@ -32,7 +31,5 @@ ActionController::Routing::Routes.draw do |map|
   
   map.connect '', :controller => "feeds"
   
-  # Install the default route as the lowest priority.
-  #map.connect ':controller/:action/:id.:format'
   map.connect ':controller/:action/:id', :requirements => {:id => /.*/}
 end
