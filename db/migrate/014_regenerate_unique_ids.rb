@@ -3,10 +3,6 @@
 # Possession of a copy of this file grants no permission or license
 # to use, modify, or create derivate works.
 # Please contact info@peerworks.org for further information.
-#
-
-require 'feed_tools'
-
 class RegenerateUniqueIds < ActiveRecord::Migration
   class FeedItem < ActiveRecord::Base
     has_one :xml_data_container, :class_name => "FeedItemXmlData", :foreign_key => "id", :dependent => :delete

@@ -6,9 +6,6 @@
 #
 # 
 
-require 'digest/sha1'
-require 'tzinfo'
-
 # == Schema Information
 # Schema version: 57
 #

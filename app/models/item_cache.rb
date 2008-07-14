@@ -5,9 +5,6 @@
 # Please contact info@peerworks.org for further information.
 #
 
-#require 'atom'
-require 'atom/pub'
-
 class ItemCache < ActiveRecord::Base
   has_many :failed_operations, :order => 'created_at asc'
   validates_presence_of :base_uri

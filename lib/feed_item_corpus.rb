@@ -5,8 +5,6 @@
 # Please contact info@peerworks.org for further information.
 #
 
-require 'hpricot'
-
 # A class for handling feed item corpus export files
 class FeedItemCorpus # :nodoc:
   def initialize(corpus)

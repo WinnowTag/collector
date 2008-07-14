@@ -5,10 +5,6 @@
 # Please contact info@peerworks.org for further information.
 #
 
-require 'digest/sha1'
-require 'feed_tools'
-require 'hpricot'
-
 # Represents a Feed provided by an RSS/Atom source.
 #
 # A Feed mainly handles collection of new items through the

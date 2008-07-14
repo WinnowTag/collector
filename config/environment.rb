@@ -25,6 +25,13 @@ Rails::Initializer.run do |config|
   # config.gem "bj"
   # config.gem "hpricot", :version => '0.6', :source => "http://code.whytheluckystiff.net"
   # config.gem "aws-s3", :lib => "aws/s3"
+  config.gem "ratom", :version => "0.3.7", :lib => "atom"
+  config.gem "feedtools", :version => "0.2.29", :lib => "feed_tools"
+  config.gem "tzinfo", :version => "0.3.4"
+
+  # Must be compiled
+  config.gem "mysql"
+  config.gem "hpricot"
 
   # Only load the plugins named here, in the order given. By default, all plugins 
   # in vendor/plugins are loaded in alphabetical order.

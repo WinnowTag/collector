@@ -5,9 +5,6 @@
 # Please contact info@peerworks.org for further information.
 #
 
-require 'digest/sha1'
-require 'feed_tools'
-
 # Provides a representation of an item from an RSS/Atom feed.
 #
 # This class includes methods for:

@@ -3,10 +3,6 @@
 # Possession of a copy of this file grants no permission or license
 # to use, modify, or create derivate works.
 # Please contact info@peerworks.org for further information.
-#
-
-require 'feed_tools'
-
 class RegenerateUniqueKeysForArchives < ActiveRecord::Migration
   class FeedItemXmlDataArchive < ActiveRecord::Base
      set_table_name("feed_item_xml_data_archives")
