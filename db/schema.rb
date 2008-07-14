@@ -1,5 +1,5 @@
 # This file is auto-generated from the current state of the database. Instead of editing this file, 
-# please use the migrations feature of ActiveRecord to incrementally modify your database, and
+# please use the migrations feature of Active Record to incrementally modify your database, and
 # then regenerate this schema definition.
 #
 # Note that this schema.rb definition is the authoritative source for your database schema. If you need
@@ -12,7 +12,7 @@
 ActiveRecord::Schema.define(:version => 39) do
 
   create_table "archival_histories", :force => true do |t|
-    t.integer  "item_count"
+    t.integer  "item_count",    :limit => 11
     t.string   "error_type"
     t.text     "error_message"
     t.datetime "created_on"
@@ -22,39 +22,39 @@ ActiveRecord::Schema.define(:version => 39) do
   create_table "collection_errors", :force => true do |t|
     t.string   "error_type"
     t.text     "error_message"
-    t.integer  "feed_id"
+    t.integer  "feed_id",               :limit => 11
     t.datetime "created_on"
-    t.integer  "collection_summary_id"
+    t.integer  "collection_summary_id", :limit => 11
   end
 
   create_table "collection_jobs", :force => true do |t|
-    t.integer  "feed_id"
+    t.integer  "feed_id",       :limit => 11
     t.string   "callback_url"
     t.string   "created_by"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "started_at"
     t.datetime "completed_at"
-    t.boolean  "user_notified", :default => false
-    t.integer  "item_count"
-    t.integer  "lock_version"
+    t.boolean  "user_notified",               :default => false
+    t.integer  "item_count",    :limit => 11
+    t.integer  "lock_version",  :limit => 11
     t.text     "message"
-    t.boolean  "failed",        :default => false
+    t.boolean  "failed",                      :default => false
   end
 
   create_table "collection_summaries", :force => true do |t|
     t.string   "fatal_error_type"
     t.text     "fatal_error_message"
-    t.integer  "item_count",          :default => 0
+    t.integer  "item_count",          :limit => 11, :default => 0
     t.datetime "created_on"
     t.datetime "updated_on"
     t.datetime "completed_on"
   end
 
   create_table "failed_operations", :force => true do |t|
-    t.integer  "item_cache_id"
-    t.integer  "item_cache_operation_id"
-    t.integer  "code"
+    t.integer  "item_cache_id",           :limit => 11
+    t.integer  "item_cache_operation_id", :limit => 11
+    t.integer  "code",                    :limit => 11
     t.string   "message"
     t.text     "content"
     t.datetime "created_at"
@@ -64,11 +64,11 @@ ActiveRecord::Schema.define(:version => 39) do
   add_index "failed_operations", ["item_cache_id", "item_cache_operation_id"], :name => "failed_operations_index", :unique => true
 
   create_table "feed_item_contents", :force => true do |t|
-    t.integer  "feed_item_id"
+    t.integer  "feed_item_id",    :limit => 11
     t.text     "title"
     t.string   "link"
     t.string   "author"
-    t.text     "description"
+    t.text     "description",     :limit => 2147483647
     t.datetime "created_on"
     t.text     "encoded_content"
   end
@@ -76,11 +76,11 @@ ActiveRecord::Schema.define(:version => 39) do
   add_index "feed_item_contents", ["feed_item_id"], :name => "index_feed_item_contents_on_feed_item_id"
 
   create_table "feed_item_contents_archives", :force => true do |t|
-    t.integer  "feed_item_id"
+    t.integer  "feed_item_id",    :limit => 11
     t.text     "title"
     t.string   "link"
     t.string   "author"
-    t.text     "description"
+    t.text     "description",     :limit => 2147483647
     t.datetime "created_on"
     t.text     "encoded_content"
   end
@@ -88,25 +88,25 @@ ActiveRecord::Schema.define(:version => 39) do
   add_index "feed_item_contents_archives", ["feed_item_id"], :name => "FIC_ARCHIVES_UNIQUE_FEED_ITEM_ID", :unique => true
 
   create_table "feed_item_xml_data", :force => true do |t|
-    t.text     "xml_data"
+    t.text     "xml_data",   :limit => 2147483647
     t.datetime "created_on"
   end
 
   create_table "feed_item_xml_data_archives", :force => true do |t|
-    t.text     "xml_data"
+    t.text     "xml_data",   :limit => 2147483647
     t.datetime "created_on"
   end
 
   create_table "feed_items", :force => true do |t|
-    t.integer  "feed_id"
+    t.integer  "feed_id",              :limit => 11
     t.string   "sort_title"
     t.datetime "time"
     t.datetime "created_on"
-    t.string   "unique_id",            :default => ""
-    t.string   "time_source",          :default => "unknown"
-    t.integer  "xml_data_size"
+    t.string   "unique_id",                          :default => ""
+    t.string   "time_source",                        :default => "unknown"
+    t.integer  "xml_data_size",        :limit => 11
     t.string   "link"
-    t.integer  "content_length"
+    t.integer  "content_length",       :limit => 11
     t.string   "title"
     t.boolean  "tokens_were_spidered"
   end
@@ -119,15 +119,15 @@ ActiveRecord::Schema.define(:version => 39) do
   add_index "feed_items", ["content_length"], :name => "index_feed_items_on_content_length"
 
   create_table "feed_items_archives", :force => true do |t|
-    t.integer  "feed_id"
+    t.integer  "feed_id",              :limit => 11
     t.string   "sort_title"
     t.datetime "time"
     t.datetime "created_on"
-    t.string   "unique_id",            :default => ""
-    t.string   "time_source",          :default => "unknown"
-    t.integer  "xml_data_size"
+    t.string   "unique_id",                          :default => ""
+    t.string   "time_source",                        :default => "unknown"
+    t.integer  "xml_data_size",        :limit => 11
     t.string   "link"
-    t.integer  "content_length"
+    t.integer  "content_length",       :limit => 11
     t.string   "title"
     t.boolean  "tokens_were_spidered"
   end
@@ -140,7 +140,7 @@ ActiveRecord::Schema.define(:version => 39) do
   add_index "feed_items_archives", ["content_length"], :name => "index_feed_items_on_content_length"
 
   create_table "feed_xml_datas", :force => true do |t|
-    t.text     "xml_data"
+    t.text     "xml_data",   :limit => 2147483647
     t.datetime "created_on"
     t.datetime "updated_on"
   end
@@ -151,13 +151,13 @@ ActiveRecord::Schema.define(:version => 39) do
     t.string   "link"
     t.text     "last_http_headers"
     t.datetime "updated_on"
-    t.boolean  "active",                  :default => true
+    t.boolean  "active",                                :default => true
     t.datetime "created_on"
     t.string   "sort_title"
-    t.integer  "collection_errors_count", :default => 0
-    t.integer  "feed_items_count",        :default => 0
-    t.integer  "duplicate_id"
-    t.boolean  "is_duplicate",            :default => false
+    t.integer  "collection_errors_count", :limit => 11, :default => 0
+    t.integer  "feed_items_count",        :limit => 11, :default => 0
+    t.integer  "duplicate_id",            :limit => 11
+    t.boolean  "is_duplicate",                          :default => false
     t.string   "created_by"
   end
 
@@ -166,10 +166,10 @@ ActiveRecord::Schema.define(:version => 39) do
   add_index "feeds", ["link"], :name => "index_feeds_on_link"
 
   create_table "item_cache_operations", :force => true do |t|
-    t.string   "action",                             :null => false
-    t.string   "actionable_type",                    :null => false
-    t.integer  "actionable_id",                      :null => false
-    t.boolean  "done",            :default => false, :null => false
+    t.string   "action",                                           :null => false
+    t.string   "actionable_type",                                  :null => false
+    t.integer  "actionable_id",   :limit => 11,                    :null => false
+    t.boolean  "done",                          :default => false, :null => false
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -184,15 +184,15 @@ ActiveRecord::Schema.define(:version => 39) do
   end
 
   create_table "protected_items", :force => true do |t|
-    t.integer  "feed_item_id"
-    t.integer  "protector_id"
+    t.integer  "feed_item_id", :limit => 11
+    t.integer  "protector_id", :limit => 11
     t.datetime "created_on"
     t.datetime "updated_on"
   end
 
   create_table "protectors", :force => true do |t|
     t.string   "name"
-    t.integer  "protected_items_count", :default => 0
+    t.integer  "protected_items_count", :limit => 11, :default => 0
     t.datetime "created_on"
     t.datetime "updated_on"
   end
@@ -207,16 +207,16 @@ ActiveRecord::Schema.define(:version => 39) do
   add_index "sessions", ["session_id"], :name => "session_id_idx"
 
   create_table "spider_results", :force => true do |t|
-    t.integer  "feed_item_id"
-    t.integer  "feed_id",                                   :null => false
-    t.boolean  "failed",                 :default => false
+    t.integer  "feed_item_id",           :limit => 11
+    t.integer  "feed_id",                :limit => 11,                    :null => false
+    t.boolean  "failed",                               :default => false
     t.text     "failure_message"
     t.text     "content"
     t.text     "scraped_content"
     t.string   "url"
     t.string   "scraper"
-    t.integer  "content_length"
-    t.integer  "scraped_content_length"
+    t.integer  "content_length",         :limit => 11
+    t.integer  "scraped_content_length", :limit => 11
     t.datetime "created_at"
     t.datetime "updated_at"
   end

@@ -17,7 +17,7 @@
 #   RAILS_ROOT = ENV['RAILS_ROOT']
 # end
 # load any host specific configuration
-RAILS_GEM_VERSION = '2.0.2'
+RAILS_GEM_VERSION = '2.1.0'
 host_specific_config = File.join(File.dirname(__FILE__), 'local', 'environment.rb')
 if File.exist?(host_specific_config)
   require host_specific_config
