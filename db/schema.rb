@@ -73,7 +73,7 @@ ActiveRecord::Schema.define(:version => 39) do
     t.text     "encoded_content"
   end
 
-  add_index "feed_item_contents", ["feed_item_id"], :name => "feed_item_contents_feed_item_id_index"
+  add_index "feed_item_contents", ["feed_item_id"], :name => "index_feed_item_contents_on_feed_item_id"
 
   create_table "feed_item_contents_archives", :force => true do |t|
     t.integer  "feed_item_id"
@@ -111,13 +111,12 @@ ActiveRecord::Schema.define(:version => 39) do
     t.boolean  "tokens_were_spidered"
   end
 
-  add_index "feed_items", ["link"], :name => "feed_items_link_index", :unique => true
-  add_index "feed_items", ["time"], :name => "feed_items_time_index"
-  add_index "feed_items", ["feed_id"], :name => "feed_items_feed_id_index"
-  add_index "feed_items", ["sort_title"], :name => "feed_items_title_index"
-  add_index "feed_items", ["unique_id"], :name => "feed_items_unique_id_index"
-  add_index "feed_items", ["content_length"], :name => "feed_items_content_length_index"
-  add_index "feed_items", ["time", "id"], :name => "id_time"
+  add_index "feed_items", ["link"], :name => "index_feed_items_on_link", :unique => true
+  add_index "feed_items", ["time"], :name => "index_feed_items_on_time"
+  add_index "feed_items", ["feed_id"], :name => "index_feed_items_on_feed_id"
+  add_index "feed_items", ["sort_title"], :name => "index_feed_items_on_title"
+  add_index "feed_items", ["unique_id"], :name => "index_feed_items_on_unique_id"
+  add_index "feed_items", ["content_length"], :name => "index_feed_items_on_content_length"
 
   create_table "feed_items_archives", :force => true do |t|
     t.integer  "feed_id"
@@ -133,12 +132,12 @@ ActiveRecord::Schema.define(:version => 39) do
     t.boolean  "tokens_were_spidered"
   end
 
-  add_index "feed_items_archives", ["link"], :name => "feed_items_link_index", :unique => true
-  add_index "feed_items_archives", ["time"], :name => "feed_items_time_index"
-  add_index "feed_items_archives", ["feed_id"], :name => "feed_items_feed_id_index"
-  add_index "feed_items_archives", ["sort_title"], :name => "feed_items_title_index"
-  add_index "feed_items_archives", ["unique_id"], :name => "feed_items_unique_id_index"
-  add_index "feed_items_archives", ["content_length"], :name => "feed_items_content_length_index"
+  add_index "feed_items_archives", ["link"], :name => "index_feed_items_on_link", :unique => true
+  add_index "feed_items_archives", ["time"], :name => "index_feed_items_on_time"
+  add_index "feed_items_archives", ["feed_id"], :name => "index_feed_items_on_feed_id"
+  add_index "feed_items_archives", ["sort_title"], :name => "index_feed_items_on_title"
+  add_index "feed_items_archives", ["unique_id"], :name => "index_feed_items_on_unique_id"
+  add_index "feed_items_archives", ["content_length"], :name => "index_feed_items_on_content_length"
 
   create_table "feed_xml_datas", :force => true do |t|
     t.text     "xml_data"
@@ -162,7 +161,7 @@ ActiveRecord::Schema.define(:version => 39) do
     t.string   "created_by"
   end
 
-  add_index "feeds", ["sort_title"], :name => "feeds_sort_title_index"
+  add_index "feeds", ["sort_title"], :name => "index_feeds_on_sort_title"
   add_index "feeds", ["title"], :name => "index_feeds_on_title"
   add_index "feeds", ["link"], :name => "index_feeds_on_link"
 
@@ -197,11 +196,6 @@ ActiveRecord::Schema.define(:version => 39) do
     t.datetime "created_on"
     t.datetime "updated_on"
   end
-
-  create_table "schema_migrations", :primary_key => "version", :force => true do |t|
-  end
-
-  add_index "schema_migrations", ["version"], :name => "unique_schema_migrations", :unique => true
 
   create_table "sessions", :force => true do |t|
     t.string   "session_id"
