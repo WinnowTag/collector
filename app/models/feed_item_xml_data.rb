@@ -6,17 +6,6 @@
 #
 
 # Stores the original XML data for a feed item.
-#
-# == Schema Information
-# Schema version: 57
-#
-# Table name: feed_item_xml_data
-#
-#  id         :integer(11)   not null, primary key
-#  xml_data   :text          
-#  created_on :datetime      
-#
-
 class FeedItemXmlData < ActiveRecord::Base
   set_table_name "feed_item_xml_data"
   belongs_to :feed_item, :class_name => "FeedItem", :foreign_key => "id"

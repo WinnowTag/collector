@@ -6,18 +6,6 @@
 #
 
 # Stores the last XML data for a feed.
-#
-# == Schema Information
-# Schema version: 57
-#
-# Table name: feed_xml_datas
-#
-#  id         :integer(11)   not null, primary key
-#  xml_data   :text          
-#  created_on :datetime      
-#  updated_on :datetime      
-#
-
 class FeedXmlData < ActiveRecord::Base
   belongs_to :feed
 end
