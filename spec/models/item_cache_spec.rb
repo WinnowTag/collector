@@ -49,7 +49,8 @@ shared_examples_for("a recorder of failed operations") do
 end
 
 describe ItemCache do
-  fixtures :item_caches
+  fixtures :item_caches, :feeds
+  
   before(:each) do
     @item_cache = ItemCache.new(:base_uri => 'http://example.com/')
   end

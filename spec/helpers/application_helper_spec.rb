@@ -10,7 +10,7 @@ require File.dirname(__FILE__) + '/../spec_helper'
 describe ApplicationHelper do
   describe '.unescape' do
     it "should return nil when it gets nil" do
-      unescape(nil).should be_nil
+      helper.unescape(nil).should be_nil
     end    
   end
 end
