@@ -7,9 +7,6 @@
 
 require File.dirname(__FILE__) + '/../test_helper'
 require File.dirname(__FILE__) + '/../spec_helper'
-require 'feed_tools'
-gem 'ratom'
-require 'atom'
 
 class FeedItemTest < Test::Unit::TestCase
   fixtures :feed_items, :feed_item_contents
