@@ -72,7 +72,7 @@ Rails::Initializer.run do |config|
   config.active_record.observers = :item_cache_observer
 
   config.after_initialize do 
-    ActionView::Helpers::AssetTagHelper.register_javascript_expansion :collector => ["in_place_completer", "slider"]
+    ActionView::Helpers::AssetTagHelper.register_javascript_expansion :collector => ["slider"]
     ActionView::Helpers::AssetTagHelper.register_stylesheet_expansion :collector => ["collector", "tables"]
   end
 end
