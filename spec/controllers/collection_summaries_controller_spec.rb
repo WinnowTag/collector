@@ -13,20 +13,21 @@ describe CollectionSummariesController do
     assert_response :success
     assert assigns(:collection_summaries)
   end
-  
-  it "index_should_contain_row_for_each_summary" do
-    get :index
-    assert_select("table.data_table", true, @response.body) do
-      assert_select('tr', CollectionSummary.count + 1, @response.body)
-    end
-  end
-  
-  it "index_should_contain_link_to_show_for_each_summary" do
-    get :index
-    CollectionSummary.find(:all).each do |s|
-      assert_select("a[href=#{collection_summary_path(s)}]", true)
-    end
-  end
+
+  # TODO: Move to view spec
+  # it "index_should_contain_row_for_each_summary" do
+  #   get :index
+  #   assert_select("table.data_table", true, @response.body) do
+  #     assert_select('tr', CollectionSummary.count + 1, @response.body)
+  #   end
+  # end
+  # 
+  # it "index_should_contain_link_to_show_for_each_summary" do
+  #   get :index
+  #   CollectionSummary.find(:all).each do |s|
+  #     assert_select("a[href=#{collection_summary_path(s)}]", true)
+  #   end
+  # end
   
   it "index_for_atom" do
     accept('application/atom+xml')

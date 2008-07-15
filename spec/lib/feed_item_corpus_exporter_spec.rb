@@ -14,7 +14,7 @@ describe FeedItemCorpusExporterWorker do
     results = {}
     exporter.stub!(:results).and_return(results)
     exporter.do_work(:feeds => [1, 2], :output => '/tmp/testoutput.xml.gz', :item_target => 4, :steepness => 100)    
-    @output = DocumentOutput.new(Zlib::GzipReader.new(File.open('/tmp/testoutput.xml.gz')))
+    @output = HpricotTestHelper::DocumentOutput.new(Zlib::GzipReader.new(File.open('/tmp/testoutput.xml.gz')))
 
     assert_equal 'Complete! Exported 4 Feed Items.', results[:progress_message]
     assert_equal 100, results[:progress]
@@ -47,7 +47,7 @@ describe FeedItemCorpusExporterWorker do
     results = {}
     exporter.stub!(:results).and_return(results)
     exporter.do_work(:feeds => [1, 2], :output => '/tmp/testoutput.xml.gz', :item_target => 3, :steepness => 0)    
-    @output = DocumentOutput.new(Zlib::GzipReader.new(File.open('/tmp/testoutput.xml.gz')))    
+    @output = HpricotTestHelper::DocumentOutput.new(Zlib::GzipReader.new(File.open('/tmp/testoutput.xml.gz')))    
     
     assert_equal 'Complete! Exported 3 Feed Items.', results[:progress_message]
     assert_equal 100, results[:progress]
@@ -80,7 +80,7 @@ describe FeedItemCorpusExporterWorker do
     results = {}
     exporter.stub!(:results).and_return(results)
     exporter.do_work(:feeds => [1], :output => '/tmp/testoutput.xml.gz', :start_date => start_date, :end_date => end_date)
-    @output = DocumentOutput.new(Zlib::GzipReader.new(File.new('/tmp/testoutput.xml.gz')))
+    @output = HpricotTestHelper::DocumentOutput.new(Zlib::GzipReader.new(File.new('/tmp/testoutput.xml.gz')))
  
     assert_equal 'Complete! Exported 2 Feed Items.', results[:progress_message]
     assert_equal 100, results[:progress]
@@ -103,7 +103,7 @@ describe FeedItemCorpusExporterWorker do
     results = {}
     exporter.stub!(:results).and_return(results)
     exporter.do_work(:feeds => [1, 2], :output => '/tmp/testoutput.xml.gz', :min_content_length => 10, :steepness => 0)  
-    @output = DocumentOutput.new(Zlib::GzipReader.new(File.open('/tmp/testoutput.xml.gz')))
+    @output = HpricotTestHelper::DocumentOutput.new(Zlib::GzipReader.new(File.open('/tmp/testoutput.xml.gz')))
     
     assert_equal 'Complete! Exported 2 Feed Items.', results[:progress_message]
     assert_equal 100, results[:progress]

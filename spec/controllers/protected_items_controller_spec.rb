@@ -32,13 +32,13 @@ describe ProtectedItemsController do
   
   it "delete_all" do
     protector = Protector.find(1)
-    assert_difference(ProtectedItem, :count, -protector.protected_items.size) do
+    assert_difference(ProtectedItem, :count, -protector.protected_items(:reload).size) do
       delete :delete_all, :protector_id => protector.id
     end
-    assert_equal(0, Protector.find(1).protected_items_count)
+    assert_equal(0, protector.protected_items(:reload).size)
   end
   
-  it "delete_all" do
+  it "delete_all one" do
     protector = Protector.find(1)
     assert_difference(ProtectedItem, :count, -1) do
       delete :delete_all, :protector_id => protector.id, :feed_item_id => protector.protected_items.first.id
