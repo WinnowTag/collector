@@ -1,9 +1,8 @@
-# Copyright (c) 2005 The Kaphan Foundation
+# Copyright (c) 2008 The Kaphan Foundation
 #
 # Possession of a copy of this file grants no permission or license
 # to use, modify, or create derivate works.
-# Please contact info@peerworks.org for further information.
-#
+# Please visit http://www.peerworks.org/contact for further information.
 class FeedsController < ApplicationController
   include ActionView::Helpers::TextHelper  
   verify :only => :destroy, :method => :delete, :render => SHOULD_BE_POST

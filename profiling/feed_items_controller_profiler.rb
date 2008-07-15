@@ -1,9 +1,8 @@
-#!/usr/bin/env ruby
+# Copyright (c) 2008 The Kaphan Foundation
 #
-#  Created by Sean Geoghegan on 2006-09-30.
-#  Copyright (c) 2006. All rights reserved.
-
-# Re-raise errors caught by the controller.
+# Possession of a copy of this file grants no permission or license
+# to use, modify, or create derivate works.
+# Please visit http://www.peerworks.org/contact for further information.
 RAILS_ENV = 'production'
 require File.join(File.dirname(__FILE__), '../config/environment')
 require 'ruby-prof'

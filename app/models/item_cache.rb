@@ -2,9 +2,7 @@
 #
 # Possession of a copy of this file grants no permission or license
 # to use, modify, or create derivate works.
-# Please contact info@peerworks.org for further information.
-#
-
+# Please visit http://www.peerworks.org/contact for further information.
 class ItemCache < ActiveRecord::Base
   has_many :failed_operations, :order => 'created_at asc'
   validates_presence_of :base_uri

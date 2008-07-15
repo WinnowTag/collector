@@ -1,12 +1,8 @@
-# Copyright (c) 2005 The Kaphan Foundation
+# Copyright (c) 2008 The Kaphan Foundation
 #
 # Possession of a copy of this file grants no permission or license
 # to use, modify, or create derivate works.
-# Please contact info@peerworks.org for further information.
-#
-# log_controller.rb
-# TODO: Document.
-
+# Please visit http://www.peerworks.org/contact for further information.
 class LogController < ApplicationController
 
   def collect

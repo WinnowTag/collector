@@ -1,9 +1,16 @@
+# Copyright (c) 2008 The Kaphan Foundation
+#
+# Possession of a copy of this file grants no permission or license
+# to use, modify, or create derivate works.
+# Please visit http://www.peerworks.org/contact for further information.
+
 # This file is copied to ~/spec when you run 'ruby script/generate rspec'
 # from the project root directory.
 ENV["RAILS_ENV"] = "test"
 require File.expand_path(File.dirname(__FILE__) + "/../config/environment")
 require 'spec'
 require 'spec/rails'
+require File.join(File.dirname(__FILE__), 'matchers')
 
 Spec::Runner.configure do |config|
   # If you're not using ActiveRecord you should remove these
@@ -12,6 +19,8 @@ Spec::Runner.configure do |config|
   config.use_transactional_fixtures = true
   config.use_instantiated_fixtures  = false
   config.fixture_path = RAILS_ROOT + '/spec/fixtures/'
+  
+  config.include WinnowMatchers, :type => :code
 
   # == Fixtures
   #

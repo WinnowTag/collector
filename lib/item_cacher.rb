@@ -2,9 +2,7 @@
 #
 # Possession of a copy of this file grants no permission or license
 # to use, modify, or create derivate works.
-# Please contact info@peerworks.org for further information.
-#
-
+# Please visit http://www.peerworks.org/contact for further information.
 ENV['RAILS_ENV'] ||= 'production'
 require File.join(File.dirname(__FILE__), '/../config/environment.rb')
 ActiveRecord::Base.logger = Logger.new(File.join(RAILS_ROOT, 'log', 'item_cache.log'), "daily")

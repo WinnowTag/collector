@@ -1,8 +1,8 @@
-# Copyright (c) 2007 The Kaphan Foundation
+# Copyright (c) 2008 The Kaphan Foundation
 #
 # Possession of a copy of this file grants no permission or license
 # to use, modify, or create derivate works.
-# Please contact info@peerworks.org for further information.
+# Please visit http://www.peerworks.org/contact for further information.
 class RegenerateUniqueIds < ActiveRecord::Migration
   class FeedItem < ActiveRecord::Base
     has_one :xml_data_container, :class_name => "FeedItemXmlData", :foreign_key => "id", :dependent => :delete

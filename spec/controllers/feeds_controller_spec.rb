@@ -1,9 +1,10 @@
+# Copyright (c) 2008 The Kaphan Foundation
+#
+# Possession of a copy of this file grants no permission or license
+# to use, modify, or create derivate works.
+# Please visit http://www.peerworks.org/contact for further information.
 require File.dirname(__FILE__) + '/../test_helper'
 require File.dirname(__FILE__) + '/../spec_helper'
-require 'feeds_controller'
-
-# Re-raise errors caught by the controller and skip authentication.
-class FeedsController; def rescue_action(e) raise e end; end
 
 describe FeedsController do
   fixtures :feeds, :users, :collection_errors
