@@ -6,8 +6,6 @@
 require File.dirname(__FILE__) + '/../../spec_helper'
 
 describe "/item_caches/index.html.erb" do
-  include ItemCachesHelper
-  
   before(:each) do
     item_cache_98 = mock_model(ItemCache, :base_uri => 'http://example1.com', :failed_operations => [])
     item_cache_99 = mock_model(ItemCache, :base_uri => 'http://example2.com', :failed_operations => [])

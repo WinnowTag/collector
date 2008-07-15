@@ -6,8 +6,6 @@
 require File.dirname(__FILE__) + '/../../spec_helper'
 
 describe "/item_caches/new.html.erb" do
-  include ItemCachesHelper
-  
   before(:each) do
     @item_cache = mock_model(ItemCache, :base_uri => nil)
     @item_cache.stub!(:new_record?).and_return(true)

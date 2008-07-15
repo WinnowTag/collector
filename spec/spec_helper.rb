@@ -54,6 +54,12 @@ Spec::Runner.configure do |config|
   # 
   # For more information take a look at Spec::Example::Configuration and Spec::Runner
 
+  include AuthenticatedTestHelper
+
+  def referer(referer)
+    @request.env['HTTP_REFERER'] = referer
+  end
+
   def login_as(user_id_or_fixture_name)
     @request.session[:user] = case user_id_or_fixture_name
       when Numeric; user_id_or_fixture_name

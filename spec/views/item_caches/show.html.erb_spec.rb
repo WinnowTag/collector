@@ -6,8 +6,6 @@
 require File.dirname(__FILE__) + '/../../spec_helper'
 
 describe "/item_caches/show.html.erb" do
-  include ItemCachesHelper
-  
   before(:each) do
     @item_cache = mock_model(ItemCache)
 
