@@ -1,27 +1,20 @@
 require File.dirname(__FILE__) + '/../test_helper'
 require File.dirname(__FILE__) + '/../spec_helper'
-require 'archival_histories_controller'
 
-# Re-raise errors caught by the controller.
-class ArchivalHistoriesController; def rescue_action(e) raise e end; end
-
-class ArchivalHistoriesControllerTest < Test::Unit::TestCase
+describe ArchivalHistoriesController do
   fixtures :archival_histories, :users
 
-  def setup
-    @controller = ArchivalHistoriesController.new
-    @request    = ActionController::TestRequest.new
-    @response   = ActionController::TestResponse.new
+  before(:each) do
     login_as(:admin)
   end
 
-  def test_should_get_index    
+  it "should_get_index" do
     get :index
     assert_response :success
     assert assigns(:archival_histories)
   end
   
-  def test_index_for_atom
+  it "index_for_atom" do
     accept('application/atom+xml')
     get :index
     assert_template 'atom'

@@ -7,22 +7,15 @@
 
 require File.dirname(__FILE__) + '/../test_helper'
 require File.dirname(__FILE__) + '/../spec_helper'
-require 'protected_items_controller'
 
-# Re-raise errors caught by the controller.
-class ProtectedItemsController; def rescue_action(e) raise e end; end
-
-class ProtectedItemsControllerTest < Test::Unit::TestCase
+describe ProtectedItemsController do
   fixtures :protected_items, :protectors
 
-  def setup
-    @controller = ProtectedItemsController.new
-    @request    = ActionController::TestRequest.new
-    @response   = ActionController::TestResponse.new
+  before(:each) do
     @controller.stub!(:local_request?).and_return(true)
   end
 
-  def test_routing
+  it "routing" do
     assert_routing('/protectors/1/protected_items', :controller => 'protected_items', 
                                                     :action => 'index',
                                                     :protector_id => "1")
@@ -30,14 +23,14 @@ class ProtectedItemsControllerTest < Test::Unit::TestCase
                       {:path => '/protectors/1/protected_items/delete_all', :method => :delete})
   end
   
-  def test_should_get_index
+  it "should_get_index" do
     protector = Protector.find(1)
     get :index, :protector_id => protector.id
     assert_response :success
     assert_equal protector.protected_items, assigns(:protected_items)
   end
   
-  def test_delete_all
+  it "delete_all" do
     protector = Protector.find(1)
     assert_difference(ProtectedItem, :count, -protector.protected_items.size) do
       delete :delete_all, :protector_id => protector.id
@@ -45,14 +38,14 @@ class ProtectedItemsControllerTest < Test::Unit::TestCase
     assert_equal(0, Protector.find(1).protected_items_count)
   end
   
-  def test_delete_all
+  it "delete_all" do
     protector = Protector.find(1)
     assert_difference(ProtectedItem, :count, -1) do
       delete :delete_all, :protector_id => protector.id, :feed_item_id => protector.protected_items.first.id
     end
   end
   
-  def test_should_create_protected_item
+  it "should_create_protected_item" do
     protector = Protector.find(1)
     old_count = ProtectedItem.count
     post :create, :protected_item => { :feed_item_id => 3 }, :protector_id => protector.id
@@ -62,7 +55,7 @@ class ProtectedItemsControllerTest < Test::Unit::TestCase
     assert_equal protector_protected_item_url(protector, assigns(:protected_item)), @response.headers['Location']
   end
 
-  def test_should_create_multiple_protected_items
+  it "should_create_multiple_protected_items" do
     protector = Protector.find(2)
     protector.protected_items.clear
     assert_difference(ProtectedItem, :count, 3) do
@@ -75,7 +68,7 @@ class ProtectedItemsControllerTest < Test::Unit::TestCase
     end
   end
   
-  def test_should_create_multiple_protected_items_even_when_some_exist
+  it "should_create_multiple_protected_items_even_when_some_exist" do
     protector = Protector.find(2)
     assert_difference(ProtectedItem, :count, 2) do
       post :create, :protector_id => protector.id,
@@ -87,12 +80,12 @@ class ProtectedItemsControllerTest < Test::Unit::TestCase
     end
   end
   
-  def test_should_show_protected_item
+  it "should_show_protected_item" do
     get :show, :id => 1, :protector_id => 1
     assert_response :success
   end
     
-  def test_should_destroy_protected_item
+  it "should_destroy_protected_item" do
     old_count = ProtectedItem.count
     delete :destroy, :id => 1, :protector_id => 1
     assert_equal old_count-1, ProtectedItem.count

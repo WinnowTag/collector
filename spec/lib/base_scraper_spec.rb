@@ -8,12 +8,12 @@
 require File.dirname(__FILE__) + '/../test_helper'
 require File.dirname(__FILE__) + '/../spec_helper'
 
-class BaseScraperTest < Test::Unit::TestCase
-  def setup
+describe BaseScraper do
+  before(:each) do
     @scraper = BaseScraper.new
   end
         
-  def test_base_scraper_returns_nil_for_handle
+  it "base_scraper_returns_nil_for_handle" do
     assert_nil(@scraper.scrape("url", mock('content')))
   end
 end

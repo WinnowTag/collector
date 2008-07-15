@@ -9,6 +9,7 @@ require File.dirname(__FILE__) + '/../spec_helper'
 
 describe FailedOperation do
   fixtures :feeds
+  
   before(:each) do
     @item_cache = ItemCache.create!(:base_uri => 'http://example.com')
     @operation = ItemCacheOperation.create!(:action => 'publish', :actionable => Feed.find(1))

@@ -2,11 +2,12 @@ require File.dirname(__FILE__) + '/../spec_helper'
 
 describe FailedOperationsController do
   fixtures :users
+  
   before(:each) do
     login_as(:admin)
   end
   
-  describe "GET 'index'" do
+  describe "GET index" do
     before(:each) do
       @item_cache = mock_model(ItemCache, :base_uri => 'http://example.org')
       ItemCache.stub!(:find).with(@item_cache.id.to_s).and_return(@item_cache)

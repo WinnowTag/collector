@@ -12,8 +12,7 @@ describe Feed do
   fixtures :feeds, :feed_items, :collection_errors, :feed_item_contents
   
   describe 'collection' do  
-    # Replace this with your real tests.
-    def test_adding_items   
+    it "adding_items" do
       feed = stub('feed', :title => 'A Feed', 
                   :link => 'http://test/site',
                   :feed_data => '<feed><item></item></feed', 
@@ -73,25 +72,25 @@ describe Feed do
       Feed.should_receive(:active_feeds).and_return(feeds)
     end
   
-    def test_collect_all
+    it "collect_all" do
       stub_collection
       Feed.collect_all    
     end
   
-    def test_collect_all_creates_new_collection_summary
+    it "collect_all_creates_new_collection_summary" do
       stub_collection
       assert_difference(CollectionSummary, :count) do
         assert_instance_of(CollectionSummary, Feed.collect_all)
       end
     end
   
-    def test_collect_all_sums_up_collection_count
+    it "collect_all_sums_up_collection_count" do
       stub_collection([2, 4])
       summary = Feed.collect_all
       assert_equal(6, summary.item_count)
     end
   
-    def test_collect_all_links_collection_errors_to_summary
+    it "collect_all_links_collection_errors_to_summary" do
       FeedTools::Feed.stub!(:open).and_raise(REXML::ParseException.new("ParseException"))
       summary = nil
       assert_nothing_raised(RuntimeError) { summary = Feed.collect_all }
@@ -100,7 +99,7 @@ describe Feed do
       assert_equal('REXML::ParseException', e.error_type)
     end
   
-    def test_collect_all_logs_fatal_error_in_summary
+    it "collect_all_logs_fatal_error_in_summary" do
       stub_collection(ActiveRecord::ActiveRecordError.new("Error message"))
       summary = nil
       assert_nothing_raised(ActiveRecord::ActiveRecordError) { summary = Feed.collect_all }
@@ -108,7 +107,7 @@ describe Feed do
       assert_equal("Error message", summary.fatal_error_message)
     end
   
-    def test_collect_opens_feed_and_calls_add_from_feed
+    it "collect_opens_feed_and_calls_add_from_feed" do
       test_feed_url = "http://test"
       mock_feed = mock('feed')
       FeedTools::Feed.should_receive(:open).with(test_feed_url).and_return(mock_feed)
@@ -117,7 +116,7 @@ describe Feed do
       feed.collect
     end
   
-    def test_max_feed_items_overrides_and_randomizes_feed_items
+    it "max_feed_items_overrides_and_randomizes_feed_items" do
       feed = Feed.find(1)
       feed_items = feed.feed_items
       feed.feed_items.stub!(:sort_by).and_return(feed_items)
@@ -129,20 +128,20 @@ describe Feed do
       assert_equal feed_items.slice(0, 2), feed.feed_items_with_max
     end
   
-    def test_to_xml_with_feed_items_with_max
+    it "to_xml_with_feed_items_with_max" do
       feed = Feed.find(1)
       feed.should_receive(:feed_items_with_max).exactly(2).and_return(feed.feed_items)
       assert feed.to_xml(:methods => :feed_items_with_max)
     end
   
-    def test_to_xml_with_feed_items
+    it "to_xml_with_feed_items" do
       feed = Feed.find(1)
       feed_items = feed.feed_items
       feed.stub!(:feed_items).and_return(feed_items)
       assert feed.to_xml(:include => :feed_items)
     end
   
-    def test_access_error_should_be_logged
+    it "access_error_should_be_logged" do
       feed = Feed.find(1)
       FeedTools::Feed.should_receive(:open).and_raise(FeedTools::FeedAccessError)
       assert_nothing_raised(FeedTools::FeedAccessError) { feed.collect }
@@ -150,7 +149,7 @@ describe Feed do
       assert_equal('FeedTools::FeedAccessError', e.error_type)
     end
   
-    def test_parse_exception_should_be_logged
+    it "parse_exception_should_be_logged" do
       feed = Feed.find(1)
       FeedTools::Feed.should_receive(:open).and_raise(REXML::ParseException.new("ParseException"))
       assert_nothing_raised(REXML::ParseException) { feed.collect }
@@ -159,7 +158,7 @@ describe Feed do
     end
   
     # Sometimes a parse exception causes a RuntimeException  
-    def test_parse_exception_with_runtime_exception_should_be_logged
+    it "parse_exception_with_runtime_exception_should_be_logged" do
       feed = Feed.find(1)
       FeedTools::Feed.should_receive(:open).and_raise(RuntimeError.new("RuntimeError"))
       assert_nothing_raised(RuntimeError) { feed.collect }
@@ -167,7 +166,7 @@ describe Feed do
       assert_equal('RuntimeError', e.error_type)
     end
   
-    def test_collection_exception_increments_count
+    it "collection_exception_increments_count" do
       feed = Feed.find(1)
       cec = feed.collection_errors_count
       FeedTools::Feed.stub!(:open).and_raise(RuntimeError)
@@ -176,7 +175,7 @@ describe Feed do
       assert_equal(cec + 1, feed.collection_errors_count)
     end
   
-    def test_collect_all_collection_exception_increments_count
+    it "collect_all_collection_exception_increments_count" do
       feed = Feed.find(1)
       cec = feed.collection_errors_count
       FeedTools::Feed.stub!(:open).and_raise(RuntimeError)
@@ -185,7 +184,7 @@ describe Feed do
       assert_equal(cec + 1, feed.collection_errors_count)
     end
   
-    def test_find_suspected_duplicates_gets_feeds_with_the_same_title
+    it "find_suspected_duplicates_gets_feeds_with_the_same_title" do
       feed = Feed.find(1)
       dup = Feed.new(:url => 'http://foo')
       dup.title = feed.title
@@ -193,7 +192,7 @@ describe Feed do
       assert_equal([feed, dup], Feed.find_duplicates(:order => 'id asc'))
     end
         
-    def test_find_suspected_duplicates_gets_feeds_with_same_link
+    it "find_suspected_duplicates_gets_feeds_with_same_link" do
       feed = Feed.find(1)
       dup = Feed.new(:url => 'http://foo')
       dup.link = feed.link
@@ -201,7 +200,7 @@ describe Feed do
       assert_equal([feed, dup], Feed.find_duplicates(:order => 'id asc'))
     end
   
-    def test_find_suspected_duplicates_returns_one_of_each
+    it "find_suspected_duplicates_returns_one_of_each" do
       feed = Feed.find(1)
       dup = Feed.new(:url => 'http://foo')
       dup.title = feed.title
@@ -212,7 +211,7 @@ describe Feed do
       assert_equal([feed, dup, dup2], Feed.find_duplicates(:order => 'id asc'))
     end
   
-    def test_collecting_html_link_updates_feeds_link_to_autodiscovered_url
+    it "collecting_html_link_updates_feeds_link_to_autodiscovered_url" do
       feed = mock('feed', :null_object => true, :items => [], :href => 'http://rss.slashdot.org/Slashdot/slashdot', :title => 'slashdot')
       FeedTools::Feed.should_receive(:open).and_return(feed)
       feed = Feed.create(:url => 'http://www.slashdot.org/')

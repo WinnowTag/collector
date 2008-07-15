@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + '/../../spec_helper'
 describe "/item_caches/edit.html.erb" do
   include ItemCachesHelper
   
-  before do
+  before(:each) do
     @item_cache = mock_model(ItemCache, :base_uri => 'http://example.com')
     assigns[:item_cache] = @item_cache
   end

@@ -8,19 +8,14 @@
 require File.dirname(__FILE__) + '/../test_helper'
 require File.dirname(__FILE__) + '/../spec_helper'
 
-class CollectionSummaryTest < Test::Unit::TestCase
+describe CollectionSummary do
   fixtures :collection_summaries
 
-  # Replace this with your real tests.
-  def test_truth
-    assert true
-  end
-  
-  def test_failed_is_true_if_fatal_error_set
+  it "failed_is_true_if_fatal_error_set" do
     assert CollectionSummary.new(:fatal_error_type => 'Exception').failed?
   end
   
-  def test_failed_is_false_if_fatal_error_not_set
+  it "failed_is_false_if_fatal_error_not_set" do
     assert !CollectionSummary.new.failed?
   end
 end

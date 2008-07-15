@@ -2,7 +2,6 @@ require File.dirname(__FILE__) + '/../spec_helper'
 
 describe ItemCachesController do
   describe "route generation" do
-
     it "should map { :controller => 'item_caches', :action => 'index' } to /item_caches" do
       route_for(:controller => "item_caches", :action => "index").should == "/item_caches"
     end
@@ -29,7 +28,6 @@ describe ItemCachesController do
   end
 
   describe "route recognition" do
-
     it "should generate params { :controller => 'item_caches', action => 'index' } from GET /item_caches" do
       params_from(:get, "/item_caches").should == {:controller => "item_caches", :action => "index"}
     end

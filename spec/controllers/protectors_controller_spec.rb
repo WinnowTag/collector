@@ -1,27 +1,20 @@
 require File.dirname(__FILE__) + '/../test_helper'
 require File.dirname(__FILE__) + '/../spec_helper'
-require 'protectors_controller'
 
-# Re-raise errors caught by the controller.
-class ProtectorsController; def rescue_action(e) raise e end; end
-
-class ProtectorsControllerTest < Test::Unit::TestCase
+describe ProtectorsController do
   fixtures :protectors
 
-  def setup
-    @controller = ProtectorsController.new
-    @request    = ActionController::TestRequest.new
-    @response   = ActionController::TestResponse.new
+  before(:each) do
     @controller.stub!(:local_request?).and_return(true)
   end
 
-  def test_should_get_index
+  it "should_get_index" do
     get :index
     assert_response :success
     assert assigns(:protectors)
   end
 
-  def test_should_create_protector
+  it "should_create_protector" do
     old_count = Protector.count
     post :create, :protector => { }
     assert_equal old_count+1, Protector.count
@@ -29,12 +22,12 @@ class ProtectorsControllerTest < Test::Unit::TestCase
     assert_redirected_to protector_path(assigns(:protector))
   end
 
-  def test_should_show_protector
+  it "should_show_protector" do
     get :show, :id => 1
     assert_response :success
   end
   
-  def test_should_destroy_protector
+  it "should_destroy_protector" do
     old_count = Protector.count
     delete :destroy, :id => 1
     assert_equal old_count-1, Protector.count

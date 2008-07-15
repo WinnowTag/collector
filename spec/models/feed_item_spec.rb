@@ -8,11 +8,10 @@
 require File.dirname(__FILE__) + '/../test_helper'
 require File.dirname(__FILE__) + '/../spec_helper'
 
-class FeedItemTest < Test::Unit::TestCase
+describe FeedItem do
   fixtures :feed_items, :feed_item_contents
   
-  # Replace this with your real tests.
-  def test_build_from_feed_item
+  it "build_from_feed_item" do
     test_feed_url = 'file:/' + File.join(File.expand_path(RAILS_ROOT), 'spec', 'fixtures', 'slashdot.rss')
     feed = FeedTools::Feed.open(URI.parse(test_feed_url))
     ft_item = feed.items.first
@@ -39,7 +38,7 @@ class FeedItemTest < Test::Unit::TestCase
     assert_nil dup
   end
     
-  def test_time_more_than_a_day_in_the_future_set_to_feed_time
+  it "time_more_than_a_day_in_the_future_set_to_feed_time" do
     last_retrieved = Time.now
     
     feed = FeedTools::Feed.new
@@ -54,7 +53,7 @@ class FeedItemTest < Test::Unit::TestCase
     assert_equal FeedItem::FeedPublicationTime, feed_item.time_source
   end
   
-  def test_item_and_feed_time_more_than_a_day_in_the_future_set_to_retrieval_time
+  it "item_and_feed_time_more_than_a_day_in_the_future_set_to_retrieval_time" do
     last_retrieved = Time.now
     
     feed = FeedTools::Feed.new
@@ -70,7 +69,7 @@ class FeedItemTest < Test::Unit::TestCase
     feed_item.time_source.should == FeedItem::FeedCollectionTime
   end
   
-  def test_nil_feed_times_uses_collection_time
+  it "nil_feed_times_uses_collection_time" do
     last_retrieved = Time.now
     feed = FeedTools::Feed.new
     feed.last_retrieved = last_retrieved
@@ -83,7 +82,7 @@ class FeedItemTest < Test::Unit::TestCase
     assert_equal FeedItem::FeedCollectionTime, feed_item.time_source
   end
   
-  def test_nil_feed_item_time_uses_feed_publication_time
+  it "nil_feed_item_time_uses_feed_publication_time" do
     publication_time = Time.now.yesterday
     feed = FeedTools::Feed.new
     feed.last_retrieved = nil
@@ -96,7 +95,7 @@ class FeedItemTest < Test::Unit::TestCase
     assert_equal FeedItem::FeedPublicationTime, feed_item.time_source
   end
     
-  def test_feed_item_content_extracts_encoded_content
+  it "feed_item_content_extracts_encoded_content" do
     test_feed_url = 'file:/' + File.join(File.expand_path(RAILS_ROOT), 'spec', 'fixtures', 'item_with_content_encoded.rss')
     feed = FeedTools::Feed.open(URI.parse(test_feed_url))
     ft_item = feed.items.first
@@ -108,7 +107,7 @@ class FeedItemTest < Test::Unit::TestCase
     assert_equal ft_item.content, feed_item.content.encoded_content    
   end
   
-  def test_extract_feed_item_title_out_of_strong_heading
+  it "extract_feed_item_title_out_of_strong_heading" do
     content = <<-END
 <p><strong>AMERICAN POWER.</strong>  Responding to a relatively unobjectionable <strong>Tom Friedman</strong> <a href="http://select.nytimes.com/2006/10/11/opinion/11friedman.html">column</a> calling for "Russia and China [to] get over their ambivalence about U.S. power", <strong>Matt</strong> <a href="http://www.matthewyglesias.com/archives/2006/10/the_bus/">notes</a> that "ambivalence about U.S. power is a natural thing for Russia and China to feel."</p>
 
@@ -124,7 +123,7 @@ class FeedItemTest < Test::Unit::TestCase
     assert_equal("AMERICAN POWER.", item.title)
   end
   
-  def test_extract_feed_item_title_out_of_heading
+  it "extract_feed_item_title_out_of_heading" do
     content = <<-END
 <span style="font-weight:bold;">Short Term Death<br>&#xD;
 </span>&#xD;
@@ -140,7 +139,7 @@ class FeedItemTest < Test::Unit::TestCase
     assert_equal("Short Term Death", item.title)
   end
   
-  def test_extract_feed_item_title_out_of_bold_heading
+  it "extract_feed_item_title_out_of_bold_heading" do
     content = <<-END
 <b>What Americans Have Sacrificed In Bush's "War On Terror"</b><br /><br />by tristero<br /><br />Many critics of the Bush administration have it wrong. They have repeatedly charged that while Bush has said the country is at war he has refused to call off the tax breaks for the rich or implement any measures that would require the American people to sacrifice. <br />
     END
@@ -150,7 +149,7 @@ class FeedItemTest < Test::Unit::TestCase
     assert_equal(%Q(What Americans Have Sacrificed In Bush's "War On Terror"), item.title)
   end
   
-  def test_sort_title_generation
+  it "sort_title_generation" do
     mock = MockFeedItem.new
     mock.title = 'THE title Of the FEEDITEM'
     feed_item = FeedItem.build_from_feed_item(mock)
@@ -158,7 +157,7 @@ class FeedItemTest < Test::Unit::TestCase
     assert_equal 'THE title Of the FEEDITEM', feed_item.title
   end
     
-  def test_build_from_feed_item_with_same_link_returns_nil
+  it "build_from_feed_item_with_same_link_returns_nil" do
     test_feed_url = 'file:/' + File.join(File.expand_path(RAILS_ROOT), 'spec', 'fixtures', 'slashdot.rss')
     feed = FeedTools::Feed.open(URI.parse(test_feed_url))
     ft_item = feed.items.first
@@ -177,17 +176,17 @@ class FeedItemTest < Test::Unit::TestCase
     assert_nil new_item
   end
   
-  def test_archived_items_should_be_skipped
+  it "archived_items_should_be_skipped" do
     FeedItem.should_receive(:make_unique_id).and_return('unique_id')
     FeedItemsArchive.should_receive(:item_exists?).with('http://test', 'unique_id').and_return(true)
     assert_nil(FeedItem.build_from_feed_item(stub('item', :time => Time.now, :link => 'http://test', :id => nil)))
   end
   
-  def test_unique_id_uses_feed_defined_id
+  it "unique_id_uses_feed_defined_id" do
     assert_equal('unique_id', FeedItem.make_unique_id(stub('item', :id => 'unique_id')))
   end
   
-  def test_unique_id_generated_from_content_if_not_defined_by_feed
+  it "unique_id_generated_from_content_if_not_defined_by_feed" do
     assert_equal(Digest::SHA1.hexdigest('titledescription'), FeedItem.make_unique_id(stub('item', :id => nil, :title => 'title', :description => 'description')))
   end
 end

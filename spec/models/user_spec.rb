@@ -8,72 +8,72 @@
 require File.dirname(__FILE__) + '/../test_helper'
 require File.dirname(__FILE__) + '/../spec_helper'
 
-class UserTest < Test::Unit::TestCase  
+describe User do  
   fixtures :users, :feed_items
   
-  def test_should_create_user
+  it "should_create_user" do
     assert_difference User, :count do
       user = create_user
       assert !user.new_record?, "#{user.errors.full_messages.to_sentence}"
     end
   end
 
-  def test_should_require_login
+  it "should_require_login" do
     assert_no_difference User, :count do
       u = create_user(:login => nil)
       assert u.errors.on(:login)
     end
   end
 
-  def test_should_require_password
+  it "should_require_password" do
     assert_no_difference User, :count do
       u = create_user(:password => nil)
       assert u.errors.on(:password)
     end
   end
 
-  def test_should_require_password_confirmation
+  it "should_require_password_confirmation" do
     assert_no_difference User, :count do
       u = create_user(:password_confirmation => nil)
       assert u.errors.on(:password_confirmation)
     end
   end
 
-  def test_should_require_email
+  it "should_require_email" do
     assert_no_difference User, :count do
       u = create_user(:email => nil)
       assert u.errors.on(:email)
     end
   end
 
-  def test_should_reset_password
+  it "should_reset_password" do
     users(:admin).update_attributes(:password => 'new password', :password_confirmation => 'new password')
     assert_equal users(:admin), User.authenticate('admin', 'new password')
   end
 
-  def test_should_not_rehash_password
+  it "should_not_rehash_password" do
     users(:admin).update_attributes(:login => 'admin2')
     assert_equal users(:admin), User.authenticate('admin2', 'test')
   end
 
-  def test_should_authenticate_user
+  it "should_authenticate_user" do
     assert_equal users(:admin), User.authenticate('admin', 'test')
   end
 
-  def test_should_set_remember_token
+  it "should_set_remember_token" do
     users(:admin).remember_me
     assert_not_nil users(:admin).remember_token
     assert_not_nil users(:admin).remember_token_expires_at
   end
 
-  def test_should_unset_remember_token
+  it "should_unset_remember_token" do
     users(:admin).remember_me
     assert_not_nil users(:admin).remember_token
     users(:admin).forget_me
     assert_nil users(:admin).remember_token
   end
     
-  def test_timezone_should_not_be_nil
+  it "timezone_should_not_be_nil" do
     assert_invalid create_user(:time_zone => nil)
   end
 

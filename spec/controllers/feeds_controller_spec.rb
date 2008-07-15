@@ -13,11 +13,11 @@ describe FeedsController do
   end
 
   describe 'CRUD operations' do    
-    def test_requires_login
+    it "requires_login" do
       assert_requires_login() {|c| c.get :index, {} }
     end
   
-    def test_create_doesnt_require_login_if_request_is_local
+    it "create_doesnt_require_login_if_request_is_local" do
       @controller.stub!(:local_request?).and_return(true)
       @request.session[:user] = nil
       assert_difference(Feed, :count) do
@@ -27,32 +27,32 @@ describe FeedsController do
       end
     end
    
-    def test_create_requires_login_if_request_is_not_local
+    it "create_requires_login_if_request_is_not_local" do
       @request.session[:user] = nil
       assert_difference(Feed, :count, 0) do
         assert_requires_login {|c| c.post :create, :feed => {:url => "http://newfeed"} }
       end
     end
   
-    def test_index_sets_feeds_instance_variable
+    it "index_sets_feeds_instance_variable" do
       get :index
       assert_equal(Feed.count(:conditions => ['is_duplicate = ?', false]), assigns(:feeds).size)
     end
   
-    def test_with_recent_errors_shows_feeds_with_recent_errors
+    it "with_recent_errors_shows_feeds_with_recent_errors" do
       get :with_recent_errors
       assert_template 'index'
       assert_equal([Feed.find(1)], assigns(:feeds))
     end
   
-    def test_with_recent_errors_shows_feeds_with_recent_errors_once
+    it "with_recent_errors_shows_feeds_with_recent_errors_once" do
       Feed.find(1).collection_errors.create(:exception => Exception.new('test'))
       get :with_recent_errors
       assert_template 'index'
       assert_equal([Feed.find(1)], assigns(:feeds))
     end
   
-    def test_duplicates_shows_duplicates
+    it "duplicates_shows_duplicates" do
       feed = Feed.find(1)
       dup = Feed.new(:url => 'http://foo')
       dup.link = feed.link
@@ -62,7 +62,7 @@ describe FeedsController do
       assert_equal([feed, dup].sort_by{|a| a.id}, assigns(:feeds).sort_by{|a| a.id})
     end
     
-    def test_duplicates_doesnt_show_duplicate_tombstones
+    it "duplicates_doesnt_show_duplicate_tombstones" do
       feed = Feed.find(1)
       dup = Feed.new(:url => 'http://foo')
       dup.link = feed.link
@@ -72,19 +72,19 @@ describe FeedsController do
       assert_equal([], assigns[:feeds])
     end
   
-    def test_list_provides_text_format
+    it "list_provides_text_format" do
       accept('text/plain')
       get :index
       assert_response :success
       assert_equal Feed.find(:all).map(&:url).join("\n"), @response.body
     end
 
-    def test_create_with_duplicate_url_redirects_to_duplicate
+    it "create_with_duplicate_url_redirects_to_duplicate" do
       post :create, :feed => {:url => Feed.find(1).url}
       assert_redirected_to feed_url(Feed.find(1))
     end
   
-    def test_create_with_duplicate_placeholder_url_redirects_to_duplicate
+    it "create_with_duplicate_placeholder_url_redirects_to_duplicate" do
       post :create, :feed => {:url => feeds(:duplicate_feed).url}
       assert_redirected_to feed_url(feeds(:duplicate_feed).duplicate)
     end    
@@ -99,19 +99,19 @@ describe FeedsController do
       Feed.find_by_url('http://test.feed').created_by.should == 'quentin'
     end
   
-    def test_rest_create_with_duplicate_url_redirects_to_duplicate
+    it "rest_create_with_duplicate_url_redirects_to_duplicate" do
       accept("application/xml")
       post :create, :feed => {:url => Feed.find(1).url}
       assert_redirected_to feed_url(Feed.find(1))
     end
   
-    def test_rest_create_with_duplicate_placeholder_url_redirects_to_duplicate
+    it "rest_create_with_duplicate_placeholder_url_redirects_to_duplicate" do
       accept("application/xml")
       post :create, :feed => {:url => feeds(:duplicate_feed).url}
       assert_redirected_to feed_url(feeds(:duplicate_feed).duplicate)
     end  
     
-    def test_create_accepting_xml   
+    it "create_accepting_xml   " do
       assert_difference(Feed, :count) do
         accept('application/xml')
         post :create, :feed => {:url => 'http://test.feed/'}
@@ -122,7 +122,7 @@ describe FeedsController do
       end
     end
   
-    def test_create_with_invalid_url_sets_422_when_accepting_xml
+    it "create_with_invalid_url_sets_422_when_accepting_xml" do
       assert_difference(Feed, :count, 0) do
         accept("application/xml")
         post :create, :feed => {:url => '####'}
@@ -130,12 +130,12 @@ describe FeedsController do
       end
     end
         
-    def test_destroy_fails_with_get
+    it "destroy_fails_with_get" do
       get :destroy
       assert_response 400
     end
   
-    def test_destroy_works_with_post
+    it "destroy_works_with_post" do
       referer('/feeds')
       feed = Feed.create(:url => 'http://rss.slashdot.org/Slashdot/slashdot')
       delete :destroy, :id => feed.id
@@ -158,7 +158,7 @@ describe FeedsController do
       response.should render_template('feeds/import')
     end
   
-    def test_post_import_with_single_url
+    it "post_import_with_single_url" do
       post :import, :feed => {:urls => 'http://rss.slashdot.org/Slashdot/slashdot'}
       assert_response :redirect
       assert_redirected_to feeds_url
@@ -168,7 +168,7 @@ describe FeedsController do
       assert_not_nil Feed.find_by_url('http://rss.slashdot.org/Slashdot/slashdot')
     end
   
-    def test_post_import_with_multiple_urls
+    it "post_import_with_multiple_urls" do
       post :import, :feed => {:urls => "http://rss.slashdot.org/Slashdot/slashdot\nhttp://rss.slashdot.org/Slashdot/slashdotDevelopers"}
       assert_response :redirect
       assert_redirected_to feeds_url
@@ -183,7 +183,7 @@ describe FeedsController do
       #flash.now[:error].should == '1 Feed already exists'
     end
   
-    def test_importing_duplicate_multiple_feeds_fails
+    it "importing_duplicate_multiple_feeds_fails" do
       Feed.create(:url => 'http://rss.slashdot.org/Slashdot/slashdot')
       post :import, :feed => {:urls => "http://rss.slashdot.org/Slashdot/slashdot\nhttp://rss.slashdot.org/Slashdot/slashdotDevelopers"}
       response.should render_template('feeds/import')
@@ -192,7 +192,7 @@ describe FeedsController do
       flash[:notice].should == '1 new feed added'
     end
 
-    def test_importing_opml_via_rest
+    it "importing_opml_via_rest" do
       assert_difference(Feed, :count, 13) do
         accept("application/xml")
         opml_data = File.read(File.join(RAILS_ROOT, "spec", "fixtures", "example.opml"))
@@ -205,20 +205,18 @@ describe FeedsController do
       end
     end
   
-    def test_show_without_id_redirects_to_index
+    it "show_without_id_redirects_to_index" do
       get :show
       assert_redirected_to feeds_url
     end
   
-    def test_show_returns_xml
+    it "show_returns_xml" do
       accept("text/xml")
       get :show, :id => 1
       assert_match(/application\/xml/, @response.content_type)
     end
-  
 
-  
-    def test_show_assigns_feed
+    it "show_assigns_feed" do
       get :show, :id => 1
       assert_response :success
       assert_template 'show'
@@ -226,29 +224,29 @@ describe FeedsController do
       assert_equal Feed.find(1), assigns(:feed)
     end
   
-    def test_show_with_duplicate_place_holder_redirects_to_duplicate
+    it "show_with_duplicate_place_holder_redirects_to_duplicate" do
       feed = feeds(:duplicate_feed)
       get :show, :id => feed.id
       assert_redirected_to feed_url(feed.duplicate)    
     end
   
-    def test_update_with_get_redirects_to_index
+    it "update_with_get_redirects_to_index" do
       get :update, :id => 1
       assert_response 400
     end
   
-    def test_update_without_id_redirects_to_index
+    it "update_without_id_redirects_to_index" do
       post :update
       assert_redirected_to feeds_url
     end
   
-    def test_update_with_protected_attributes_fails
+    it "update_with_protected_attributes_fails" do
       post :update, :id => 1, :feed => {:title => 'Title', :url => 'http://test', :active => true}
       assert_redirected_to feeds_url
       assert_not_equal("http://test", Feed.find(1).url)
     end
   
-    def test_update_using_ajax
+    it "update_using_ajax" do
       accept('text/javascript')
       post :update, :id => 1, :feed => {:active => false}
       assert_response :success

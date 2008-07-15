@@ -8,11 +8,10 @@
 require File.dirname(__FILE__) + '/../test_helper'
 require File.dirname(__FILE__) + '/../spec_helper'
 
-class ProtectedItemTest < Test::Unit::TestCase
+describe ProtectedItem do
   fixtures :protected_items, :protectors, :feed_items
 
-  # Replace this with your real tests.
-  def test_items_are_unique_per_protector
+  it "items_are_unique_per_protector" do
     protector = Protector.find(1)
     item = FeedItem.find(4)
     assert_valid ProtectedItem.create(:protector => protector, :feed_item => item)

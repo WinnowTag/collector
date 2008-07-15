@@ -2,18 +2,14 @@ require File.dirname(__FILE__) + '/../test_helper'
 require File.dirname(__FILE__) + '/../spec_helper'
 require 'workers/feed_item_corpus_exporter_worker'
 
-class FeedItemCorpusExporterTest < Test::Unit::TestCase
+describe FeedItemCorpusExporterWorker do
   fixtures :feeds, :feed_items, :feed_xml_datas, :feed_item_xml_data
  
-  def setup
-    # stub out worker initialization
-  end
-  
-  def tear_down
+  after(:each) do
     @output = nil
   end
   
-  def test_full_export
+  it "full_export" do
     exporter = FeedItemCorpusExporterWorker.new
     results = {}
     exporter.stub!(:results).and_return(results)
@@ -46,7 +42,7 @@ class FeedItemCorpusExporterTest < Test::Unit::TestCase
     assert feed.search('feed-items/feed-item').first.search('feed-id').empty?
   end
   
-  def test_full_export_with_item_count_target   
+  it "full_export_with_item_count_target" do
     exporter = FeedItemCorpusExporterWorker.new
     results = {}
     exporter.stub!(:results).and_return(results)
@@ -77,7 +73,7 @@ class FeedItemCorpusExporterTest < Test::Unit::TestCase
     assert feed.search('feed-items/feed-item').first.search('feed-id').empty?
   end
   
-  def test_partial_export
+  it "partial_export" do
     start_date = Time.now.utc.yesterday
     end_date = Time.now.utc
     exporter = FeedItemCorpusExporterWorker.new
@@ -102,7 +98,7 @@ class FeedItemCorpusExporterTest < Test::Unit::TestCase
     assert feed.search('feed-items/feed-item').first.search('feed-id').empty?
   end
   
-  def test_full_export_by_content_length
+  it "full_export_by_content_length" do
     exporter = FeedItemCorpusExporterWorker.new
     results = {}
     exporter.stub!(:results).and_return(results)

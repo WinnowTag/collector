@@ -7,13 +7,13 @@
 require File.dirname(__FILE__) + '/../test_helper'
 require File.dirname(__FILE__) + '/../spec_helper'
 
-class OpmlTest < Test::Unit::TestCase
-  def test_number_of_feeds
+describe Opml do
+  it "number_of_feeds" do
     opml = Opml.parse(File.open(File.join(RAILS_ROOT, 'spec', 'fixtures', 'example.opml')))
     assert_equal 13, opml.feeds.size
   end
   
-  def test_feed_parsing
+  it "feed_parsing" do
     opml = Opml.parse(File.open(File.join(RAILS_ROOT, 'spec', 'fixtures', 'example.opml')))
     feed = opml.feeds.first
     assert_not_nil feed
@@ -21,12 +21,12 @@ class OpmlTest < Test::Unit::TestCase
     assert_equal("http://news.com.com/2547-1_3-0-5.xml", feed.xmlUrl)
   end
   
-  def test_number_of_feeds_from_string
+  it "number_of_feeds_from_string" do
     opml = Opml.parse(File.read(File.join(RAILS_ROOT, 'spec', 'fixtures', 'example.opml')))
     assert_equal 13, opml.feeds.size
   end
   
-  def test_feed_parsing_from_string
+  it "feed_parsing_from_string" do
     opml = Opml.parse(File.read(File.join(RAILS_ROOT, 'spec', 'fixtures', 'example.opml')))
     feed = opml.feeds.first
     assert_not_nil feed

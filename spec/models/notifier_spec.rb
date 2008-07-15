@@ -1,13 +1,13 @@
 require File.dirname(__FILE__) + '/../test_helper'
 require File.dirname(__FILE__) + '/../spec_helper'
 
-class NotifierTest < Test::Unit::TestCase
+describe Notifier do
   FIXTURES_PATH = File.dirname(__FILE__) + '/../fixtures'
   CHARSET = "utf-8"
 
   include ActionMailer::Quoting
 
-  def setup
+  before(:each) do
     ActionMailer::Base.delivery_method = :test
     ActionMailer::Base.perform_deliveries = true
     ActionMailer::Base.deliveries = []
@@ -17,7 +17,7 @@ class NotifierTest < Test::Unit::TestCase
     @expected.mime_version = '1.0'
   end
 
-  def test_deployed
+  it "deployed" do
     @expected.subject = '[DEPLOYMENT] r666 deployed'
     @expected.from    = "wizzadmin@peerworks.org"
     @expected.to      = "wizzadmin@peerworks.org"
@@ -27,12 +27,12 @@ class NotifierTest < Test::Unit::TestCase
     assert_equal @expected.encoded, Notifier.create_deployed("", "the beast", "666", "", "", @expected.date).encoded
   end
 
-  private
-    def read_fixture(action)
-      IO.readlines("#{FIXTURES_PATH}/notifier/#{action}")
-    end
+private
+  def read_fixture(action)
+    IO.readlines("#{FIXTURES_PATH}/notifier/#{action}")
+  end
 
-    def encode(subject)
-      quoted_printable(subject, CHARSET)
-    end
+  def encode(subject)
+    quoted_printable(subject, CHARSET)
+  end
 end

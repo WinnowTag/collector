@@ -8,13 +8,7 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
 describe FeedItemsController do
-
-  #Delete these examples and add some real ones
-  it "should use FeedItemsController" do
-    controller.should be_an_instance_of(FeedItemsController)
-  end
-
-  describe "GET 'show'" do
+  describe "GET show" do
     before(:each) do
       @feed_item = mock_model(FeedItem)
       @feed_item.should_receive(:to_atom).with(:base => "http://test.host:80")
@@ -32,7 +26,7 @@ describe FeedItemsController do
     end
   end
   
-  describe "GET 'spider'" do
+  describe "GET spider" do
     before(:each) do
       @feed_item = mock_model(FeedItem, valid_feed_item_attributes(:spider_result => nil))
       @feed_item.stub!(:spider_result=)

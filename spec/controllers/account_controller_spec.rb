@@ -1,39 +1,26 @@
 require File.dirname(__FILE__) + '/../test_helper'
 require File.dirname(__FILE__) + '/../spec_helper'
-require 'account_controller'
 
-# Re-raise errors caught by the controller.
-class AccountController; def rescue_action(e) raise e end; end
-
-class AccountControllerTest < Test::Unit::TestCase
-
+describe AccountController do
   fixtures :users
 
-  def setup
-    @controller = AccountController.new
-    @request    = ActionController::TestRequest.new
-    @response   = ActionController::TestResponse.new
+  before(:each) do
     AccountController.signup_disabled = false
-    # for testing action mailer
-    ActionMailer::Base.delivery_method = :test
-    ActionMailer::Base.perform_deliveries = true
-    @emails = ActionMailer::Base.deliveries 
-    @emails.clear
   end
 
-  def test_should_login_and_redirect
+  it "should_login_and_redirect" do
     post :login, :login => 'admin', :password => 'test'
     assert session[:user]
     assert_response :redirect
   end
 
-  def test_should_fail_login_and_not_redirect
+  it "should_fail_login_and_not_redirect" do
     post :login, :login => 'admin', :password => 'bad password'
     assert_nil session[:user]
     assert_response :success
   end
 
-  def test_should_allow_signup
+  it "should_allow_signup" do
     assert_difference User, :count do
       create_user
       assert_response :redirect
@@ -41,7 +28,7 @@ class AccountControllerTest < Test::Unit::TestCase
     end
   end
 
-  def test_should_require_login_on_signup
+  it "should_require_login_on_signup" do
     assert_no_difference User, :count do
       create_user(:login => nil)
       assert assigns(:user).errors.on(:login)
@@ -49,7 +36,7 @@ class AccountControllerTest < Test::Unit::TestCase
     end
   end
 
-  def test_should_require_password_on_signup
+  it "should_require_password_on_signup" do
     assert_no_difference User, :count do
       create_user(:password => nil)
       assert assigns(:user).errors.on(:password)
@@ -57,7 +44,7 @@ class AccountControllerTest < Test::Unit::TestCase
     end
   end
 
-  def test_should_require_password_confirmation_on_signup
+  it "should_require_password_confirmation_on_signup" do
     assert_no_difference User, :count do
       create_user(:password_confirmation => nil)
       assert assigns(:user).errors.on(:password_confirmation)
@@ -65,7 +52,7 @@ class AccountControllerTest < Test::Unit::TestCase
     end
   end
 
-  def test_should_require_email_on_signup
+  it "should_require_email_on_signup" do
     assert_no_difference User, :count do
       create_user(:email => nil)
       assert assigns(:user).errors.on(:email)
@@ -73,37 +60,37 @@ class AccountControllerTest < Test::Unit::TestCase
     end
   end
 
-  def test_should_logout
+  it "should_logout" do
     login_as :admin
     get :logout
     assert_nil session[:user]
     assert_response :redirect
   end
 
-  def test_should_remember_me
+  it "should_remember_me" do
     post :login, :login => 'admin', :password => 'test', :remember_me => "1"
     assert_not_nil @response.cookies["auth_token"]
   end
 
-  def test_should_not_remember_me
+  it "should_not_remember_me" do
     post :login, :login => 'admin', :password => 'test', :remember_me => "0"
     assert_nil @response.cookies["auth_token"]
   end
   
-  def test_should_delete_token_on_logout
+  it "should_delete_token_on_logout" do
     login_as :admin
     get :logout
     assert_equal @response.cookies["auth_token"], []
   end
 
-  def test_should_login_with_cookie
+  it "should_login_with_cookie" do
     users(:admin).remember_me
     @request.cookies["auth_token"] = cookie_for(:admin)
     get :index
     assert @controller.send(:logged_in?)
   end
 
-  def test_should_fail_cookie_login
+  it "should_fail_cookie_login" do
     users(:admin).remember_me
     users(:admin).update_attribute :remember_token_expires_at, 5.minutes.ago.utc
     @request.cookies["auth_token"] = cookie_for(:admin)
@@ -111,14 +98,14 @@ class AccountControllerTest < Test::Unit::TestCase
     assert !@controller.send(:logged_in?)
   end
 
-  def test_should_fail_cookie_login
+  it "should_fail_cookie_login" do
     users(:admin).remember_me
     @request.cookies["auth_token"] = auth_token('invalid_auth_token')
     get :index
     assert !@controller.send(:logged_in?)
   end
  
-  def test_edit_can_only_change_some_values
+  it "edit_can_only_change_some_values" do
     referer('')
     login_as(:admin)
     post :edit, :current_user => {:firstname => 'Someone', :lastname => 'Else', :email => 'someone@else.com', :login => 'evil'}
@@ -131,21 +118,21 @@ class AccountControllerTest < Test::Unit::TestCase
     assert_redirected_to ''
   end
   
-  def test_get_edit_returns_the_form
+  it "get_edit_returns_the_form" do
     login_as(:admin)
     get :edit
     assert_response :success
     assert_template 'edit'
   end
   
-  def test_edit_requires_login
+  it "edit_requires_login" do
     assert_requires_login do 
       get :edit
       post :edit
     end
   end
   
-  def test_should_allow_password_change
+  it "should_allow_password_change" do
     referer("")
     post :login, :login => 'admin', :password => 'test'
     post :change_password, { :old_password => 'test', :password => 'newpassword', :password_confirmation => 'newpassword' }
@@ -159,7 +146,7 @@ class AccountControllerTest < Test::Unit::TestCase
     assert_response :redirect
   end
 
-  def test_non_matching_passwords_should_not_change
+  it "non_matching_passwords_should_not_change" do
     post :login, :login => 'admin', :password => 'test'
     assert session[:user]
     post :change_password, { :old_password => 'test', :password => 'newpassword', :password_confirmation => 'test' }
@@ -167,7 +154,7 @@ class AccountControllerTest < Test::Unit::TestCase
     assert_equal "Password mismatch", flash[:notice]
   end
 
-  def test_incorrect_old_password_does_not_change
+  it "incorrect_old_password_does_not_change" do
     post :login, :login => 'admin', :password => 'test'
     assert session[:user]
     post :change_password, { :old_password => 'wrongpassword', :password => 'newpassword', :password_confirmation => 'newpassword' }
@@ -175,14 +162,14 @@ class AccountControllerTest < Test::Unit::TestCase
     assert_equal "Wrong password", flash[:notice]
   end
     
-  def test_login_updates_logged_in_at_time
+  it "login_updates_logged_in_at_time" do
     previous_login_time = User.find_by_login('admin').logged_in_at
     post :login, :login => 'admin', :password => 'test'
     assert_not_nil User.find_by_login('admin').logged_in_at
     assert_not_equal previous_login_time, User.find_by_login('admin').logged_in_at
   end
   
-  def test_disable_signup
+  it "disable_signup" do
     AccountController.signup_disabled = true
     referer('')
     get :signup
