@@ -11,7 +11,6 @@ Rake::Task[:default].prerequisites.clear
 
 task :default do
   Rake::Task['spec'].invoke
-  Rake::Task['test:integration'].invoke
   Rake::Task['test:stories'].invoke
 end
 
@@ -41,13 +40,7 @@ desc "Task for CruiseControl.rb"
 task :cruise do
   ENV['RAILS_ENV'] = RAILS_ENV = 'test'
 
-  [:'test:integration'].each do |task|
-    # Removes each of their db:test:prepare dependency
-    Rake::Task[task].prerequisites.delete('db:test:prepare')
-  end
-  
   Rake::Task['db:migrate'].invoke
   Rake::Task['db:test:prepare'].invoke
   Rake::Task['rcov_for_cc'].invoke
-  Rake::Task['test:integration'].invoke
 end
