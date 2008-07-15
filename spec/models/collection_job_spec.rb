@@ -65,13 +65,13 @@ describe CollectionJob do
   it "executing_should_set_started_at" do
     job = collection_jobs(:first_in_queue)
     job.execute
-    assert_instance_of(Time, job.started_at)
+    job.started_at.should_not be_nil
   end
   
   it "when_execute_completes_completed_at_should_be_set" do
     job = collection_jobs(:first_in_queue)
     job.execute
-    assert_not_nil(job.completed_at)
+    job.completed_at.should_not be_nil
   end
   
   it "execute_sets_item_count" do

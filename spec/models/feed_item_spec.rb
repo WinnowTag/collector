@@ -10,6 +10,10 @@ require File.dirname(__FILE__) + '/../spec_helper'
 
 describe FeedItem do
   fixtures :feed_items, :feed_item_contents
+
+  class MockFeedItem 
+    attr_accessor :time, :feed, :feed_data, :author, :title, :link, :description, :content, :id
+  end
   
   it "build_from_feed_item" do
     test_feed_url = 'file:/' + File.join(File.expand_path(RAILS_ROOT), 'spec', 'fixtures', 'slashdot.rss')
@@ -189,13 +193,7 @@ describe FeedItem do
   it "unique_id_generated_from_content_if_not_defined_by_feed" do
     assert_equal(Digest::SHA1.hexdigest('titledescription'), FeedItem.make_unique_id(stub('item', :id => nil, :title => 'title', :description => 'description')))
   end
-end
-
-class MockFeedItem 
-  attr_accessor :time, :feed, :feed_data, :author, :title, :link, :description, :content, :id
-end
-
-describe FeedItem do
+  
   describe 'to_atom' do
     before(:each) do
       @item = FeedItem.find(:first)
@@ -274,5 +272,5 @@ describe FeedItem do
       item.content.encoded_content = "This has a non\004-printable character"
       item.to_atom.content.to_s.should == "This has a non-printable character"
     end
-  end  
+  end
 end
