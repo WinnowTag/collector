@@ -410,8 +410,7 @@ describe Feed do
   
     describe 'with 1 page of items' do
       before(:each) do
-        @atom = Atom::Feed.load_feed(@feed.to_atom(:include_entries => true, 
-                                                   :base => 'http://collector.mindloom.org').to_xml)
+        @atom = Atom::Feed.load_feed(@feed.to_atom(:include_entries => true, :base => 'http://collector.mindloom.org').to_xml)
       end
       
       it "should render a first link pointing to self" do

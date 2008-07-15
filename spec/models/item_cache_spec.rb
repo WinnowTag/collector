@@ -172,7 +172,7 @@ describe ItemCache do
         response = mock_response(Net::HTTPCreated, feed.to_atom_entry.to_xml)
     
         http = mock('http')
-        http.should_receive(:post).with('/feeds', feed.to_atom_entry.to_xml, an_instance_of(Hash)).and_return(response)
+        http.should_receive(:request).with(an_instance_of(Net::HTTP::Post), feed.to_atom_entry.to_xml).and_return(response)
         Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
     
         ItemCache.process_operation(op)
@@ -185,7 +185,7 @@ describe ItemCache do
         response = mock_response(Net::HTTPCreated, item.to_atom.to_xml)
     
         http = mock('http')
-        http.should_receive(:post).with('/feeds/1/feed_items', item.to_atom(:base => 'http://collector.mindloom.org').to_xml, an_instance_of(Hash)).and_return(response)
+        http.should_receive(:request).with(an_instance_of(Net::HTTP::Post), item.to_atom(:base => 'http://collector.mindloom.org').to_xml).and_return(response)
         Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
     
         ItemCache.process_operation(op)
@@ -200,7 +200,7 @@ describe ItemCache do
         response = mock_response(Net::HTTPSuccess, nil)
       
         http = mock('http')
-        http.should_receive(:put).with('/feeds/1', an_instance_of(String), an_instance_of(Hash)).and_return(response)
+        http.should_receive(:request).with(an_instance_of(Net::HTTP::Put), an_instance_of(String)).and_return(response)
         Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
       
         ItemCache.process_operation(op)
@@ -213,7 +213,7 @@ describe ItemCache do
         response = mock_response(Net::HTTPSuccess, nil)
       
         http = mock('http')
-        http.should_receive(:put).with("/feed_items/#{item.id}", an_instance_of(String), an_instance_of(Hash)).and_return(response)
+        http.should_receive(:request).with(an_instance_of(Net::HTTP::Put), an_instance_of(String)).and_return(response)
         Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
       
         ItemCache.process_operation(op)
@@ -228,7 +228,7 @@ describe ItemCache do
         response = mock_response(Net::HTTPSuccess, nil)
       
         http = mock('http')
-        http.should_receive(:delete).with("/feeds/#{feed.id}", an_instance_of(Hash)).and_return(response)
+        http.should_receive(:request).with(an_instance_of(Net::HTTP::Delete)).and_return(response)
         Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
       
         ItemCache.process_operation(op)
@@ -241,7 +241,7 @@ describe ItemCache do
         response = mock_response(Net::HTTPSuccess, nil)
       
         http = mock('http')
-        http.should_receive(:delete).with("/feed_items/#{item.id}", an_instance_of(Hash)).and_return(response)
+        http.should_receive(:request).with(an_instance_of(Net::HTTP::Delete)).and_return(response)
         Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
       
         ItemCache.process_operation(op)
@@ -259,7 +259,7 @@ describe ItemCache do
         @response.stub!(:body).and_return("<p>Forbidden</p>")
       
         http = mock('http')
-        http.stub!(:post).and_return(@response)
+        http.stub!(:request).and_return(@response)
         Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
       
         ItemCache.process_operation(@operation)
@@ -277,7 +277,7 @@ describe ItemCache do
         @response.stub!(:body).and_return("<p>Not Found</p>")
       
         http = mock('http')
-        http.stub!(:put).and_return(@response)
+        http.stub!(:request).and_return(@response)
         Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
       
         ItemCache.process_operation(@operation)
@@ -295,7 +295,7 @@ describe ItemCache do
         @response.stub!(:body).and_return("<p>Internal Server Error</p>")
       
         http = mock('http')
-        http.stub!(:delete).and_return(@response)
+        http.stub!(:request).and_return(@response)
         Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
       
         ItemCache.process_operation(@operation)
@@ -318,7 +318,7 @@ describe ItemCache do
       response = mock_response(Net::HTTPCreated, feed.to_atom_entry.to_xml)
   
       http = mock('http')
-      http.should_receive(:post).with('/feeds', feed.to_atom_entry.to_xml, an_instance_of(Hash)).and_return(response)
+      http.should_receive(:request).with(an_instance_of(Net::HTTP::Post), feed.to_atom_entry.to_xml).and_return(response)
       Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
       
       @item_cache.redo_failed_operations
@@ -335,7 +335,7 @@ describe ItemCache do
       response = mock_response(Net::HTTPCreated, feed.to_atom_entry.to_xml)
   
       http = mock('http')
-      http.should_receive(:post).with('/feeds', feed.to_atom_entry.to_xml, an_instance_of(Hash)).twice.and_return(response)
+      http.should_receive(:request).with(an_instance_of(Net::HTTP::Post), feed.to_atom_entry.to_xml).twice.and_return(response)
       Net::HTTP.should_receive(:start).with('example.org', 80).twice.and_yield(http)
       
       @item_cache.redo_failed_operations
@@ -351,7 +351,7 @@ describe ItemCache do
       response.stub!(:body).and_return("<p>Internal Server Error</p>")
   
       http = mock('http')
-      http.should_receive(:post).with('/feeds', feed.to_atom_entry.to_xml, an_instance_of(Hash)).and_return(response)
+      http.should_receive(:request).with(an_instance_of(Net::HTTP::Post), feed.to_atom_entry.to_xml).and_return(response)
       Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
       
       @item_cache.redo_failed_operations
