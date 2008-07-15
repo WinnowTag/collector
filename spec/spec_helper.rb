@@ -21,6 +21,7 @@ Spec::Runner.configure do |config|
   config.fixture_path = RAILS_ROOT + '/spec/fixtures/'
   
   config.include WinnowMatchers, :type => :code
+  config.include AuthenticatedTestHelper
 
   # == Fixtures
   #
@@ -53,8 +54,6 @@ Spec::Runner.configure do |config|
   # == Notes
   # 
   # For more information take a look at Spec::Example::Configuration and Spec::Runner
-
-  include AuthenticatedTestHelper
 
   def referer(referer)
     @request.env['HTTP_REFERER'] = referer
