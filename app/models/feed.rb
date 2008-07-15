@@ -295,10 +295,10 @@ class Feed < ActiveRecord::Base
                                               :include => :feed_item_content)
         feed.links << Atom::Link.new(:rel => 'first', :href => self_link)
         
-        if feed_items.page_count == 1
+        if feed_items.total_pages == 1
           feed.links << Atom::Link.new(:rel => 'last', :href => self_link)
         else
-          feed.links << Atom::Link.new(:rel => 'last', :href => "#{self_link}?page=#{feed_items.page_count}")          
+          feed.links << Atom::Link.new(:rel => 'last', :href => "#{self_link}?page=#{feed_items.total_pages}")          
           
           if feed_items.previous_page
             feed.links << Atom::Link.new(:rel => 'prev', :href => "#{self_link}?page=#{feed_items.previous_page}")
