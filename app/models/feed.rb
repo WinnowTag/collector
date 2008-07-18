@@ -16,6 +16,7 @@ class Feed < ActiveRecord::Base
   has_many	:feed_items, :dependent => :delete_all
   has_one :xml_data_container, :class_name => "FeedXmlData", :foreign_key => "id", :dependent => :delete
   validates_uniqueness_of :url, :message => 'Feed already exists'
+  validate :url_is_not_from_winnow
   attr_accessible :url, :active
   before_save :update_duplicate
   has_many :spider_results,    :dependent => :delete_all, :order => 'created_at desc'
@@ -353,6 +354,12 @@ class Feed < ActiveRecord::Base
   def update_duplicate
     if self.duplicate_id
       self.is_duplicate = true
+    end
+  end
+  
+  def url_is_not_from_winnow
+    if URI.parse(url).host =~ /(winnow|trunk).mindloom.org/
+      errors.add(:base, "Winnow generated feeds cannot be added to Winnow.")
     end
   end
 end

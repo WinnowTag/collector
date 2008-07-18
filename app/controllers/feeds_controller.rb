@@ -69,7 +69,7 @@ class FeedsController < ApplicationController
             head :created, :location => feed_url(@feed)
           end
         else
-          flash.now[:error] = @feed.errors.on(:url)
+          flash.now[:error] = @feed.errors.full_messages.join("<br/")
           wants.html { render :action => 'new' }
           wants.xml  { render :xml => @feed.errors.to_xml, :status => 422 }
         end
