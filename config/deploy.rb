@@ -27,6 +27,7 @@ set :domain, "ds400-2.blueboxgrid.com"
 set :repository, "git@github.com:seangeo/collector.git"
 set :branch, "bbg"
 set :scm, "git"
+set :scm_verbose, true
 set :user, "mindloom"
 set :deploy_to, "/home/mindloom/collector.deploy"
 set :deploy_via, :remote_cache
