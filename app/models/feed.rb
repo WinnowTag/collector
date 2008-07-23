@@ -358,8 +358,11 @@ class Feed < ActiveRecord::Base
   end
   
   def url_is_not_from_winnow
-    if URI.parse(url).host =~ /(winnow|trunk).mindloom.org/
-      errors.add(:base, "Winnow generated feeds cannot be added to Winnow.")
+    begin
+      if URI.parse(url).host =~ /(winnow|trunk).mindloom.org/
+        errors.add(:base, "Winnow generated feeds cannot be added to Winnow.")
+      end
+    rescue
     end
   end
 end
