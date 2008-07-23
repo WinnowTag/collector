@@ -25,7 +25,7 @@ Rails::Initializer.run do |config|
   # config.gem "bj"
   # config.gem "hpricot", :version => '0.6', :source => "http://code.whytheluckystiff.net"
   # config.gem "aws-s3", :lib => "aws/s3"
-  config.gem "ratom", :version => "0.4.1", :lib => "atom/pub"
+  config.gem "ratom", :version => "0.4.2", :lib => "atom/pub"
   config.gem "feedtools", :version => "0.2.29", :lib => "feed_tools"
 
   # Must be compiled
