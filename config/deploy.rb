@@ -23,13 +23,13 @@ set :use_sudo, false
 # :primary => true.
 
 default_run_options[:pty] = true
-set :domain, "collector.wizztag.org"
+set :domain, "ds400-2.blueboxgrid.com"
 set :repository, "git@github.com:seangeo/collector.git"
-set :branch, "master"
+set :branch, "bbg"
 set :scm, "git"
-set :user, "winnow"
-set :deploy_to, "/home/winnow/www/collector.deploy"
-set :mongrel_conf, "#{current_path}/config/mongrel_cluster.yml"
+set :scm_verbose, true
+set :user, "mindloom"
+set :deploy_to, "/home/mindloom/collector.deploy"
 set :deploy_via, :remote_cache
 set :group, "collector"
 
@@ -54,7 +54,7 @@ role :db,  domain, :primary => true
 # SSH OPTIONS
 # =============================================================================
 # ssh_options[:keys] = %w(/path/to/my/key /path/to/another/key)
-ssh_options[:port] = 65000
+# ssh_options[:port] = 65000
 
 # =============================================================================
 # TASKS
@@ -88,14 +88,9 @@ ssh_options[:port] = 65000
 #   are treated as local variables, which are made available to the (ERb)
 #   template.
 
-task :package_assets, :role => :web do
-  run "cd #{release_path} && rake RAILS_ENV=production asset:packager:build_all"
-end
-
 task :copy_config do
   run "ln -s #{shared_path}/tmp #{release_path}/tmp"
   run "ln -s #{shared_path}/database.yml #{release_path}/config/database.yml"
-  run "ln -s #{shared_path}/mongrel_cluster.yml #{release_path}/config/mongrel_cluster.yml"
 end
 
 desc "Notify the list of deployment"
@@ -105,7 +100,6 @@ task :send_nofication do
   run %Q(cd #{current_path} && script/runner 'Notifier.deliver_deployed("http://#{domain}", "#{repository}", "#{revision}", "#{ENV['USER']}", "#{mail_comment}")')
 end
 
-after :'deploy:update_code', :package_assets
 after :'deploy:update_code', :copy_config
 after :deploy, :send_nofication
 
