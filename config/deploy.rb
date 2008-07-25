@@ -25,7 +25,7 @@ set :use_sudo, false
 default_run_options[:pty] = true
 set :domain, "ds400-2.blueboxgrid.com"
 set :repository, "git@github.com:seangeo/collector.git"
-set :branch, "bbg"
+set :branch, "master"
 set :scm, "git"
 set :scm_verbose, true
 set :user, "mindloom"
