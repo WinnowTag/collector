@@ -31,11 +31,6 @@ class ApplicationController < ActionController::Base
                  'sure you have Javascript enabled too! ', 
         :status => 400
       } unless defined?(MISSING_PARAMS)
-      
-protected
-  def local_request?
-    ["208.85.146.72", "208.85.146.70", "127.0.0.1"].include?(request.remote_ip)
-  end
   
 private
   def flash_completed_collections

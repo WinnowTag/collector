@@ -27,6 +27,7 @@ Rails::Initializer.run do |config|
   # config.gem "aws-s3", :lib => "aws/s3"
   config.gem "ratom", :version => "0.4.2", :lib => "atom/pub"
   config.gem "feedtools", :version => "0.2.29", :lib => "feed_tools"
+  config.gem "auth-hmac"
 
   # Must be compiled
   config.gem "mysql"
