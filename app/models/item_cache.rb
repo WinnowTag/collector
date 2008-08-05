@@ -70,11 +70,11 @@ class ItemCache < ActiveRecord::Base
   def do_publish(feed_or_item)
     case feed_or_item
     when Feed
-      feed_collection.publish(feed_or_item.to_atom_entry)
+      feed_collection.publish(feed_or_item.to_atom_entry, hmac_credentials)
     when FeedItem
       collection = feed_collection(feed_or_item.feed_id)
       logger.info("publishing item(#{feed_or_item.id}) to #{collection.href}")
-      collection.publish(feed_or_item.to_atom(:base => self.class.collector_url))      
+      collection.publish(feed_or_item.to_atom(:base => self.class.collector_url), hmac_credentials)      
     end
   end
   
@@ -89,14 +89,14 @@ class ItemCache < ActiveRecord::Base
         
     # Create an edit link so the Atom library know where to send the update    
     atom.links << Atom::Link.new(:rel => 'edit', :href => "#{self.base_uri}/#{path}/#{feed_or_item.id}")
-    atom.save!
+    atom.save!(hmac_credentials)
   end
   
   def do_delete(type, id)
     atom = Atom::Entry.new do |atom|
       # Create an edit link so the Atom library knows where send the delete
       atom.links << Atom::Link.new(:rel => 'edit', :href => "#{self.base_uri}/#{type.underscore.pluralize}/#{id}")      
-    end.destroy!
+    end.destroy!(hmac_credentials)
   end
     
   def feed_collection(feed = :all)
@@ -113,5 +113,17 @@ class ItemCache < ActiveRecord::Base
     else
       'http://localhost:3000'
     end
+  end
+  
+  def hmac_access_id
+    HMAC_CREDENTIALS['collector'] ? HMAC_CREDENTIALS['collector'].keys.first : nil
+  end
+  
+  def hmac_secret_key
+    HMAC_CREDENTIALS['collector'] ? HMAC_CREDENTIALS['collector'][hmac_access_id] : nil
+  end
+  
+  def hmac_credentials
+    {:hmac_access_id => hmac_access_id, :hmac_secret_key => hmac_secret_key}
   end
 end

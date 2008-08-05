@@ -172,7 +172,7 @@ describe ItemCache do
         http.should_receive(:request).with(an_instance_of(Net::HTTP::Post), feed.to_atom_entry.to_xml).and_return(response)
         Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
     
-        ItemCache.process_operation(op)
+        ItemCache.find(:first).process_operation(op)
       end
   
       it "should send a POST request to base_uri/feeds/:feed_id/feed_items to add an item to a feed" do
@@ -185,7 +185,23 @@ describe ItemCache do
         http.should_receive(:request).with(an_instance_of(Net::HTTP::Post), item.to_atom(:base => 'http://collector.mindloom.org').to_xml).and_return(response)
         Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
     
-        ItemCache.process_operation(op)
+        ItemCache.find(:first).process_operation(op)
+      end
+      
+      it "should send hmac authentication credentials" do
+        item = FeedItem.find(1)
+        op = ItemCacheOperation.create!(:action => 'publish', :actionable => item)
+        
+        response = mock_response(Net::HTTPCreated, item.to_atom.to_xml)
+    
+        http = mock('http')
+        http.should_receive(:request) do |request, body|
+          request['Authorization'].should match(/^AuthHMAC collector_id:.*$/)
+          response
+        end
+        Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
+    
+        ItemCache.find(:first).process_operation(op)
       end
     end
   
@@ -200,7 +216,7 @@ describe ItemCache do
         http.should_receive(:request).with(an_instance_of(Net::HTTP::Put), an_instance_of(String)).and_return(response)
         Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
       
-        ItemCache.process_operation(op)
+        ItemCache.find(:first).process_operation(op)
       end
     
       it "should send a PUT request to base_uri/feed_items/:feed_item_id to update a feed item" do
@@ -213,7 +229,23 @@ describe ItemCache do
         http.should_receive(:request).with(an_instance_of(Net::HTTP::Put), an_instance_of(String)).and_return(response)
         Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
       
-        ItemCache.process_operation(op)
+        ItemCache.find(:first).process_operation(op)
+      end
+      
+      it "should send hmac authentication credentials" do
+        item = FeedItem.find(1)
+        op = ItemCacheOperation.create!(:action => 'update', :actionable => item)
+        
+        response = mock_response(Net::HTTPCreated, item.to_atom.to_xml)
+    
+        http = mock('http')
+        http.should_receive(:request) do |request, body|
+          request['Authorization'].should match(/^AuthHMAC collector_id:.*$/)
+          response
+        end
+        Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
+    
+        ItemCache.find(:first).process_operation(op)
       end
     end
   
@@ -228,7 +260,7 @@ describe ItemCache do
         http.should_receive(:request).with(an_instance_of(Net::HTTP::Delete)).and_return(response)
         Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
       
-        ItemCache.process_operation(op)
+        ItemCache.find(:first).process_operation(op)
       end
     
       it "should send a DELETE request to base_uri/feed_items/:feed_item_id to delete a feed item" do
@@ -241,8 +273,24 @@ describe ItemCache do
         http.should_receive(:request).with(an_instance_of(Net::HTTP::Delete)).and_return(response)
         Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
       
-        ItemCache.process_operation(op)
-      end    
+        ItemCache.find(:first).process_operation(op)
+      end   
+      
+      it "should send hmac authentication credentials" do
+        item = FeedItem.find(1)
+        op = ItemCacheOperation.create!(:action => 'delete', :actionable => item)
+        
+        response = mock_response(Net::HTTPCreated, item.to_atom.to_xml)
+    
+        http = mock('http')
+        http.should_receive(:request) do |request, body|
+          request['Authorization'].should match(/^AuthHMAC collector_id:.*$/)
+          response
+        end
+        Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
+    
+        ItemCache.find(:first).process_operation(op)
+      end 
     end
   end
   
