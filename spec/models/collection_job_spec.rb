@@ -114,7 +114,7 @@ describe CollectionJob do
     Net::HTTP.should_receive(:start).
               with('localhost', 3000).
               and_yield(http)
-    http.should_receive(:post).with('/users/seangeo/collection_job_results', xml, {"Accept" => 'text/xml', 'Content-Type' => 'text/xml'})
+    http.should_receive(:request).with(an_instance_of(Net::HTTP::Post), xml)
     
     job.send(:post_to_callback)    
   end

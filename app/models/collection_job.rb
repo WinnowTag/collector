@@ -54,12 +54,15 @@ class CollectionJob < ActiveRecord::Base
       update_attribute(:user_notified, true)
       uri = URI.parse(self.callback_url)
       Net::HTTP.start(uri.host, uri.port) do |http|
-        http.post(uri.path,
+        request = Net::HTTP::Post.new(uri.path, 'Accept' => 'text/xml', 'Content-Type' => 'text/xml')
+        if HMAC_CREDENTIALS['collector']
+          access_key = HMAC_CREDENTIALS['collector'].keys.first
+          AuthHMAC.sign!(request, access_key, HMAC_CREDENTIALS['collector'][access_key])
+        end
+        http.request(request,
                   to_xml(:except => [:id, :created_at, :updated_at, :started_at,
                                     :callback_url, :user_notified, :lock_version],
-                         :root => 'collection-job-result'),
-                 'Accept' => 'text/xml', 
-                 'Content-Type' => 'text/xml')
+                         :root => 'collection-job-result'))
       end
     end
   end
