@@ -91,6 +91,7 @@ role :db,  domain, :primary => true
 task :copy_config do
   run "ln -s #{shared_path}/tmp #{release_path}/tmp"
   run "ln -s #{shared_path}/database.yml #{release_path}/config/database.yml"
+  run "ln -s #{shared_path}/hmac_credentials.yml #{release_path}/config/hmac_credentials.yml"
 end
 
 desc "Notify the list of deployment"
