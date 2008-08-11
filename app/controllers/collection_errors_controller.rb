@@ -4,8 +4,6 @@
 # to use, modify, or create derivate works.
 # Please visit http://www.peerworks.org/contact for further information.
 class CollectionErrorsController < ApplicationController
-  skip_filter   :login_required
-  before_filter :login_required_unless_local
   before_filter :find_feed
   
   # GET /collection_errors

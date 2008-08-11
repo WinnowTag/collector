@@ -4,8 +4,9 @@
 # to use, modify, or create derivate works.
 # Please visit http://www.peerworks.org/contact for further information.
 class CollectionJobsController < ApplicationController
+  with_auth_hmac HMAC_CREDENTIALS['winnow'], :only => []
   skip_before_filter :login_required
-  before_filter :login_required_unless_local
+  before_filter :login_required_unless_hmac_authenticated
   before_filter :find_feed
   
   def index
