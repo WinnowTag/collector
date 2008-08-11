@@ -33,7 +33,8 @@ steps_for(:atom_service_interation) do
   end
   
   When("I fetch the feed for the first collection") do
-    @atom = @service.workspaces.first.collections.first.feed
+    @atom = Atom::Feed.load_feed(URI.parse(@service.workspaces.first.collections.first.href),
+                                 :hmac_access_id => 'winnow_id', :hmac_secret_key => 'winnow_secret')
   end
   
   When("item $i of the feed") do |i|
@@ -72,7 +73,7 @@ steps_for(:atom_service_interation) do
   end
   
   Then("fetching self returns an $klass") do |klass|
-    @atom.reload!.should be_an_instance_of(klass.constantize)
+    @atom.reload!(:hmac_access_id => 'winnow_id', :hmac_secret_key => 'winnow_secret').should be_an_instance_of(klass.constantize)
   end
 end
 

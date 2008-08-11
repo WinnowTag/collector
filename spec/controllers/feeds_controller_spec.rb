@@ -17,8 +17,8 @@ describe FeedsController do
       assert_requires_login() {|c| c.get :index, {} }
     end
   
-    it "create_doesnt_require_login_if_request_is_local" do
-      @controller.stub!(:local_request?).and_return(true)
+    it "create_doesnt_require_login_if_request_is hmac authenticated" do
+      @controller.should_receive(:hmac_authenticated?).and_return(true)
       @request.session[:user] = nil
       assert_difference(Feed, :count) do
         post :create, :feed => {:url => "http://newfeed"}
@@ -27,7 +27,7 @@ describe FeedsController do
       end
     end
    
-    it "create_requires_login_if_request_is_not_local" do
+    it "create_requires_login_if_request_is_not_hmac authenticated" do
       @request.session[:user] = nil
       assert_difference(Feed, :count, 0) do
         assert_requires_login {|c| c.post :create, :feed => {:url => "http://newfeed"} }

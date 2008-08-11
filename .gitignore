@@ -2,3 +2,4 @@
 config/database.yml
 db/development_structure.sql
 log
+config/hmac_credentials.yml

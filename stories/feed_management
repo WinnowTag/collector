@@ -19,6 +19,7 @@ Story: Feed Management
     
         Given no feeds
         And 1 item cache
+				And I am a logged in user
         
         When I add the feed http://example.org
         

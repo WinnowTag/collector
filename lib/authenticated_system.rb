@@ -61,6 +61,14 @@ module AuthenticatedSystem
       end
     end
     
+    def login_required_unless_hmac_authenticated
+      unless hmac_authenticated?
+        login_required
+      else
+        true
+      end
+    end
+    
     # Redirect as appropriate when an access request fails.
     #
     # The default action is to redirect to the login screen.
