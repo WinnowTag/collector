@@ -8,7 +8,7 @@
 	<p><%=f.label 'email' %><%= f.text_field 'email' %></p>
 	<p>
     <label for="">Time Zone</label>
-    <%= f.time_zone_select :time_zone, TimeZone.us_zones, :include_blank => true %>
+    <%= f.time_zone_select :time_zone, TZInfo::Timezone.us_zones, :model => TZInfo::Timezone, :include_blank => true %>
 	</p>
 	<p><label>&nbsp;</label><%= submit_tag 'Save' %></p>
 </fieldset>
