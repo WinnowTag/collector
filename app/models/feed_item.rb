@@ -127,8 +127,7 @@ public
     new_feed_item = nil
     unique_id = self.make_unique_id(feed_item)
     
-    unless FeedItemsArchive.item_exists?(feed_item.link, unique_id) ||
-           self.find_by_link_or_uid(feed_item.link, unique_id)
+    unless self.find_by_link_or_uid(feed_item.link, unique_id)
 
       time, time_source = extract_time(feed_item)
       feed_item_content = FeedItemContent.generate_content_for_feed_item(feed_item)

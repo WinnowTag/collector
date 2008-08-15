@@ -177,12 +177,6 @@ describe FeedItem do
     assert_nil new_item
   end
   
-  it "archived_items_should_be_skipped" do
-    FeedItem.should_receive(:make_unique_id).and_return('unique_id')
-    FeedItemsArchive.should_receive(:item_exists?).with('http://test', 'unique_id').and_return(true)
-    assert_nil(FeedItem.build_from_feed_item(stub('item', :time => Time.now, :link => 'http://test', :id => nil)))
-  end
-  
   it "unique_id_uses_feed_defined_id" do
     assert_equal('unique_id', FeedItem.make_unique_id(stub('item', :id => 'unique_id')))
   end
