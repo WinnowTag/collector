@@ -9,15 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 39) do
-
-  create_table "archival_histories", :force => true do |t|
-    t.integer  "item_count",    :limit => 11
-    t.string   "error_type"
-    t.text     "error_message"
-    t.datetime "created_on"
-    t.datetime "completed_on"
-  end
+ActiveRecord::Schema.define(:version => 20080815065009) do
 
   create_table "collection_errors", :force => true do |t|
     t.string   "error_type"
@@ -183,18 +175,8 @@ ActiveRecord::Schema.define(:version => 39) do
     t.datetime "updated_at"
   end
 
-  create_table "protected_items", :force => true do |t|
-    t.integer  "feed_item_id", :limit => 11
-    t.integer  "protector_id", :limit => 11
-    t.datetime "created_on"
-    t.datetime "updated_on"
-  end
-
-  create_table "protectors", :force => true do |t|
-    t.string   "name"
-    t.integer  "protected_items_count", :limit => 11, :default => 0
-    t.datetime "created_on"
-    t.datetime "updated_on"
+  create_table "schema_info", :id => false, :force => true do |t|
+    t.integer "version", :limit => 11
   end
 
   create_table "sessions", :force => true do |t|
