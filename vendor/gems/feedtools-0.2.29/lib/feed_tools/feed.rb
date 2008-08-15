@@ -237,7 +237,6 @@ module FeedTools
             html_body = FeedTools::XmlHelper.try_xpaths(self.xml_document, [
               "html/body"
             ])
-            puts "trace: #{html_body.inspect}"
             if html_body != nil
               raise FeedAccessError,
                 "#{self.href} does not appear to be a feed."
