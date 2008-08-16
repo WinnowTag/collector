@@ -97,7 +97,12 @@ class Feed < ActiveRecord::Base
         logger.level = Logger::INFO
     
         benchmark("Collection Time", Logger::INFO, false) do
-          self.active_feeds.each do |feed|
+          # Only use the ids from the active_feeds array and load the feed again
+          # this allows the garbage collector to feed each feed after collection
+          # instead of maintaining a big array of all collected feeds and items
+          # while iterating. Should result in much better memory usage.
+          self.active_feeds.map{|f| f.id}.each do |feed_id|
+            feed = Feed.find(feed_id)
             case collection_result = feed.collect
             when Integer         then summary.item_count += collection_result
             when CollectionError then summary.collection_errors << collection_result

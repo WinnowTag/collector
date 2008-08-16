@@ -60,7 +60,9 @@ describe Feed do
     end
   
     def stub_collection(returning = [1,1])
-      feeds = [mock('feed1'), mock('feed2')]
+      feeds = [mock_model(Feed), mock_model(Feed)]
+      Feed.should_receive(:find).with(feeds.first.id).and_return(feeds.first)
+      Feed.should_receive(:find).with(feeds.last.id).and_return(feeds.last) unless returning.is_a?(Exception)
     
       if returning.is_a?(Exception)
         feeds.first.should_receive(:collect).and_raise(returning)
