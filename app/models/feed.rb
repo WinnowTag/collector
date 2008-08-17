@@ -108,6 +108,11 @@ class Feed < ActiveRecord::Base
             when CollectionError then summary.collection_errors << collection_result
             end
             summary.save
+            
+            # Also make sure to force GC after collecting each feed, otherwise
+            # the above fix doesn't seem to actually work.
+            feed = nil
+            GC.start
           end
         end      
       rescue Exception => e
