@@ -33,10 +33,6 @@ Rails::Initializer.run do |config|
   config.gem "mysql"
   config.gem "hpricot"
   config.gem "tzinfo", :version => "0.3.9"
-  
-  if `uname -n` =~ /blueboxgrid.com/
-    config.gem :fiveruns_manage
-  end
 
   # Only load the plugins named here, in the order given. By default, all plugins 
   # in vendor/plugins are loaded in alphabetical order.
