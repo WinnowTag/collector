@@ -36,7 +36,7 @@ describe FeedsController do
   
     it "index_sets_feeds_instance_variable" do
       get :index
-      assert_equal(Feed.count(:conditions => ['is_duplicate = ?', false]), assigns(:feeds).size)
+      assert_equal(Feed.count(:conditions => ['duplicate_id is NULL']), assigns(:feeds).size)
     end
   
     it "with_recent_errors_shows_feeds_with_recent_errors" do

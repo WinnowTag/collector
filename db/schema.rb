@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20080815065009) do
+ActiveRecord::Schema.define(:version => 20080904043849) do
 
   create_table "collection_errors", :force => true do |t|
     t.string   "error_type"
@@ -67,24 +67,7 @@ ActiveRecord::Schema.define(:version => 20080815065009) do
 
   add_index "feed_item_contents", ["feed_item_id"], :name => "index_feed_item_contents_on_feed_item_id"
 
-  create_table "feed_item_contents_archives", :force => true do |t|
-    t.integer  "feed_item_id",    :limit => 11
-    t.text     "title"
-    t.string   "link"
-    t.string   "author"
-    t.text     "description",     :limit => 2147483647
-    t.datetime "created_on"
-    t.text     "encoded_content"
-  end
-
-  add_index "feed_item_contents_archives", ["feed_item_id"], :name => "FIC_ARCHIVES_UNIQUE_FEED_ITEM_ID", :unique => true
-
   create_table "feed_item_xml_data", :force => true do |t|
-    t.text     "xml_data",   :limit => 2147483647
-    t.datetime "created_on"
-  end
-
-  create_table "feed_item_xml_data_archives", :force => true do |t|
     t.text     "xml_data",   :limit => 2147483647
     t.datetime "created_on"
   end
@@ -110,27 +93,6 @@ ActiveRecord::Schema.define(:version => 20080815065009) do
   add_index "feed_items", ["unique_id"], :name => "index_feed_items_on_unique_id"
   add_index "feed_items", ["content_length"], :name => "index_feed_items_on_content_length"
 
-  create_table "feed_items_archives", :force => true do |t|
-    t.integer  "feed_id",              :limit => 11
-    t.string   "sort_title"
-    t.datetime "time"
-    t.datetime "created_on"
-    t.string   "unique_id",                          :default => ""
-    t.string   "time_source",                        :default => "unknown"
-    t.integer  "xml_data_size",        :limit => 11
-    t.string   "link"
-    t.integer  "content_length",       :limit => 11
-    t.string   "title"
-    t.boolean  "tokens_were_spidered"
-  end
-
-  add_index "feed_items_archives", ["link"], :name => "index_feed_items_on_link", :unique => true
-  add_index "feed_items_archives", ["time"], :name => "index_feed_items_on_time"
-  add_index "feed_items_archives", ["feed_id"], :name => "index_feed_items_on_feed_id"
-  add_index "feed_items_archives", ["sort_title"], :name => "index_feed_items_on_title"
-  add_index "feed_items_archives", ["unique_id"], :name => "index_feed_items_on_unique_id"
-  add_index "feed_items_archives", ["content_length"], :name => "index_feed_items_on_content_length"
-
   create_table "feed_xml_datas", :force => true do |t|
     t.text     "xml_data",   :limit => 2147483647
     t.datetime "created_on"
@@ -140,16 +102,15 @@ ActiveRecord::Schema.define(:version => 20080815065009) do
   create_table "feeds", :force => true do |t|
     t.string   "url"
     t.string   "title"
-    t.string   "link"
-    t.text     "last_http_headers"
-    t.datetime "updated_on"
-    t.boolean  "active",                                :default => true
-    t.datetime "created_on"
     t.string   "sort_title"
-    t.integer  "collection_errors_count", :limit => 11, :default => 0
-    t.integer  "feed_items_count",        :limit => 11, :default => 0
+    t.string   "link"
+    t.boolean  "active",                                :default => true
     t.integer  "duplicate_id",            :limit => 11
-    t.boolean  "is_duplicate",                          :default => false
+    t.integer  "feed_items_count",        :limit => 11, :default => 0
+    t.integer  "collection_errors_count", :limit => 11, :default => 0
+    t.integer  "collections_count",       :limit => 11, :default => 0
+    t.datetime "updated_on"
+    t.datetime "created_on"
     t.string   "created_by"
   end
 
@@ -225,10 +186,6 @@ ActiveRecord::Schema.define(:version => 20080815065009) do
 
   add_foreign_key "feed_item_contents", ["feed_item_id"], "feed_items", ["id"], :on_delete => :cascade, :name => "feed_item_contents_ibfk_1"
 
-  add_foreign_key "feed_item_contents_archives", ["feed_item_id"], "feed_items_archives", ["id"], :on_delete => :cascade, :name => "feed_item_contents_archives_ibfk_1"
-
   add_foreign_key "feed_item_xml_data", ["id"], "feed_items", ["id"], :on_delete => :cascade, :name => "feed_item_xml_data_ibfk_1"
-
-  add_foreign_key "feed_item_xml_data_archives", ["id"], "feed_items_archives", ["id"], :on_delete => :cascade, :name => "feed_item_xml_data_archives_ibfk_1"
 
 end

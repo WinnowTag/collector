@@ -313,7 +313,6 @@ describe Feed do
 
       middledup = Feed.new(:url => 'http://slashdotdup')
       middledup.link = 'http://slashdot.org/'
-      middledup.is_duplicate = true
       middledup.duplicate = targetdup
       middledup.save!
     

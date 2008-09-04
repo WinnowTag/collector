@@ -206,9 +206,9 @@ class FeedsController < ApplicationController
   def setup_search_term
     @search_term = params[:search_term]
     unless @search_term.nil? or @search_term.empty?
-      @conditions = ['(title like ? or url like ?) and is_duplicate = ?', "%#{@search_term}%", "%#{@search_term}%", false]
+      @conditions = ['(title like ? or url like ?) and duplicate_id is NULL', "%#{@search_term}%", "%#{@search_term}%"]
     else
-      @conditions = ['is_duplicate = ?', false]
+      @conditions = ['duplicate_id is NULL']
     end
   end
   

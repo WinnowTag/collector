@@ -18,7 +18,6 @@ class Feed < ActiveRecord::Base
   validates_uniqueness_of :url, :message => 'Feed already exists'
   validate :url_is_not_from_winnow
   attr_accessible :url, :active
-  before_save :update_duplicate
   has_many :spider_results,    :dependent => :delete_all, :order => 'created_at desc'
   has_many :collection_jobs,   :dependent => :delete_all, :order => 'created_at desc'
   has_many :collection_errors, :dependent => :delete_all, :order => 'created_on desc'
@@ -212,7 +211,6 @@ class Feed < ActiveRecord::Base
     self.title             = feed.title if feed.title
     self.sort_title        = self.title.sub(/^(the|an|a) +/i, '').downcase if self.title
     self.last_xml_data     = feed.feed_data
-    self.last_http_headers = feed.http_headers
     self.link              = feed.link
     
     return new_feed_items
@@ -221,7 +219,7 @@ class Feed < ActiveRecord::Base
   # Return a list of Feeds that are active.
   def self.active_feeds
     find(:all, :order => "title ASC",
-          :conditions => ['active = ? and is_duplicate = ?', true, false])
+          :conditions => ['active = ? and duplicate_id is NULL', true])
   end
 
   # url attribute is immutable once set
@@ -341,6 +339,10 @@ class Feed < ActiveRecord::Base
     end
   end
   
+  def is_duplicate?
+    !self.duplicate.nil?
+  end
+  
   protected
   # URL is only checked on create since it should be read only and we dont want 
   # to do this every time we save.
@@ -359,12 +361,6 @@ class Feed < ActiveRecord::Base
   # updated on is used to indicate when the feed was last collected - so set it to nil on create
   def before_create
     write_attribute('updated_on', nil)
-  end
-  
-  def update_duplicate
-    if self.duplicate_id
-      self.is_duplicate = true
-    end
   end
   
   def url_is_not_from_winnow
