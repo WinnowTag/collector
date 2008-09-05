@@ -9,7 +9,7 @@ describe FeedItemsController do
   describe "GET show" do
     before(:each) do
       @feed_item = mock_model(FeedItem)
-      @feed_item.should_receive(:to_atom).with(:base => "http://test.host:80")
+      @feed_item.should_receive(:atom_document).and_return("")
       FeedItem.should_receive(:find).with("1").and_return(@feed_item)
     end
     

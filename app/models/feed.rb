@@ -174,7 +174,7 @@ class Feed < ActiveRecord::Base
     self.save!
     logger.info "total_item_count in feed: #{f.items.size}\n" +
                 "new_item_count: #{new_feed_items.size}\n" +
-                new_feed_items.map {|fi| "new_item: #{fi.content.title}"}.join("\n")
+                new_feed_items.map {|fi| "new_item: #{fi.title}"}.join("\n")
     return new_feed_items.size
   end
   
@@ -200,8 +200,7 @@ class Feed < ActiveRecord::Base
     new_feed_items = nil
     
     new_feed_items = feed.items.map do |fi|
-      item = FeedItem.build_from_feed_item(fi, self)
-      item if (item && item.save)
+      FeedItem.create_from_feed_item(fi, self)
     end.compact
         
     self.feed_items.reset
@@ -299,8 +298,7 @@ class Feed < ActiveRecord::Base
       if options[:include_entries]
         feed_items = self.feed_items.paginate(:order => 'time desc', 
                                               :page => options[:page], 
-                                              :total_entries => self.feed_items.size,
-                                              :include => :feed_item_content)
+                                              :total_entries => self.feed_items.size)
         feed.links << Atom::Link.new(:rel => 'first', :href => self_link)
         
         if feed_items.total_pages == 1
@@ -318,7 +316,7 @@ class Feed < ActiveRecord::Base
         end        
         
         feed_items.each do |feed_item|
-          feed.entries << feed_item.to_atom(options)
+          feed.entries << feed_item.atom
         end
       end      
     end

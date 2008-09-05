@@ -179,10 +179,10 @@ describe ItemCache do
         item = FeedItem.find(1)
         op = ItemCacheOperation.create!(:action => 'publish', :actionable => item)
         
-        response = mock_response(Net::HTTPCreated, item.to_atom.to_xml)
+        response = mock_response(Net::HTTPCreated, item.atom.to_xml)
     
         http = mock('http')
-        http.should_receive(:request).with(an_instance_of(Net::HTTP::Post), item.to_atom(:base => 'http://collector.mindloom.org').to_xml).and_return(response)
+        http.should_receive(:request).with(an_instance_of(Net::HTTP::Post), item.atom.to_xml).and_return(response)
         Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
     
         ItemCache.find(:first).process_operation(op)
@@ -192,7 +192,7 @@ describe ItemCache do
         item = FeedItem.find(1)
         op = ItemCacheOperation.create!(:action => 'publish', :actionable => item)
         
-        response = mock_response(Net::HTTPCreated, item.to_atom.to_xml)
+        response = mock_response(Net::HTTPCreated, item.atom.to_xml)
     
         http = mock('http')
         http.should_receive(:request) do |request, body|
@@ -236,7 +236,7 @@ describe ItemCache do
         item = FeedItem.find(1)
         op = ItemCacheOperation.create!(:action => 'update', :actionable => item)
         
-        response = mock_response(Net::HTTPCreated, item.to_atom.to_xml)
+        response = mock_response(Net::HTTPCreated, item.atom.to_xml)
     
         http = mock('http')
         http.should_receive(:request) do |request, body|
@@ -280,7 +280,7 @@ describe ItemCache do
         item = FeedItem.find(1)
         op = ItemCacheOperation.create!(:action => 'delete', :actionable => item)
         
-        response = mock_response(Net::HTTPCreated, item.to_atom.to_xml)
+        response = mock_response(Net::HTTPCreated, item.atom.to_xml)
     
         http = mock('http')
         http.should_receive(:request) do |request, body|

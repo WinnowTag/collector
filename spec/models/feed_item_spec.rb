@@ -6,27 +6,31 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
 describe FeedItem do
-  fixtures :feed_items, :feed_item_contents
+  fixtures :feed_items
 
   class MockFeedItem 
-    attr_accessor :time, :feed, :feed_data, :author, :title, :link, :description, :content, :id
+    attr_accessor :time, :feed, :feed_data, :author, :title, :link, :content, :id, :summary
+    
+    def initialize
+      @link = "http://link"
+    end
   end
   
-  it "build_from_feed_item" do
+  it "create_from_feed_item" do
     test_feed_url = 'file:/' + File.join(File.expand_path(RAILS_ROOT), 'spec', 'fixtures', 'slashdot.rss')
     feed = FeedTools::Feed.open(URI.parse(test_feed_url))
     ft_item = feed.items.first
     ft_item.stub!(:time).and_return(Time.now)
-    feed_item = FeedItem.build_from_feed_item(ft_item)
+    feed_item = FeedItem.create_from_feed_item(ft_item)
     feed_item.save
 
-    assert_equal ft_item.title, feed_item.content.title
+    assert_equal ft_item.title, feed_item.atom.title
     assert_equal ft_item.time, feed_item.time
     assert_equal FeedItem.make_unique_id(ft_item), feed_item.unique_id
-    assert_equal ft_item.link, feed_item.content.link
+    assert_equal ft_item.link, feed_item.atom.alternate.href
     assert_equal ft_item.link, feed_item.link
-    assert_equal ft_item.author.name, feed_item.content.author
-    assert_equal ft_item.description, feed_item.content.description
+    assert_equal ft_item.author.name, feed_item.atom.authors.first.name
+    assert_equal ft_item.content.gsub("\n", " "), feed_item.atom.content
     assert_equal "apple's growing pains", feed_item.sort_title
     assert_equal ft_item.feed_data.size, feed_item.xml_data_size
     assert_equal ft_item.content.size, feed_item.content_length
@@ -34,7 +38,7 @@ describe FeedItem do
     
     # make sure we can't create another one wtih the same content but a different link
     ft_item.stub!(:link).and_return('http://somewhereelse.com')
-    dup = FeedItem.build_from_feed_item(ft_item)
+    dup = FeedItem.create_from_feed_item(ft_item)
     assert_nil dup
   end
     
@@ -47,7 +51,7 @@ describe FeedItem do
     ft_feed_item = MockFeedItem.new
     ft_feed_item.feed = feed
     ft_feed_item.time = Time.now.tomorrow.tomorrow
-    feed_item = FeedItem.build_from_feed_item(ft_feed_item)
+    feed_item = FeedItem.create_from_feed_item(ft_feed_item)
     
     assert feed_item.time < ft_feed_item.time    
     assert_equal FeedItem::FeedPublicationTime, feed_item.time_source
@@ -63,7 +67,7 @@ describe FeedItem do
     ft_feed_item = MockFeedItem.new
     ft_feed_item.feed = feed
     ft_feed_item.time = Time.now.tomorrow.tomorrow
-    feed_item = FeedItem.build_from_feed_item(ft_feed_item)
+    feed_item = FeedItem.create_from_feed_item(ft_feed_item)
     
     feed_item.time.should == last_retrieved
     feed_item.time_source.should == FeedItem::FeedCollectionTime
@@ -77,7 +81,7 @@ describe FeedItem do
     ft_feed_item = MockFeedItem.new
     ft_feed_item.feed = feed
     ft_feed_item.time = nil
-    feed_item = FeedItem.build_from_feed_item(ft_feed_item)
+    feed_item = FeedItem.create_from_feed_item(ft_feed_item)
     assert_equal feed.last_retrieved, feed_item.time
     assert_equal FeedItem::FeedCollectionTime, feed_item.time_source
   end
@@ -90,7 +94,7 @@ describe FeedItem do
     ft_feed_item = MockFeedItem.new
     ft_feed_item.feed = feed
     ft_feed_item.time = nil
-    feed_item = FeedItem.build_from_feed_item(ft_feed_item)
+    feed_item = FeedItem.create_from_feed_item(ft_feed_item)
     assert_equal feed.published, feed_item.time
     assert_equal FeedItem::FeedPublicationTime, feed_item.time_source
   end
@@ -100,11 +104,11 @@ describe FeedItem do
     feed = FeedTools::Feed.open(URI.parse(test_feed_url))
     ft_item = feed.items.first
     ft_item.stub!(:time).and_return(Time.now)
-    feed_item = FeedItem.build_from_feed_item(ft_item)
+    feed_item = FeedItem.create_from_feed_item(ft_item)
     
-    assert_equal ft_item.title, feed_item.content.title
-    assert_equal ft_item.description, feed_item.content.description
-    assert_equal ft_item.content, feed_item.content.encoded_content    
+    assert_equal ft_item.title, feed_item.atom.title
+    assert_equal ft_item.summary, feed_item.atom.summary
+    assert_equal ft_item.content.gsub("\n", " ").gsub(/\s+/, ' '), feed_item.atom.content    
   end
   
   it "extract_feed_item_title_out_of_strong_heading" do
@@ -119,7 +123,7 @@ describe FeedItem do
     END
     ftitem = MockFeedItem.new
     ftitem.content = content
-    item = FeedItem.build_from_feed_item(ftitem)
+    item = FeedItem.create_from_feed_item(ftitem)
     assert_equal("AMERICAN POWER.", item.title)
   end
   
@@ -135,7 +139,7 @@ describe FeedItem do
     END
     ftitem = MockFeedItem.new
     ftitem.content = content
-    item = FeedItem.build_from_feed_item(ftitem)
+    item = FeedItem.create_from_feed_item(ftitem)
     assert_equal("Short Term Death", item.title)
   end
   
@@ -145,24 +149,24 @@ describe FeedItem do
     END
     ftitem = MockFeedItem.new
     ftitem.content = content
-    item = FeedItem.build_from_feed_item(ftitem)
+    item = FeedItem.create_from_feed_item(ftitem)
     assert_equal(%Q(What Americans Have Sacrificed In Bush's "War On Terror"), item.title)
   end
   
   it "sort_title_generation" do
     mock = MockFeedItem.new
     mock.title = 'THE title Of the FEEDITEM'
-    feed_item = FeedItem.build_from_feed_item(mock)
+    feed_item = FeedItem.create_from_feed_item(mock)
     assert_equal 'title of the feeditem', feed_item.sort_title
     assert_equal 'THE title Of the FEEDITEM', feed_item.title
   end
     
-  it "build_from_feed_item_with_same_link_returns_nil" do
+  it "create_from_feed_item_with_same_link_returns_nil" do
     test_feed_url = 'file:/' + File.join(File.expand_path(RAILS_ROOT), 'spec', 'fixtures', 'slashdot.rss')
     feed = FeedTools::Feed.open(URI.parse(test_feed_url))
     ft_item = feed.items.first
     ft_item.stub!(:time).and_return(Time.now)
-    feed_item = FeedItem.build_from_feed_item(ft_item)
+    feed_item = FeedItem.create_from_feed_item(ft_item)
     assert feed_item.save
     
     new_time = Time.now
@@ -172,7 +176,7 @@ describe FeedItem do
     ft_item.stub!(:title).and_return(new_title)
     ft_item.stub!(:content).and_return(new_content)
     
-    new_item = FeedItem.build_from_feed_item(ft_item)
+    new_item = FeedItem.create_from_feed_item(ft_item)
     assert_nil new_item
   end
   
@@ -181,86 +185,6 @@ describe FeedItem do
   end
   
   it "unique_id_generated_from_content_if_not_defined_by_feed" do
-    assert_equal(Digest::SHA1.hexdigest('titledescription'), FeedItem.make_unique_id(stub('item', :id => nil, :title => 'title', :description => 'description')))
-  end
-  
-  describe 'to_atom' do
-    before(:each) do
-      @item = FeedItem.find(:first)
-      @entry = @item.to_atom(:base => 'http://collector.mindloom.org')
-    end
-    
-    it "should return an Atom:Entry" do
-      @entry.should be_an_instance_of(Atom::Entry)
-    end
-    
-    it "should have the title" do
-      @entry.title.should == @item.title
-    end
-    
-    it "should have the id" do
-      @entry.id.should == "urn:peerworks.org:entry##{@item.id}"
-    end
-    
-    it "should have the updated date" do
-      @entry.updated.should == @item.time
-    end
-    
-    it "should have the author's name" do
-      @entry.authors.first.name.should == @item.author
-    end
-    
-    it "should have the content" do
-      @entry.content.should == @item.content.encoded_content
-    end
-    
-    it "should have the content type" do
-      @entry.content.type.should == 'html'
-    end
-    
-    it "should have the alternate link pointing to link" do
-      @entry.alternate.href.should == @item.link
-    end
-
-    it "should have a spider link" do
-      @entry.links.select {|l| l.rel == 'http://peerworks.org/rel/spider'}.should_not be_empty
-    end
-    
-    it "should have the spider link pointing to http://base/feed_items/:id/spider" do
-      @entry.links.select {|l| l.rel == 'http://peerworks.org/rel/spider'}.first.href.should == 
-          "http://collector.mindloom.org/feed_items/#{@item.id}/spider"
-    end
-    
-    describe 'without author' do
-      before(:each) do
-        @item.content.author = nil
-        @entry = @item.to_atom
-      end
-      
-      it "should be have no authors" do
-        @entry.should have(0).authors
-      end
-    end
-  end
-  
-  describe 'to_atom with non-utf-8 content' do
-    before(:each) do
-      @item = FeedItem.find(:first)
-      @item.content.encoded_content = "This is not utf-8 because of this character: \225"
-      @entry = @item.to_atom(:base => 'http://collector.mindloom.org')
-    end
-    
-    it "should re-encode the content if it can" do
-      entry = Atom::Entry.load_entry(@entry.to_xml)
-      entry.content.to_s.should == Iconv.iconv('utf-8', 'LATIN1', "This is not utf-8 because of this character: \225").first
-    end
-  end
-  
-  describe "to_atom with non-printable characters" do
-    it "should remove them" do
-      item = FeedItem.find(:first)
-      item.content.encoded_content = "This has a non\004-printable character"
-      item.to_atom.content.to_s.should == "This has a non-printable character"
-    end
+    assert_equal(Digest::SHA1.hexdigest('titledescription'), FeedItem.make_unique_id(stub('item', :id => nil, :title => 'title', :summary => 'description')))
   end
 end

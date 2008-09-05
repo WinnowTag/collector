@@ -39,4 +39,3 @@ Story: Atom Client Access
         
     Then  it contains the title        
     And the id fragment matches the item id
-    And fetching self returns an Atom::Entry

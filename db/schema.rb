@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20080904043849) do
+ActiveRecord::Schema.define(:version => 20080905014547) do
 
   create_table "collection_errors", :force => true do |t|
     t.string   "error_type"
@@ -55,6 +55,15 @@ ActiveRecord::Schema.define(:version => 20080904043849) do
 
   add_index "failed_operations", ["item_cache_id", "item_cache_operation_id"], :name => "failed_operations_index", :unique => true
 
+  create_table "feed_item_atom_documents", :force => true do |t|
+    t.integer  "feed_item_id",  :limit => 11
+    t.binary   "atom_document", :limit => 16777215
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "feed_item_atom_documents", ["feed_item_id"], :name => "index_feed_item_atom_documents_on_feed_item_id", :unique => true
+
   create_table "feed_item_contents", :force => true do |t|
     t.integer  "feed_item_id",    :limit => 11
     t.text     "title"
@@ -66,11 +75,6 @@ ActiveRecord::Schema.define(:version => 20080904043849) do
   end
 
   add_index "feed_item_contents", ["feed_item_id"], :name => "index_feed_item_contents_on_feed_item_id"
-
-  create_table "feed_item_xml_data", :force => true do |t|
-    t.text     "xml_data",   :limit => 2147483647
-    t.datetime "created_on"
-  end
 
   create_table "feed_items", :force => true do |t|
     t.integer  "feed_id",              :limit => 11
@@ -185,7 +189,5 @@ ActiveRecord::Schema.define(:version => 20080904043849) do
   end
 
   add_foreign_key "feed_item_contents", ["feed_item_id"], "feed_items", ["id"], :on_delete => :cascade, :name => "feed_item_contents_ibfk_1"
-
-  add_foreign_key "feed_item_xml_data", ["id"], "feed_items", ["id"], :on_delete => :cascade, :name => "feed_item_xml_data_ibfk_1"
 
 end

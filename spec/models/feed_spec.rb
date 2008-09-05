@@ -7,7 +7,7 @@ require File.dirname(__FILE__) + '/../spec_helper'
 require 'atom'
 
 describe Feed do
-  fixtures :feeds, :feed_items, :collection_errors, :feed_item_contents
+  fixtures :feeds, :feed_items, :collection_errors, :feed_item_atom_documents
   
   describe 'collection' do  
     it "adding_items" do
@@ -19,8 +19,8 @@ describe Feed do
                           stub('item', :title => 'An Item',
                                :link => 'http://test/item1',
                                :time => Time.now,
-                               :author => stub('author', :name => 'Ghost'),
-                               :description => 'description of item',
+                               :author => stub('author', :name => 'Ghost', :email => nil),
+                               :summary => 'description of item',
                                :content => 'longer content',
                                :feed_data => '<item></item>',
                                :id => nil)
@@ -40,15 +40,14 @@ describe Feed do
       assert_equal feed.items.size, added_feed_items.size
       first_returned_item = added_feed_items.first
       first_feed_item = feed.items.first
-      assert_equal first_feed_item.title, first_returned_item.content.title
+      assert_equal first_feed_item.title, first_returned_item.title
       assert_equal first_feed_item.time, first_returned_item.time
     
       # Make sure it is also in the DB
       stored_feed_item = FeedItem.find_by_unique_id(first_returned_item.unique_id)
-      assert_equal first_feed_item.title, stored_feed_item.content.title
+      assert_equal first_feed_item.title, stored_feed_item.title
       assert_equal first_feed_item.time.to_i, stored_feed_item.time.to_i
-      assert_equal first_feed_item.link, stored_feed_item.content.link
-      assert_equal first_feed_item.description, stored_feed_item.content.description
+      assert_equal first_feed_item.summary, stored_feed_item.atom.summary
       assert_equal winnow_feed, stored_feed_item.feed
     
       # Make sure adding it again produces no duplicates
@@ -221,9 +220,9 @@ describe Feed do
   describe 'collect! duplicate detection' do
     it "should detect duplicates by URL through autodiscovery" do
       item = mock('item', :title => 'title', :id => 'uid', 
-                          :content => 'item', :link => 'http://example', :description => 'item',
+                          :content => 'item', :link => 'http://example', :summary => 'item',
                           :feed_data => 'data',
-                          :time => Time.now, :author => stub('author', :name => 'Bob'))
+                          :time => Time.now, :author => stub('author', :name => 'Bob', :email => nil))
       feed = mock('feed', :items => [item], 
                           :href => 'http://rss.slashdot.org/Slashdot/slashdot', 
                           :title => 'slashdot',
@@ -247,9 +246,9 @@ describe Feed do
 
     it "should detect duplicates by link through auto discovery" do
       item = mock('item', :title => 'title', :id => 'uid', 
-                          :content => 'item', :link => 'http://example', :description => 'item',
+                          :content => 'item', :link => 'http://example', :summary => 'item',
                           :feed_data => 'data',
-                          :time => Time.now, :author => stub('author', :name => 'Bob'))
+                          :time => Time.now, :author => stub('author', :name => 'Bob', :email => nil))
       feed = mock('feed', :items => [item], 
                           :href => 'http://rss.slashdot.org/Slashdot/slashdot', 
                           :title => 'slashdot',
@@ -296,9 +295,9 @@ describe Feed do
   
     it "should detect a chain of duplicates" do
       item = mock('item', :title => 'title', :id => 'uid', 
-                          :content => 'item', :link => 'http://example', :description => 'item',
+                          :content => 'item', :link => 'http://example', :summary => 'item',
                           :feed_data => 'data',
-                          :time => Time.now, :author => stub('author', :name => 'Bob'))
+                          :time => Time.now, :author => stub('author', :name => 'Bob', :email => nil))
       feed = mock('feed', :items => [item], 
                           :href => 'http://rss.slashdot.org/Slashdot/slashdot', 
                           :title => 'slashdot',
@@ -315,17 +314,17 @@ describe Feed do
       middledup.save!
     
       dup = Feed.create!(:url => 'http://www.slashdot.org/')
-      dup.collect
+      dup.collect!
     
       dup = Feed.find(dup.id)
-      assert dup.is_duplicate?
       assert_equal targetdup, dup.duplicate
+      assert dup.is_duplicate?
     end
   end
   
   describe 'to_atom_entry' do
     before(:each) do
-      @feed = Feed.find(:first)
+      @feed = Feed.find(1)
       @atom = Atom::Entry.load_entry(@feed.to_atom_entry(:base => 'http://collector.wizztag.org').to_xml)
     end
     
@@ -432,8 +431,8 @@ describe Feed do
       
       describe "the item" do
         before(:each) do
-          @item = @feed.feed_items.paginate(:order => 'time desc', :page => nil).first
-          @atom_item = @atom.entries.first
+          @item = FeedItem.find(1)
+          @atom_item = @atom.entries.detect {|e| e.id == "urn:peerworks.org:entry#1"}
         end
         
         it "should have an id" do
@@ -445,15 +444,15 @@ describe Feed do
         end
         
         it "should have an updated date" do
-          @atom_item.updated.should == @item.time
+          @atom_item.updated.should_not be_nil
         end
           
         it "should have an author" do
-          @atom_item.authors.first.name.should == @item.author
+          @atom_item.authors.first.name.should == 'John Smith'
         end
         
         it "should have content encoded as HTML" do
-          @atom_item.content.should == @item.content.encoded_content
+          @atom_item.content.should == @item.atom.content
         end
         
         it "should have a spider link" do

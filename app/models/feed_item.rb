@@ -27,13 +27,13 @@ class FeedItem < ActiveRecord::Base
   validates_uniqueness_of :unique_id, :link
   
   belongs_to :feed, :counter_cache => true
-  # Dont use this association directly since it may need to be generated,
-  # use the content method instead
-  has_one :feed_item_content, :dependent => :delete
   cattr_reader :per_page
   @@per_page = 40
+  cattr_accessor :base_uri
+  @@base_uri = "http://collector.mindloom.org"
   attr_accessor :just_published
   has_one :spider_result, :dependent => :delete
+  has_one :feed_item_atom_document
 
   
   # Coptures the different sources for feed item time
@@ -49,57 +49,22 @@ class FeedItem < ActiveRecord::Base
   end   
   include TimeSources
 
-  # Gets a UID suitable for use within the classifier
-  def uid 
-    "Winnow::FeedItem::#{self.id}"
-  end
-  
-  # Gets the content of this feed.
-  def content(force = false)
-    self.feed_item_content(force)
-  end
-  
-  def author
-    self.content and self.content.author
-  end
-  
-  def to_atom(options = {})
-    Atom::Entry.new do |entry|
-      entry.title = self.title
-      entry.id = "urn:peerworks.org:entry##{self.id}"
-      entry.updated = self.time
-      entry.authors << Atom::Person.new(:name => self.author) if self.author
-      entry.links << Atom::Link.new(:rel => 'self', 
-                                    :href => "#{options[:base]}/feed_items/#{self.id}.atom")
-      entry.links << Atom::Link.new(:rel => 'alternate', :href => self.link)
-      entry.links << Atom::Link.new(:rel => 'http://peerworks.org/rel/spider', 
-                                    :href => "#{options[:base]}/feed_items/#{self.id}/spider")     
-      # Content could be non-utf8 or contain non-printable characters due to a FeedTools pre 0.2.29 bug.
-      # LibXML chokes on this so try and fix it.
-      if self.content
-        begin
-          entry.content = Atom::Content::Html.new(Iconv.iconv('utf-8', 'utf-8', self.content.encoded_content).first.tr("\000-\011", ""))
-        rescue Iconv::IllegalSequence
-          # LATIN1 is the most likely, try that or fail
-          entry.content = Atom::Content::Html.new(Iconv.iconv('utf-8', 'LATIN1', self.content.encoded_content).first.tr("\000-\011", ""))
-        end
-      end
+  def atom_document
+    if self.feed_item_atom_document
+      self.feed_item_atom_document.atom_document
     end
   end
   
-  # Get the display title for this feed item.
-  def extract_title(feed_item)
-    if feed_item.title and not feed_item.title.empty?
-      feed_item.title
-    elsif feed_item.content and feed_item.content.match(/^<?p?>?<(strong|h1|h2|h3|h4|b)>([^<]*)<\/\1>/i)
-      $2
-    elsif feed_item.content.is_a? String
-      feed_item.content.split(/\n|<br ?\/?>/).each do |line|
-        potential_title = line.gsub(/<\/?[^>]*>/, "").chomp # strip html
-        break potential_title if potential_title and not potential_title.empty?
-      end.split(/!|\?|\./).first
+  def atom
+    if self.feed_item_atom_document && atom_doc = self.feed_item_atom_document.atom_document
+      Atom::Entry.load_entry(atom_doc)
     else
-      "Untitled"
+      Atom::Entry.new do |e|
+        e.id = "urn:peerworks.org:entry##{self.id}"
+        e.title = self.title
+        e.updated = self.time
+        e.links << Atom::Link.new(:rel => 'alternate', :href => self.link)
+      end
     end
   end
     
@@ -119,26 +84,26 @@ public
   # The FeedItem is not saved in the database. It is not associated with a Feed,
   # it is up to the caller to do that.
   #
-  def self.build_from_feed_item(feed_item, feed = nil)
+  def self.create_from_feed_item(feed_item, feed = nil)
     new_feed_item = nil
     unique_id = self.make_unique_id(feed_item)
     
     unless self.find_by_link_or_uid(feed_item.link, unique_id)
 
       time, time_source = extract_time(feed_item)
-      feed_item_content = FeedItemContent.generate_content_for_feed_item(feed_item)
-      new_feed_item = FeedItem.new(:feed => feed,
+      new_feed_item = FeedItem.create(:feed => feed,
                                    :link => feed_item.link, 
                                    :unique_id => unique_id,
                                    :xml_data_size => feed_item.feed_data ? feed_item.feed_data.size : 0,
                                    :content_length => feed_item.content ? feed_item.content.size : 0,
                                    :time => time,
                                    :time_source => time_source,
-                                   :feed_item_content => feed_item_content,
-                                   :title => feed_item_content.title)
+                                   :title => extract_title(feed_item))
     
       # Strip articles and downcase the sort_title
-      new_feed_item.sort_title = new_feed_item.title.sub(/^(the|an|a) +/i, '').downcase     
+      new_feed_item.sort_title = new_feed_item.title.sub(/^(the|an|a) +/i, '').downcase if new_feed_item.title
+      new_feed_item.feed_item_atom_document = FeedItemAtomDocument.build_from_feed_item(new_feed_item.id, feed_item, :base => FeedItem.base_uri) 
+      new_feed_item.save!
     end
     
     return new_feed_item
@@ -151,14 +116,14 @@ public
     unique_id = ""
     unique_id << item.title if item.title
 
-    if description = item.description
-      if description.length < 200
-        unique_id << description
+    if summary = item.summary
+      if summary.length < 200
+        unique_id << summary
       else
-        first_100 = description[0,100]
+        first_100 = summary[0,100]
         unique_id << first_100 unless first_100.nil?
-        n = [100,description.length].min
-        last_100 = description[-n..-1]
+        n = [100,summary.length].min
+        last_100 = summary[-n..-1]
         unique_id << last_100 unless last_100.nil?
       end
     end
@@ -176,5 +141,21 @@ public
     else
       [Time.now.utc, FeedCollectionTime]
     end    
+  end
+  
+  # Get the display title for this feed item.
+  def self.extract_title(feed_item)
+    if feed_item.title and not feed_item.title.empty?
+      feed_item.title
+    elsif feed_item.content and feed_item.content.match(/^<?p?>?<(strong|h1|h2|h3|h4|b)>([^<]*)<\/\1>/i)
+      $2
+    elsif feed_item.content.is_a? String
+      feed_item.content.split(/\n|<br ?\/?>/).each do |line|
+        potential_title = line.gsub(/<\/?[^>]*>/, "").chomp # strip html
+        break potential_title if potential_title and not potential_title.empty?
+      end.split(/!|\?|\./).first
+    else
+      "Untitled"
+    end
   end
 end

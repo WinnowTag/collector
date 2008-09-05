@@ -13,7 +13,7 @@ describe FeedItemCorpusExporterWorker do
     @output = nil
   end
   
-  it "full_export" do
+  xit "full_export" do
     exporter = FeedItemCorpusExporterWorker.new
     results = {}
     exporter.stub!(:results).and_return(results)
@@ -45,7 +45,7 @@ describe FeedItemCorpusExporterWorker do
     assert feed.search('feed-items/feed-item').first.search('feed-id').empty?
   end
   
-  it "full_export_with_item_count_target" do
+  xit "full_export_with_item_count_target" do
     exporter = FeedItemCorpusExporterWorker.new
     results = {}
     exporter.stub!(:results).and_return(results)
@@ -76,7 +76,7 @@ describe FeedItemCorpusExporterWorker do
     assert feed.search('feed-items/feed-item').first.search('feed-id').empty?
   end
   
-  it "partial_export" do
+  xit "partial_export" do
     start_date = Time.now.utc.yesterday
     end_date = Time.now.utc
     exporter = FeedItemCorpusExporterWorker.new
@@ -101,7 +101,7 @@ describe FeedItemCorpusExporterWorker do
     assert feed.search('feed-items/feed-item').first.search('feed-id').empty?
   end
   
-  it "full_export_by_content_length" do
+  xit "full_export_by_content_length" do
     exporter = FeedItemCorpusExporterWorker.new
     results = {}
     exporter.stub!(:results).and_return(results)

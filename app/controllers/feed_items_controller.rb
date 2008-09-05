@@ -10,7 +10,7 @@ class FeedItemsController < ApplicationController
     @feed_item = FeedItem.find(params[:id])
     respond_to do |wants|
       wants.atom do 
-        render :xml => @feed_item.to_atom(:base => "http://#{request.host}:#{request.port}")
+        render :xml => @feed_item.atom_document
       end
     end
   end

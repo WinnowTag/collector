@@ -9,7 +9,7 @@ require 'workers/feed_item_corpus_importer_worker'
 describe FeedItemCorpusImporterWorker do
   fixtures :feeds, :feed_items
   
-  it "import_of_corpus_with_single_new_feed" do
+  xit "import_of_corpus_with_single_new_feed" do
     initial_feeds = Feed.find(:all, :include => :feed_items)
     file = File.join(RAILS_ROOT, 'spec', 'fixtures', 'single_new_feed_corpus.xml')
     importer = FeedItemCorpusImporterWorker.new
@@ -31,7 +31,7 @@ describe FeedItemCorpusImporterWorker do
     assert_equal FeedItem::FeedItemTime, imported_feed.feed_items.first.time_source    
   end  
   
-  it "import_of_corpus_with_new_item_for_existing_feed" do
+  xit "import_of_corpus_with_new_item_for_existing_feed" do
     initial_feeds = Feed.find(:all, :include => :feed_items)
     file = File.join(RAILS_ROOT, 'spec', 'fixtures', 'new_item_to_existing_feed_corpus.xml')
     importer = FeedItemCorpusImporterWorker.new
@@ -51,7 +51,7 @@ describe FeedItemCorpusImporterWorker do
     assert_equal FeedItem::FeedItemTime, imported_feed.feed_items.first.time_source
   end
   
-  it "import_of_new_and_duplicate_item_for_existing_feed" do
+  xit "import_of_new_and_duplicate_item_for_existing_feed" do
     initial_feeds = Feed.find(:all, :include => :feed_items)
     file = File.join(RAILS_ROOT, 'spec', 'fixtures', 'new_item_and_duplicate_item_for_existing_feed_corpus.xml')
     importer = FeedItemCorpusImporterWorker.new
@@ -71,7 +71,7 @@ describe FeedItemCorpusImporterWorker do
     assert_equal FeedItem::FeedItemTime, imported_feed.feed_items.first.time_source
   end
   
-  it "import_of_new_items_for_existing_feed" do
+  xit "import_of_new_items_for_existing_feed" do
     initial_feeds = Feed.find(:all, :include => :feed_items)
     file = File.join(RAILS_ROOT, 'spec', 'fixtures', 'new_items_for_existing_feeds_corpus.xml')
     importer = FeedItemCorpusImporterWorker.new
@@ -95,7 +95,7 @@ describe FeedItemCorpusImporterWorker do
     assert_equal 2, imported_feed.feed_items.find(:all, :conditions => ['unique_id in (?)', %w(forth new4)]).size
   end
   
-  it "partial_import" do
+  xit "partial_import" do
     initial_feeds = Feed.find(:all, :include => :feed_items)
     file = File.join(RAILS_ROOT, 'spec', 'fixtures', 'new_items_for_existing_feeds_corpus.xml')
     importer = FeedItemCorpusImporterWorker.new

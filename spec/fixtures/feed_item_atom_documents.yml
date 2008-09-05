@@ -2,8 +2,17 @@
 
 one:
   feed_item_id: 1
-  atom_document: 
+  atom_document: '<entry xmlns="http://www.w3.org/2005/Atom">
+    <title>Feed item 1</title>
+    <link href="http://first"/>
+    <link href="http://collector.mindloom.org/feed_items/1.atom" rel="self"/>
+    <link href="http://collector.mindloom.org/feed_items/1/spider" rel="http://peerworks.org/rel/spider"/>
+    <author>
+      <name>John Smith</name>
+    </author>
+    <id>urn:peerworks.org:entry#1</id>
+    <content type="html">This &lt;em&gt;is&lt;/em&gt; html.</content>
+    <updated><%= Time.now.utc.yesterday.yesterday.xmlschema%></updated>
+    <summary>Some text.</summary>
+    </entry>'
 
-two:
-  feed_item_id: 1
-  atom_document: 

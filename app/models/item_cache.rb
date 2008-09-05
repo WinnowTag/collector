@@ -74,7 +74,7 @@ class ItemCache < ActiveRecord::Base
     when FeedItem
       collection = feed_collection(feed_or_item.feed_id)
       logger.info("publishing item(#{feed_or_item.id}) to #{collection.href}")
-      collection.publish(feed_or_item.to_atom(:base => self.class.collector_url), hmac_credentials)      
+      collection.publish(feed_or_item.atom, hmac_credentials)      
     end
   end
   
@@ -82,7 +82,7 @@ class ItemCache < ActiveRecord::Base
     atom = if feed_or_item.is_a?(Feed)
       feed_or_item.to_atom_entry
     else
-      feed_or_item.to_atom(:base => self.class.collector_url)
+      feed_or_item.atom
     end
     
     path = feed_or_item.is_a?(Feed) ? 'feeds' : 'feed_items'
