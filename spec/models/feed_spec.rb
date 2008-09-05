@@ -42,7 +42,6 @@ describe Feed do
       first_feed_item = feed.items.first
       assert_equal first_feed_item.title, first_returned_item.content.title
       assert_equal first_feed_item.time, first_returned_item.time
-      assert_equal first_feed_item.feed_data, first_returned_item.xml_data
     
       # Make sure it is also in the DB
       stored_feed_item = FeedItem.find_by_unique_id(first_returned_item.unique_id)
@@ -50,7 +49,6 @@ describe Feed do
       assert_equal first_feed_item.time.to_i, stored_feed_item.time.to_i
       assert_equal first_feed_item.link, stored_feed_item.content.link
       assert_equal first_feed_item.description, stored_feed_item.content.description
-      assert_equal first_feed_item.feed_data, stored_feed_item.xml_data
       assert_equal winnow_feed, stored_feed_item.feed
     
       # Make sure adding it again produces no duplicates

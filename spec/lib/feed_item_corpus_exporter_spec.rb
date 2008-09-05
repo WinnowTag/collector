@@ -7,7 +7,7 @@ require File.dirname(__FILE__) + '/../spec_helper'
 require 'workers/feed_item_corpus_exporter_worker'
 
 describe FeedItemCorpusExporterWorker do
-  fixtures :feeds, :feed_items, :feed_xml_datas, :feed_item_xml_data
+  fixtures :feeds, :feed_items, :feed_xml_datas
  
   after(:each) do
     @output = nil
@@ -35,7 +35,6 @@ describe FeedItemCorpusExporterWorker do
     assert_equal 3, feed.search('feed-items/feed-item').size
     assert_equal Feed.find(1).last_xml_data, feed.search('last-xml-data').text
     assert feed.search('feed-items/feed-item').first.search('feed-id').empty?
-    assert_equal FeedItem.find(1).xml_data, feed.at('feed-items/feed-item').search('xml-data').text
    
     feed = elements('//feeds/feed')[1]
     assert_not_nil feed 

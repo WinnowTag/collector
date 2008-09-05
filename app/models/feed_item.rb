@@ -30,7 +30,6 @@ class FeedItem < ActiveRecord::Base
   # Dont use this association directly since it may need to be generated,
   # use the content method instead
   has_one :feed_item_content, :dependent => :delete
-  has_one :xml_data_container, :class_name => "FeedItemXmlData", :foreign_key => "id", :dependent => :delete
   cattr_reader :per_page
   @@per_page = 40
   attr_accessor :just_published
@@ -87,24 +86,21 @@ class FeedItem < ActiveRecord::Base
       end
     end
   end
-
-  # Short cuts to the xml_data_container model
-  def xml_data
-    unless self.xml_data_container.nil?
-      self.xml_data_container.xml_data
+  
+  # Get the display title for this feed item.
+  def extract_title(feed_item)
+    if feed_item.title and not feed_item.title.empty?
+      feed_item.title
+    elsif feed_item.content and feed_item.content.match(/^<?p?>?<(strong|h1|h2|h3|h4|b)>([^<]*)<\/\1>/i)
+      $2
+    elsif feed_item.content.is_a? String
+      feed_item.content.split(/\n|<br ?\/?>/).each do |line|
+        potential_title = line.gsub(/<\/?[^>]*>/, "").chomp # strip html
+        break potential_title if potential_title and not potential_title.empty?
+      end.split(/!|\?|\./).first
+    else
+      "Untitled"
     end
-  end
-
-  def xml_data=(xml)
-    if self.xml_data_container.nil?
-      if self.new_record?
-        self.build_xml_data_container
-      else
-        self.create_xml_data_container
-      end
-    end
-
-    self.xml_data_container.xml_data = xml
   end
     
   #-------------------------------------------------------------------------------
@@ -134,7 +130,6 @@ public
       new_feed_item = FeedItem.new(:feed => feed,
                                    :link => feed_item.link, 
                                    :unique_id => unique_id,
-                                   :xml_data => feed_item.feed_data,
                                    :xml_data_size => feed_item.feed_data ? feed_item.feed_data.size : 0,
                                    :content_length => feed_item.content ? feed_item.content.size : 0,
                                    :time => time,

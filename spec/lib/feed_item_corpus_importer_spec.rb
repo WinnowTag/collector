@@ -26,7 +26,6 @@ describe FeedItemCorpusImporterWorker do
     assert_equal "Ajaxian", imported_feed.title
     assert_equal 1, imported_feed.feed_items.length
     assert_equal 'ajaxiscool', imported_feed.feed_items.first.unique_id
-    assert_equal '<item><title>A Couple Quick Ajax Experience Notes</title></item>', imported_feed.feed_items.first.xml_data
     assert_equal 'http://ajaxian.com/ajax_is_cool', imported_feed.feed_items.first.link
     assert_equal 'XMLXMLXML', imported_feed.last_xml_data
     assert_equal FeedItem::FeedItemTime, imported_feed.feed_items.first.time_source    

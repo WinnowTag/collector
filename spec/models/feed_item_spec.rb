@@ -22,7 +22,6 @@ describe FeedItem do
 
     assert_equal ft_item.title, feed_item.content.title
     assert_equal ft_item.time, feed_item.time
-    assert_equal ft_item.feed_data, feed_item.xml_data
     assert_equal FeedItem.make_unique_id(ft_item), feed_item.unique_id
     assert_equal ft_item.link, feed_item.content.link
     assert_equal ft_item.link, feed_item.link
