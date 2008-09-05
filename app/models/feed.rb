@@ -14,7 +14,6 @@ class Feed < ActiveRecord::Base
   attr_accessor :just_published
   belongs_to :duplicate, :class_name => 'Feed'
   has_many	:feed_items, :dependent => :delete_all
-  has_one :xml_data_container, :class_name => "FeedXmlData", :foreign_key => "id", :dependent => :delete
   validates_uniqueness_of :url, :message => 'Feed already exists'
   validate :url_is_not_from_winnow
   attr_accessible :url, :active
@@ -209,7 +208,6 @@ class Feed < ActiveRecord::Base
     reload
     self.title             = feed.title if feed.title
     self.sort_title        = self.title.sub(/^(the|an|a) +/i, '').downcase if self.title
-    self.last_xml_data     = feed.feed_data
     self.link              = feed.link
     
     return new_feed_items
@@ -226,30 +224,6 @@ class Feed < ActiveRecord::Base
     if new_record?
       write_attribute(:url, u)
     end
-  end
-  
-  # Get the XML data retrieved from the last collection.
-  #
-  # Acts as a wrapper around the xml_data_container association.
-  #
-  def last_xml_data
-    self.xml_data_container ? self.xml_data_container.xml_data : nil
-  end
-
-  # Sets the last XML data.
-  #
-  # Acts as a wrapper around the xml_data_container association.
-  #
-  def last_xml_data=(xml)
-    unless self.xml_data_container
-      if self.new_record?
-        self.build_xml_data_container
-      else
-        self.create_xml_data_container
-      end
-    end
-
-    self.xml_data_container.xml_data = xml
   end
   
   # Sets the maximum number of items to return in calls to feed_items_with_max.

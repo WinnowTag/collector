@@ -33,7 +33,6 @@ describe Feed do
       assert_equal feed.items.size, winnow_feed.feed_items.length
       assert_equal feed.link, winnow_feed.link
       assert_equal feed.title.sub(/^(the|an|a) +/i, '').downcase, winnow_feed.sort_title
-      assert_equal feed.feed_data, winnow_feed.last_xml_data
       assert_nil winnow_feed.updated_on
     
       # check the returned items are the same as those stored
