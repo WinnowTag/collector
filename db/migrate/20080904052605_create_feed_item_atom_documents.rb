@@ -12,6 +12,8 @@ class CreateFeedItemAtomDocuments < ActiveRecord::Migration
 
       t.timestamps
     end
+    
+    add_index :feed_item_atom_documents, [:feed_item_id], :unique => true
   end
 
   def self.down
