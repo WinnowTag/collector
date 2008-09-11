@@ -25,14 +25,13 @@ describe FeedItem do
     feed_item.save
 
     assert_equal ft_item.title, feed_item.atom.title
-    assert_equal ft_item.time, feed_item.time
+    assert_equal ft_item.time, feed_item.item_updated
     assert_equal FeedItem.make_unique_id(ft_item), feed_item.unique_id
     assert_equal ft_item.link, feed_item.atom.alternate.href
     assert_equal ft_item.link, feed_item.link
     assert_equal ft_item.author.name, feed_item.atom.authors.first.name
     assert_equal ft_item.content.gsub("\n", " "), feed_item.atom.content
     assert_equal "apple's growing pains", feed_item.sort_title
-    assert_equal ft_item.feed_data.size, feed_item.xml_data_size
     assert_equal ft_item.content.size, feed_item.content_length
     assert feed_item.save
     
@@ -53,8 +52,7 @@ describe FeedItem do
     ft_feed_item.time = Time.now.tomorrow.tomorrow
     feed_item = FeedItem.create_from_feed_item(ft_feed_item)
     
-    assert feed_item.time < ft_feed_item.time    
-    assert_equal FeedItem::FeedPublicationTime, feed_item.time_source
+    assert feed_item.item_updated < ft_feed_item.time
   end
   
   it "item_and_feed_time_more_than_a_day_in_the_future_set_to_retrieval_time" do
@@ -69,8 +67,7 @@ describe FeedItem do
     ft_feed_item.time = Time.now.tomorrow.tomorrow
     feed_item = FeedItem.create_from_feed_item(ft_feed_item)
     
-    feed_item.time.should == last_retrieved
-    feed_item.time_source.should == FeedItem::FeedCollectionTime
+    feed_item.item_updated.should == last_retrieved
   end
   
   it "nil_feed_times_uses_collection_time" do
@@ -82,8 +79,7 @@ describe FeedItem do
     ft_feed_item.feed = feed
     ft_feed_item.time = nil
     feed_item = FeedItem.create_from_feed_item(ft_feed_item)
-    assert_equal feed.last_retrieved, feed_item.time
-    assert_equal FeedItem::FeedCollectionTime, feed_item.time_source
+    assert_equal feed.last_retrieved, feed_item.item_updated
   end
   
   it "nil_feed_item_time_uses_feed_publication_time" do
@@ -95,8 +91,7 @@ describe FeedItem do
     ft_feed_item.feed = feed
     ft_feed_item.time = nil
     feed_item = FeedItem.create_from_feed_item(ft_feed_item)
-    assert_equal feed.published, feed_item.time
-    assert_equal FeedItem::FeedPublicationTime, feed_item.time_source
+    assert_equal feed.published, feed_item.item_updated
   end
     
   it "feed_item_content_extracts_encoded_content" do

@@ -20,7 +20,7 @@ steps_for(:atom_service_interation) do
   end
   
   Given("item $i of the feed") do |i|
-    @test_object = @test_object.feed_items.find(:all, :order => 'time desc')[i.to_i - 1]
+    @test_object = @test_object.feed_items.find(:all, :order => 'item_updated desc')[i.to_i - 1]
   end
   
   Given("a base url") do

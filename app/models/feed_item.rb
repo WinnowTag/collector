@@ -62,7 +62,7 @@ class FeedItem < ActiveRecord::Base
       Atom::Entry.new do |e|
         e.id = "urn:peerworks.org:entry##{self.id}"
         e.title = self.title
-        e.updated = self.time
+        e.updated = self.item_updated
         e.links << Atom::Link.new(:rel => 'alternate', :href => self.link)
       end
     end
@@ -89,15 +89,11 @@ public
     unique_id = self.make_unique_id(feed_item)
     
     unless self.find_by_link_or_uid(feed_item.link, unique_id)
-
-      time, time_source = extract_time(feed_item)
       new_feed_item = FeedItem.create(:feed => feed,
                                    :link => feed_item.link, 
                                    :unique_id => unique_id,
-                                   :xml_data_size => feed_item.feed_data ? feed_item.feed_data.size : 0,
                                    :content_length => feed_item.content ? feed_item.content.size : 0,
-                                   :time => time,
-                                   :time_source => time_source,
+                                   :item_updated => extract_time(feed_item),
                                    :title => extract_title(feed_item))
     
       # Strip articles and downcase the sort_title
@@ -133,13 +129,13 @@ public
   
   def self.extract_time(feed_item)
     if feed_item.time and (feed_item.time.getutc < (Time.now.getutc.tomorrow))
-      [feed_item.time.getutc, FeedItemTime]
+      feed_item.time.getutc
     elsif feed_item.feed and feed_item.feed.published and (feed_item.feed.published.getutc < Time.now.getutc.tomorrow)
-      [feed_item.feed.published.getutc, FeedPublicationTime]
+      feed_item.feed.published.getutc
     elsif feed_item.feed and feed_item.feed.last_retrieved
-      [feed_item.feed.last_retrieved.getutc, FeedCollectionTime]
+      feed_item.feed.last_retrieved.getutc
     else
-      [Time.now.utc, FeedCollectionTime]
+      Time.now.utc
     end    
   end
   

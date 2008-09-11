@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20080905014547) do
+ActiveRecord::Schema.define(:version => 20080905064925) do
 
   create_table "collection_errors", :force => true do |t|
     t.string   "error_type"
@@ -64,44 +64,26 @@ ActiveRecord::Schema.define(:version => 20080905014547) do
 
   add_index "feed_item_atom_documents", ["feed_item_id"], :name => "index_feed_item_atom_documents_on_feed_item_id", :unique => true
 
-  create_table "feed_item_contents", :force => true do |t|
-    t.integer  "feed_item_id",    :limit => 11
-    t.text     "title"
-    t.string   "link"
-    t.string   "author"
-    t.text     "description",     :limit => 2147483647
-    t.datetime "created_on"
-    t.text     "encoded_content"
-  end
-
-  add_index "feed_item_contents", ["feed_item_id"], :name => "index_feed_item_contents_on_feed_item_id"
-
   create_table "feed_items", :force => true do |t|
-    t.integer  "feed_id",              :limit => 11
-    t.string   "sort_title"
-    t.datetime "time"
-    t.datetime "created_on"
-    t.string   "unique_id",                          :default => ""
-    t.string   "time_source",                        :default => "unknown"
-    t.integer  "xml_data_size",        :limit => 11
-    t.string   "link"
-    t.integer  "content_length",       :limit => 11
+    t.integer  "feed_id",        :limit => 11, :default => 0
+    t.integer  "collection_id",  :limit => 11
     t.string   "title"
-    t.boolean  "tokens_were_spidered"
+    t.string   "link"
+    t.datetime "item_updated"
+    t.string   "unique_id"
+    t.string   "atom_md5"
+    t.integer  "content_length", :limit => 11, :default => 0
+    t.datetime "created_on"
+    t.string   "sort_title"
   end
 
   add_index "feed_items", ["link"], :name => "index_feed_items_on_link", :unique => true
-  add_index "feed_items", ["time"], :name => "index_feed_items_on_time"
+  add_index "feed_items", ["collection_id"], :name => "index_feed_items_on_collection_id", :unique => true
+  add_index "feed_items", ["item_updated"], :name => "index_feed_items_on_time"
   add_index "feed_items", ["feed_id"], :name => "index_feed_items_on_feed_id"
   add_index "feed_items", ["sort_title"], :name => "index_feed_items_on_title"
   add_index "feed_items", ["unique_id"], :name => "index_feed_items_on_unique_id"
   add_index "feed_items", ["content_length"], :name => "index_feed_items_on_content_length"
-
-  create_table "feed_xml_datas", :force => true do |t|
-    t.text     "xml_data",   :limit => 2147483647
-    t.datetime "created_on"
-    t.datetime "updated_on"
-  end
 
   create_table "feeds", :force => true do |t|
     t.string   "url"
@@ -187,7 +169,5 @@ ActiveRecord::Schema.define(:version => 20080905014547) do
     t.datetime "last_accessed_at"
     t.string   "time_zone",                               :default => "UTC"
   end
-
-  add_foreign_key "feed_item_contents", ["feed_item_id"], "feed_items", ["id"], :on_delete => :cascade, :name => "feed_item_contents_ibfk_1"
 
 end

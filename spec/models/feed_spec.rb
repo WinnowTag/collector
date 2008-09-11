@@ -40,12 +40,12 @@ describe Feed do
       first_returned_item = added_feed_items.first
       first_feed_item = feed.items.first
       assert_equal first_feed_item.title, first_returned_item.title
-      assert_equal first_feed_item.time, first_returned_item.time
+      assert_equal first_feed_item.time, first_returned_item.item_updated
     
       # Make sure it is also in the DB
       stored_feed_item = FeedItem.find_by_unique_id(first_returned_item.unique_id)
       assert_equal first_feed_item.title, stored_feed_item.title
-      assert_equal first_feed_item.time.to_i, stored_feed_item.time.to_i
+      assert_equal first_feed_item.time.to_i, stored_feed_item.item_updated.to_i
       assert_equal first_feed_item.summary, stored_feed_item.atom.summary
       assert_equal winnow_feed, stored_feed_item.feed
     

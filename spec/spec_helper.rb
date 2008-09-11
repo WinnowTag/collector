@@ -71,7 +71,7 @@ Spec::Runner.configure do |config|
     { :link => "http://#{unique_id}.example.com", 
       :unique_id => unique_id,
       :title => "Feed Item #{unique_id}",
-      :time => Time.now
+      :item_updated => Time.now
     }.merge(attributes)
   end
   
