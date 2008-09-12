@@ -84,13 +84,12 @@ public
   # The FeedItem is not saved in the database. It is not associated with a Feed,
   # it is up to the caller to do that.
   #
-  def self.create_from_feed_item(feed_item, feed = nil)
+  def self.create_from_feed_item(feed_item)
     new_feed_item = nil
     unique_id = self.make_unique_id(feed_item)
     
     unless self.find_by_link_or_uid(feed_item.link, unique_id)
-      new_feed_item = FeedItem.create(:feed => feed,
-                                   :link => feed_item.link, 
+      new_feed_item = FeedItem.create(:link => feed_item.link, 
                                    :unique_id => unique_id,
                                    :content_length => feed_item.content ? feed_item.content.size : 0,
                                    :item_updated => extract_time(feed_item),
@@ -99,6 +98,7 @@ public
       # Strip articles and downcase the sort_title
       new_feed_item.sort_title = new_feed_item.title.sub(/^(the|an|a) +/i, '').downcase if new_feed_item.title
       new_feed_item.feed_item_atom_document = FeedItemAtomDocument.build_from_feed_item(new_feed_item.id, feed_item, :base => FeedItem.base_uri) 
+      new_feed_item.atom_md5 = Base64.encode64(Digest::MD5.digest(new_feed_item.atom_document))
       new_feed_item.save!
     end
     

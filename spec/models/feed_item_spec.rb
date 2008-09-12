@@ -40,6 +40,17 @@ describe FeedItem do
     dup = FeedItem.create_from_feed_item(ft_item)
     assert_nil dup
   end
+  
+  it "should set the atom_md5 to be the base64 md5 of the atom document" do
+    test_feed_url = 'file:/' + File.join(File.expand_path(RAILS_ROOT), 'spec', 'fixtures', 'slashdot.rss')
+    feed = FeedTools::Feed.open(URI.parse(test_feed_url))
+    ft_item = feed.items.first
+    ft_item.stub!(:time).and_return(Time.now)
+    feed_item = FeedItem.create_from_feed_item(ft_item)
+    feed_item.save
+    
+    feed_item.atom_md5.should == Base64.encode64(Digest::MD5.digest(feed_item.atom_document))
+  end
     
   it "time_more_than_a_day_in_the_future_set_to_feed_time" do
     last_retrieved = Time.now
