@@ -9,29 +9,34 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20080905064925) do
+ActiveRecord::Schema.define(:version => 20080912051921) do
 
   create_table "collection_errors", :force => true do |t|
-    t.string   "error_type"
-    t.text     "error_message"
-    t.integer  "feed_id",               :limit => 11
-    t.datetime "created_on"
+    t.integer  "collection_job_id",     :limit => 11
     t.integer  "collection_summary_id", :limit => 11
+    t.string   "error_type",                          :null => false
+    t.text     "error_message"
+    t.datetime "created_on"
   end
 
+  add_index "collection_errors", ["collection_job_id"], :name => "index_collection_errors_on_collection_job_id", :unique => true
+
   create_table "collection_jobs", :force => true do |t|
-    t.integer  "feed_id",       :limit => 11
-    t.string   "callback_url"
-    t.string   "created_by"
+    t.integer  "feed_id",               :limit => 11
+    t.integer  "collection_summary_id", :limit => 11
+    t.integer  "item_count",            :limit => 11, :default => 0
+    t.string   "http_response_code"
+    t.string   "http_last_modified"
+    t.string   "http_etag"
+    t.integer  "lock_version",          :limit => 11
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "started_at"
     t.datetime "completed_at"
-    t.boolean  "user_notified",               :default => false
-    t.integer  "item_count",    :limit => 11
-    t.integer  "lock_version",  :limit => 11
-    t.text     "message"
-    t.boolean  "failed",                      :default => false
+    t.datetime "creator_notified_at"
+    t.string   "created_by"
+    t.string   "callback_url"
+    t.string   "state"
   end
 
   create_table "collection_summaries", :force => true do |t|
@@ -98,6 +103,7 @@ ActiveRecord::Schema.define(:version => 20080905064925) do
     t.datetime "updated_on"
     t.datetime "created_on"
     t.string   "created_by"
+    t.integer  "lock_version",            :limit => 11, :default => 0
   end
 
   add_index "feeds", ["sort_title"], :name => "index_feeds_on_sort_title"

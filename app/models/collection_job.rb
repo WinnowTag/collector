@@ -6,10 +6,13 @@
 class CollectionJob < ActiveRecord::Base
   class SchedulingException < StandardError; end
   belongs_to :feed
+  belongs_to :collection_summary
+  has_one :collection_error
+  has_many :collection_errors
   
   def self.completed_jobs_for_user(login)
     find(:all,
-         :conditions => ['completed_at is not null and collection_jobs.created_by = ? and user_notified = ?', login, false],
+         :conditions => ['completed_at is not null and collection_jobs.created_by = ? and creator_notified_at is NULL', login],
          :order => 'completed_at desc',
          :include => :feed
       )
@@ -28,18 +31,29 @@ class CollectionJob < ActiveRecord::Base
     begin
       self.update_attribute(:started_at, Time.now.utc)
       self.item_count = self.feed.collect!
-      self.message = "Collected #{self.item_count} new items"
       complete_job
     rescue ActiveRecord::StaleObjectError => e
       # Just re-raise this since it doesn't matter, something else is handling the job
       raise(e)
     rescue Exception => detail
-      self.message = detail.message
-      self.failed = true
-      logger.warn("Error performing user requested collection on #{feed.title}: #{detail}")
-      logger.warn(detail.backtrace.join("\n"))
+      self.feed.increment_error_count
+      self.collection_error = CollectionError.create(:error_type => detail.class.name, 
+                                                     :error_message => detail.message,
+                                                     :collection_summary => self.collection_summary)
       complete_job
     end
+  end
+  
+  def failed?
+    !self.collection_error.nil?
+  end
+  
+  def user_notified?
+    !self.creator_notified_at.nil?
+  end
+  
+  def message
+    "Collected #{item_count} new items" unless failed?
   end
   
   private
@@ -51,7 +65,7 @@ class CollectionJob < ActiveRecord::Base
   
   def post_to_callback
     if self.callback_url
-      update_attribute(:user_notified, true)
+      update_attribute(:creator_notified_at, Time.now.getutc)
       uri = URI.parse(self.callback_url)
       Net::HTTP.start(uri.host, uri.port) do |http|
         request = Net::HTTP::Post.new(uri.path, 'Accept' => 'text/xml', 'Content-Type' => 'text/xml')
@@ -60,8 +74,8 @@ class CollectionJob < ActiveRecord::Base
           AuthHMAC.sign!(request, access_key, HMAC_CREDENTIALS['collector'][access_key])
         end
         http.request(request,
-                  to_xml(:except => [:id, :created_at, :updated_at, :started_at,
-                                    :callback_url, :user_notified, :lock_version],
+                  to_xml(:only => [:feed_id, :message, :item_count, :completed_at],
+                         :include => [:collection_error],
                          :root => 'collection-job-result'))
       end
     end

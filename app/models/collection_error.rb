@@ -5,6 +5,6 @@
 # Please visit http://www.peerworks.org/contact for further information.
 class CollectionError < ActiveRecord::Base
   include ExceptionRecorder
-  belongs_to :feed, :counter_cache => true
+  belongs_to :collection_job
   belongs_to :collection_summary
 end

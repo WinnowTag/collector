@@ -3,11 +3,9 @@ one:
   id: 1
   error_type: MyString
   error_message: MyText
-  feed_id: 1
   created_on: <%= Time.now.ago(1.hour).utc.to_formatted_s(:db) %>
 two:
   id: 2
   error_type: MyString
   error_message: MyText
-  feed_id: 2
   created_on: <%= Time.now.ago(7.days).utc.to_formatted_s(:db) %>

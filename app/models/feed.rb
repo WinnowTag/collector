@@ -19,7 +19,7 @@ class Feed < ActiveRecord::Base
   attr_accessible :url, :active
   has_many :spider_results,    :dependent => :delete_all, :order => 'created_at desc'
   has_many :collection_jobs,   :dependent => :delete_all, :order => 'created_at desc'
-  has_many :collection_errors, :dependent => :delete_all, :order => 'created_on desc'
+  has_many :collection_errors, :through => :collection_jobs, :source => :collection_errors
   has_one  :last_error, :order => 'created_on desc'
   
   def self.find_or_create_by_url(url)
@@ -62,8 +62,9 @@ class Feed < ActiveRecord::Base
   def self.find_with_recent_errors(options = {})
     options_for_find = {
       :select => 'DISTINCT feeds.*',
-      :joins  => 'INNER JOIN collection_errors AS ce ON feeds.id = ce.feed_id',
-      :conditions => ['ce.created_on >= ?', Time.now.ago(2.days).utc]
+      :joins  => 'INNER JOIN collection_jobs AS cj ON feeds.id = cj.feed_id ' +
+                 'INNER JOIN collection_errors AS ce ON cj.id = ce.collection_job_id',
+      :conditions => ['cj.created_at >= ?', Time.now.ago(2.days).utc]
     }.merge(options)
 
     if options_for_find[:per_page]
@@ -148,20 +149,22 @@ class Feed < ActiveRecord::Base
     end
   end
   
+  def increment_error_count
+    begin
+      self.update_attribute(:collection_errors_count, self.collection_errors_count + 1)
+    rescue ActiveRecord::StaleObjectError
+      reload
+      retry
+    end
+  end
+  
   # Run collection on this Feed
   #
   # Returns the number of new feed items or a collection error
   def collect
     begin
       self.collect!
-    rescue ActiveRecord::ActiveRecordError => are
-      self.collection_errors.create(:exception => are)
-      raise are # Something seriously wrong so bail out of collection
     rescue StandardError => e
-      # This will catch any network problems or parsing errors that are 
-      # specific to this feed only.  Just log these and return the error.
-      logger.error "ERROR #{self.url}: #{e}"
-      return self.collection_errors.create(:exception => e)
     end
   end
   

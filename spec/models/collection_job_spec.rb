@@ -6,10 +6,10 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
 describe CollectionJob do
-  fixtures :collection_jobs, :feeds
+  fixtures :collection_jobs, :feeds, :collection_summaries
   
   before(:each) do
-    @feed = mock(Feed, :collect! => 0, :title => 'feed', :new_record? => false)
+    @feed = mock(Feed, :collect! => 0, :title => 'feed', :new_record? => false, :increment_error_count => nil)
     Feed.stub!(:find).and_return(@feed)
   end
   
@@ -107,8 +107,7 @@ describe CollectionJob do
   
   it "posts_xml_to_callback" do
     job = collection_jobs(:job_with_cb)
-    xml = job.to_xml(:except => [:id, :created_at, :updated_at, :started_at,
-                                  :callback_url, :user_notified, :lock_version],
+    xml = job.to_xml(:only => [:feed_id, :message, :item_count, :completed_at],
                      :root => 'collection-job-result')
     http = mock('http')
     Net::HTTP.should_receive(:start).
@@ -136,7 +135,7 @@ describe CollectionJob do
     @feed.should_receive(:collect!).and_raise(RuntimeError.new("This is an error message"))
     job = collection_jobs(:first_in_queue)
     job.execute
-    assert_equal("This is an error message", job.message)
+    assert_equal("This is an error message", job.collection_error.error_message)
   end
   
   it "failure_should_set_failed_flag" do
@@ -144,5 +143,20 @@ describe CollectionJob do
     job = collection_jobs(:first_in_queue)
     job.execute
     assert(job.failed?)
+  end
+  
+  it "should links collection errors to summary" do
+    @feed.should_receive(:collect!).and_raise(REXML::ParseException.new("ParseException"))
+    job = collection_jobs(:first_in_queue)
+    job.execute
+    job.collection_error.should_not be_nil
+    job.collection_summary.collection_errors.include?(job.collection_error)
+  end
+  
+  it "should increment error count for the feed" do
+    @feed.should_receive(:collect!).and_raise(REXML::ParseException.new("ParseException"))
+    @feed.should_receive(:increment_error_count)
+    job = collection_jobs(:first_in_queue)
+    job.execute
   end
 end

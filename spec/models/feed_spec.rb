@@ -86,15 +86,6 @@ describe Feed do
       assert_equal(6, summary.item_count)
     end
   
-    it "collect_all_links_collection_errors_to_summary" do
-      FeedTools::Feed.stub!(:open).and_raise(REXML::ParseException.new("ParseException"))
-      summary = nil
-      assert_nothing_raised(RuntimeError) { summary = Feed.collect_all }
-      assert_equal(2, summary.collection_errors.size)
-      assert e = summary.collection_errors.last
-      assert_equal('REXML::ParseException', e.error_type)
-    end
-  
     it "collect_all_logs_fatal_error_in_summary" do
       stub_collection(ActiveRecord::ActiveRecordError.new("Error message"))
       summary = nil
@@ -135,50 +126,7 @@ describe Feed do
       feed_items = feed.feed_items
       feed.stub!(:feed_items).and_return(feed_items)
       assert feed.to_xml(:include => :feed_items)
-    end
-  
-    it "access_error_should_be_logged" do
-      feed = Feed.find(1)
-      FeedTools::Feed.should_receive(:open).and_raise(FeedTools::FeedAccessError)
-      assert_nothing_raised(FeedTools::FeedAccessError) { feed.collect }
-      assert e = feed.collection_errors.first
-      assert_equal('FeedTools::FeedAccessError', e.error_type)
-    end
-  
-    it "parse_exception_should_be_logged" do
-      feed = Feed.find(1)
-      FeedTools::Feed.should_receive(:open).and_raise(REXML::ParseException.new("ParseException"))
-      assert_nothing_raised(REXML::ParseException) { feed.collect }
-      assert e = feed.collection_errors.first
-      assert_equal('REXML::ParseException', e.error_type)
-    end
-  
-    # Sometimes a parse exception causes a RuntimeException  
-    it "parse_exception_with_runtime_exception_should_be_logged" do
-      feed = Feed.find(1)
-      FeedTools::Feed.should_receive(:open).and_raise(RuntimeError.new("RuntimeError"))
-      assert_nothing_raised(RuntimeError) { feed.collect }
-      assert e = feed.collection_errors.first
-      assert_equal('RuntimeError', e.error_type)
-    end
-  
-    it "collection_exception_increments_count" do
-      feed = Feed.find(1)
-      cec = feed.collection_errors_count
-      FeedTools::Feed.stub!(:open).and_raise(RuntimeError)
-      assert_nothing_raised(RuntimeError) { feed.collect }
-      feed.reload
-      assert_equal(cec + 1, feed.collection_errors_count)
-    end
-  
-    it "collect_all_collection_exception_increments_count" do
-      feed = Feed.find(1)
-      cec = feed.collection_errors_count
-      FeedTools::Feed.stub!(:open).and_raise(RuntimeError)
-      assert_nothing_raised(RuntimeError) { Feed.collect_all }
-      feed.reload
-      assert_equal(cec + 1, feed.collection_errors_count)
-    end
+    end  
   
     it "find_suspected_duplicates_gets_feeds_with_the_same_title" do
       feed = Feed.find(1)
@@ -319,6 +267,25 @@ describe Feed do
       assert_equal targetdup, dup.duplicate
       assert dup.is_duplicate?
     end
+  end
+  
+  it "should increment the error count" do
+    feed = Feed.find(2)
+    feed.collection_errors_count.should == 0
+    feed.increment_error_count
+    feed.collection_errors_count.should == 1
+  end
+  
+  it "should increment the error count from multiple instances" do
+    feed1 = Feed.find(2)
+    feed2 = Feed.find(2)
+    feed1.collection_errors_count.should == 0
+    feed2.collection_errors_count.should == 0
+    
+    feed1.increment_error_count
+    feed2.increment_error_count
+    
+    feed2.collection_errors_count.should == 2
   end
   
   describe 'to_atom_entry' do
