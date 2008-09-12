@@ -7,7 +7,7 @@
 
 class AddLockVersionToFeeds < ActiveRecord::Migration
   def self.up
-    add_column :feeds, :lock_version, :integer
+    add_column :feeds, :lock_version, :integer, :default => 0
   end
 
   def self.down

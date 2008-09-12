@@ -25,6 +25,7 @@ dummy_feed:
   updated_on: <%= Time.now.to_formatted_s(:db) %>
   collection_errors_count: 1
   feed_items_count: 3
+  lock_version: 1
 another_dummy_feed:
   id: 2
   url: http://ruby-doc.org/en/index.rdf
@@ -32,14 +33,17 @@ another_dummy_feed:
   sort_title: ruby documentation
   active: true
   feed_items_count: 1
+  lock_version: 1
 inactive_feed:
   id: 3
   url: http://rss.slashdot.org/Slashdot
   title: Slashdot
   sort_title: slashdot
   active: false
+  lock_version: 1
 duplicate_feed:
   id: 4
   url: http://duplicate
   duplicate_id: 1
   title: Duplicate
+  lock_version: 1

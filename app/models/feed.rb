@@ -142,10 +142,26 @@ class Feed < ActiveRecord::Base
       logger.info "Feed(#{self.id}) found to be " +
                   "a duplicate of #{dup.url} (#{dup.id}) and removed"
       feed_items.each do |fi|
-        fi.feed = dup
-        fi.save
+        dup.feed_items << fi
       end
       self.duplicate = dup      
+    end
+  end
+  
+  # Run collection on this Feed
+  #
+  # Returns the number of new feed items or a collection error
+  def collect
+    begin
+      self.collect!
+    rescue ActiveRecord::ActiveRecordError => are
+      self.collection_errors.create(:exception => are)
+      raise are # Something seriously wrong so bail out of collection
+    rescue StandardError => e
+      # This will catch any network problems or parsing errors that are 
+      # specific to this feed only.  Just log these and return the error.
+      logger.error "ERROR #{self.url}: #{e}"
+      return self.collection_errors.create(:exception => e)
     end
   end
   
@@ -168,7 +184,7 @@ class Feed < ActiveRecord::Base
     # if this the first collection - then check for duplicates
     if self.updated_on.nil?
       resolve_duplicate!
-    end      
+    end
     
     self.save!
     logger.info "total_item_count in feed: #{f.items.size}\n" +
@@ -177,33 +193,16 @@ class Feed < ActiveRecord::Base
     return new_feed_items.size
   end
   
-  # Run collection on this Feed
-  #
-  # Returns the number of new feed items or a collection error
-  def collect
-    begin
-      self.collect!
-    rescue ActiveRecord::ActiveRecordError => are
-      self.collection_errors.create(:exception => are)
-      raise are # Something seriously wrong so bail out of collection
-    rescue StandardError => e
-      # This will catch any network problems or parsing errors that are 
-      # specific to this feed only.  Just log these and return the error.
-      logger.error "ERROR #{self.url}: #{e}"
-      return self.collection_errors.create(:exception => e)
-    end
-  end
-  
   # From FeedTools::Feed, add feed items to this feed
   def add_from_feed(feed)
     new_feed_items = nil
     
     new_feed_items = feed.items.map do |fi|
-      FeedItem.create_from_feed_item(fi, self)
+      feed_item = FeedItem.create_from_feed_item(fi)
+      self.feed_items << feed_item if feed_item
+      feed_item
     end.compact
-        
-    self.feed_items.reset
-    
+            
     # reload to get the updated feed item counter cache before updating attributes
     reload
     self.title             = feed.title if feed.title
