@@ -14,6 +14,7 @@ describe Feed do
       feed = stub('feed', :title => 'A Feed', 
                   :link => 'http://test/site',
                   :feed_data => '<feed><item></item></feed', 
+                  :href => 'http://test',
                   :http_headers => {})
       feed.stub!(:items).and_return([
                           stub('item', :title => 'An Item',
@@ -27,13 +28,12 @@ describe Feed do
                         ])
     
       winnow_feed = Feed.create(:url => "http://test")
-      added_feed_items = winnow_feed.add_from_feed(feed)
+      added_feed_items = winnow_feed.update_from_feed!(feed)
     
       assert_equal feed.title, winnow_feed.title
       assert_equal feed.items.size, winnow_feed.feed_items.length
       assert_equal feed.link, winnow_feed.link
       assert_equal feed.title.sub(/^(the|an|a) +/i, '').downcase, winnow_feed.sort_title
-      assert_nil winnow_feed.updated_on
     
       # check the returned items are the same as those stored
       assert_equal feed.items.size, added_feed_items.size
@@ -51,7 +51,7 @@ describe Feed do
     
       # Make sure adding it again produces no duplicates
       previous_size = winnow_feed.feed_items.size
-      added_feed_items = winnow_feed.add_from_feed(feed)
+      added_feed_items = winnow_feed.update_from_feed!(feed)
       assert_equal previous_size, winnow_feed.feed_items.length
     end
   
@@ -92,15 +92,6 @@ describe Feed do
       assert_nothing_raised(ActiveRecord::ActiveRecordError) { summary = Feed.collect_all }
       assert_equal("ActiveRecord::ActiveRecordError", summary.fatal_error_type)
       assert_equal("Error message", summary.fatal_error_message)
-    end
-  
-    it "collect_opens_feed_and_calls_add_from_feed" do
-      test_feed_url = "http://test"
-      mock_feed = mock('feed')
-      FeedTools::Feed.should_receive(:open).with(test_feed_url).and_return(mock_feed)
-      feed = Feed.create(:url => test_feed_url)
-      feed.should_receive(:add_from_feed).with(mock_feed)
-      feed.collect
     end
   
     it "max_feed_items_overrides_and_randomizes_feed_items" do
@@ -156,10 +147,9 @@ describe Feed do
     end
   
     it "collecting_html_link_updates_feeds_link_to_autodiscovered_url" do
-      feed = mock('feed', :null_object => true, :items => [], :href => 'http://rss.slashdot.org/Slashdot/slashdot', :title => 'slashdot')
-      FeedTools::Feed.should_receive(:open).and_return(feed)
+      mock_feed = mock('feed', :null_object => true, :items => [], :href => 'http://rss.slashdot.org/Slashdot/slashdot', :title => 'slashdot')
       feed = Feed.create(:url => 'http://www.slashdot.org/')
-      feed.collect!
+      feed.update_from_feed!(mock_feed)
       assert_equal 'http://rss.slashdot.org/Slashdot/slashdot', feed.url
     end
   end
@@ -176,12 +166,11 @@ describe Feed do
                           :feed_data => 'data',
                           :link => 'http://slashdot.org/',
                           :http_headers => {})
-      FeedTools::Feed.should_receive(:open).and_return(feed)
     
       dup = Feed.create!(:url => 'http://www.slashdot.org/')
       target = Feed.create!(:url => 'http://rss.slashdot.org/Slashdot/slashdot')
     
-      dup.collect!
+      dup.update_from_feed!(feed)
     
       dup = Feed.find(dup.id)
       assert dup.is_duplicate?    
@@ -202,14 +191,13 @@ describe Feed do
                           :feed_data => 'data',
                           :link => 'http://slashdot.org/',
                           :http_headers => {})
-      FeedTools::Feed.should_receive(:open).and_return(feed)
     
       target = Feed.new(:url => 'http://somewhereelse.com/Slashdot/slashdot')
       target.link = 'http://slashdot.org/'
       target.save!
     
       dup = Feed.create(:url => 'http://www.slashdot.org/')
-      dup.collect!
+      dup.update_from_feed!(feed)
     
       dup = Feed.find(dup.id)
       assert dup.is_duplicate?
@@ -226,13 +214,12 @@ describe Feed do
                           :feed_data => 'data',
                           :link => 'http://example.org',
                           :http_headers => {})
-      FeedTools::Feed.should_receive(:open).and_return(feed)
       
       target = Feed.create!(:url => 'http://www.example.org/feeds/atom')
       target.link = 'http://example.org'
       target.save!
       dup = Feed.create!(:url => 'http://www.example.org/feeds/rss')
-      dup.collect!
+      dup.update_from_feed!(feed)
       
       dup = Feed.find(dup.id)
       dup.should be_is_duplicate
@@ -251,7 +238,6 @@ describe Feed do
                           :feed_data => 'data',
                           :link => 'http://slashdot.org/',
                           :http_headers => {})
-      FeedTools::Feed.should_receive(:open).and_return(feed)
     
       targetdup = Feed.create!(:url => 'http://somewhereelse/Slashdot/slashdot')
 
@@ -261,7 +247,7 @@ describe Feed do
       middledup.save!
     
       dup = Feed.create!(:url => 'http://www.slashdot.org/')
-      dup.collect!
+      dup.update_from_feed!(feed)
     
       dup = Feed.find(dup.id)
       assert_equal targetdup, dup.duplicate

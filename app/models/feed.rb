@@ -22,6 +22,12 @@ class Feed < ActiveRecord::Base
   has_many :collection_errors, :through => :collection_jobs, :source => :collection_errors
   has_one  :last_error, :order => 'created_on desc'
   
+  # Return a list of Feeds that are active.
+  def self.active_feeds
+    find(:all, :order => "title ASC",
+          :conditions => ['active = ? and duplicate_id is NULL', true])
+  end
+  
   def self.find_or_create_by_url(url)
     returning(find_or_build_by_url(url)) do |feed|
       feed.save if feed.new_record?
@@ -158,27 +164,23 @@ class Feed < ActiveRecord::Base
     end
   end
   
-  # Run collection on this Feed
-  #
-  # Returns the number of new feed items or a collection error
-  def collect
-    begin
-      self.collect!
-    rescue StandardError => e
-    end
-  end
-  
   # Same as collect but raises exceptions
-  def collect!
-    logger.info("\ncollecting: #{self.url}")
-    f = FeedTools::Feed.open(self.url)
-    
-    new_feed_items = self.add_from_feed(f)
+  def update_from_feed!(feed)
+    new_feed_items = feed.items.map do |fi|
+      feed_item = FeedItem.create_from_feed_item(fi)
+      self.feed_items << feed_item if feed_item
+      feed_item
+    end.compact
+
+    reload
+    self.title      = feed.title if feed.title
+    self.sort_title = self.title.sub(/^(the|an|a) +/i, '').downcase if self.title
+    self.link       = feed.link
 
     # We may have auto-discovered a URL so update the record and check for a duplicate
-    if f.href != self.url
+    if feed.href != self.url
       original_url = self.url
-      self.write_attribute(:url, f.href)
+      self.write_attribute(:url, feed.href)
       if resolve_duplicate!
         self.write_attribute(:url, original_url)
       end
@@ -188,39 +190,11 @@ class Feed < ActiveRecord::Base
     if self.updated_on.nil?
       resolve_duplicate!
     end
-    
+        
     self.save!
-    logger.info "total_item_count in feed: #{f.items.size}\n" +
-                "new_item_count: #{new_feed_items.size}\n" +
-                new_feed_items.map {|fi| "new_item: #{fi.title}"}.join("\n")
-    return new_feed_items.size
-  end
-  
-  # From FeedTools::Feed, add feed items to this feed
-  def add_from_feed(feed)
-    new_feed_items = nil
-    
-    new_feed_items = feed.items.map do |fi|
-      feed_item = FeedItem.create_from_feed_item(fi)
-      self.feed_items << feed_item if feed_item
-      feed_item
-    end.compact
-            
-    # reload to get the updated feed item counter cache before updating attributes
-    reload
-    self.title             = feed.title if feed.title
-    self.sort_title        = self.title.sub(/^(the|an|a) +/i, '').downcase if self.title
-    self.link              = feed.link
-    
     return new_feed_items
   end
   
-  # Return a list of Feeds that are active.
-  def self.active_feeds
-    find(:all, :order => "title ASC",
-          :conditions => ['active = ? and duplicate_id is NULL', true])
-  end
-
   # url attribute is immutable once set
   def url=(u)
     if new_record?
