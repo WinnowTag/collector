@@ -68,31 +68,25 @@ describe Feed do
       Feed.should_receive(:active_feeds).and_return(feeds)
     end
   
-    it "collect_all" do
-      stub_collection
-      Feed.collect_all    
-    end
-  
     it "collect_all_creates_new_collection_summary" do
-      stub_collection
       assert_difference(CollectionSummary, :count) do
-        assert_instance_of(CollectionSummary, Feed.collect_all)
+        Feed.collect_all
       end
     end
   
-    it "collect_all_sums_up_collection_count" do
-      stub_collection([2, 4])
-      summary = Feed.collect_all
-      assert_equal(6, summary.item_count)
+    it "collect_all creates new collection jobs" do
+      assert_difference(CollectionJob, :count, Feed.active_feeds.size) do
+        Feed.collect_all
+      end
     end
   
-    it "collect_all_logs_fatal_error_in_summary" do
-      stub_collection(ActiveRecord::ActiveRecordError.new("Error message"))
-      summary = nil
-      assert_nothing_raised(ActiveRecord::ActiveRecordError) { summary = Feed.collect_all }
-      assert_equal("ActiveRecord::ActiveRecordError", summary.fatal_error_type)
-      assert_equal("Error message", summary.fatal_error_message)
-    end
+    it "collect_all_logs_fatal_error_in_summary" # do
+     #      stub_collection(ActiveRecord::ActiveRecordError.new("Error message"))
+     #      summary = nil
+     #      assert_nothing_raised(ActiveRecord::ActiveRecordError) { summary = Feed.collect_all }
+     #      assert_equal("ActiveRecord::ActiveRecordError", summary.fatal_error_type)
+     #      assert_equal("Error message", summary.fatal_error_message)
+     #    end
   
     it "max_feed_items_overrides_and_randomizes_feed_items" do
       feed = Feed.find(1)

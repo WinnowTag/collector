@@ -91,43 +91,13 @@ class Feed < ActiveRecord::Base
     END
   end
   
-  # Run collection on all active Feeds
-  # Currently this results in alphabetical order by feed title.
-  # TODO: Check seeds by least recently retrieved order?
-  # TODO: Add feed-specific notion of check interval?
+  # Create collection jobs for all active feeds.
+  #
   def self.collect_all
     returning(CollectionSummary.create) do |summary|
-      begin
-        self.logger = Logger.new(WINNOW_COLLECT_LOG, "daily")
-        logger.level = Logger::INFO
-    
-        benchmark("Collection Time", Logger::INFO, false) do
-          # Only use the ids from the active_feeds array and load the feed again
-          # this allows the garbage collector to feed each feed after collection
-          # instead of maintaining a big array of all collected feeds and items
-          # while iterating. Should result in much better memory usage.
-          self.active_feeds.map{|f| f.id}.each do |feed_id|
-            feed = Feed.find(feed_id)
-            case collection_result = feed.collect
-            when Integer         then summary.item_count += collection_result
-            when CollectionError then summary.collection_errors << collection_result
-            end
-            summary.save
-            
-            # Also make sure to force GC after collecting each feed, otherwise
-            # the above fix doesn't seem to actually work.
-            feed = nil
-            GC.start
-          end
-        end      
-      rescue Exception => e
-        logger.fatal "FAILED: #{e.message}\n#{e.backtrace.join("\n")}"
-        summary.fatal_error_type    = e.class.to_s
-        summary.fatal_error_message = e.message
-      ensure
-        summary.completed_on = Time.now.utc
-        summary.save
-      end
+      self.active_feeds.each do |feed|
+        feed.collection_jobs.create(:collection_summary => summary)
+      end      
     end
   end
   
