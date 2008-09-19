@@ -16,12 +16,4 @@ describe CollectionError do
     e = Exception.new("error message")
     assert_equal("error message", CollectionError.create(:exception => e).error_message)
   end
-  
-  it "counter_cache" do
-    f = Feed.find(:first)
-    count = f.collection_errors_count
-    f.collection_errors.create(:exception => Exception.new)
-    f.reload
-    assert_equal(count + 1, f.collection_errors_count)
-  end
 end

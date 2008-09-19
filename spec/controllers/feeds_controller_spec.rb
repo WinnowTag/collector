@@ -39,14 +39,11 @@ describe FeedsController do
       assert_equal(Feed.count(:conditions => ['duplicate_id is NULL']), assigns(:feeds).size)
     end
   
-    it "with_recent_errors_shows_feeds_with_recent_errors" do
-      get :with_recent_errors
-      assert_template 'index'
-      assert_equal([Feed.find(1)], assigns(:feeds))
-    end
-  
     it "with_recent_errors_shows_feeds_with_recent_errors_once" do
-      Feed.find(1).collection_errors.create(:exception => Exception.new('test'))
+      feed = Feed.find(1)
+      job = feed.collection_jobs.create!
+      job.collection_error = CollectionError.create(:exception => Exception.new('test'))
+      feed.save!
       get :with_recent_errors
       assert_template 'index'
       assert_equal([Feed.find(1)], assigns(:feeds))
