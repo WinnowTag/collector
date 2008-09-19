@@ -9,4 +9,8 @@ class CollectionSummary < ActiveRecord::Base
   def failed?
     !self.fatal_error_type.nil?
   end
+  
+  def increment_item_count(i)
+    self.update_attribute(:item_count, self.item_count + i)
+  end
 end

@@ -9,8 +9,10 @@ describe CollectionJob do
   fixtures :collection_jobs, :feeds, :collection_summaries
   
   before(:each) do
-    @feed = mock(Feed, :collect! => 0, :title => 'feed', :new_record? => false, :increment_error_count => nil)
+    @feed_update = mock('feed_update')
+    @feed = mock(Feed, :update_from_feed! => [], :title => 'feed', :new_record? => false, :increment_error_count => nil, :url => '')
     Feed.stub!(:find).and_return(@feed)
+    FeedTools::Feed.stub!(:open).and_return(@feed_update)
   end
   
   it "next_job_returns_first_job_in_queue" do
@@ -72,28 +74,37 @@ describe CollectionJob do
   end
   
   it "execute_sets_item_count" do
-    @feed.should_receive(:collect!).and_return(10)
+    @feed.should_receive(:update_from_feed!).with(@feed_update).and_return(['a'] * 10)
     job = collection_jobs(:first_in_queue)
     job.execute
     assert_equal(10, job.item_count)    
   end
   
+  it "should update the summary count" do    
+    @feed.should_receive(:update_from_feed!).with(@feed_update).and_return(['a'] * 15)
+    
+    job = collection_jobs(:first_in_queue)
+    assert_difference(job.collection_summary, :item_count, 15) do
+      job.execute
+    end
+  end
+  
   it "execute_sets_item_count_message" do
-    @feed.should_receive(:collect!).and_return(10)
+    @feed.should_receive(:update_from_feed!).with(@feed_update).and_return(['a'] * 10)
     job = collection_jobs(:first_in_queue)
     job.execute
     assert_equal("Collected 10 new items", job.message)
   end
   
   it "failed_job_is_marked_as_completed" do
-    @feed.should_receive(:collect!).and_raise
+    @feed.should_receive(:update_from_feed!).with(@feed_update).and_raise
     job = collection_jobs(:first_in_queue)
     assert_nothing_raised(Exception) { job.execute }
     assert_not_nil job.completed_at
   end
   
   it "failed_job_send_post_to_callback" do
-    @feed.should_receive(:collect!).and_raise
+    @feed.should_receive(:update_from_feed!).with(@feed_update).and_raise
     job = collection_jobs(:first_in_queue)
     job.should_receive(:post_to_callback).once
     job.execute rescue nil  
@@ -132,21 +143,21 @@ describe CollectionJob do
   end
   
   it "failure_should_set_message" do
-    @feed.should_receive(:collect!).and_raise(RuntimeError.new("This is an error message"))
+    @feed.should_receive(:update_from_feed!).with(@feed_update).and_raise(RuntimeError.new("This is an error message"))
     job = collection_jobs(:first_in_queue)
     job.execute
     assert_equal("This is an error message", job.collection_error.error_message)
   end
   
   it "failure_should_set_failed_flag" do
-    @feed.should_receive(:collect!).and_raise(RuntimeError)
+    @feed.should_receive(:update_from_feed!).with(@feed_update).and_raise(RuntimeError)
     job = collection_jobs(:first_in_queue)
     job.execute
     assert(job.failed?)
   end
   
   it "should links collection errors to summary" do
-    @feed.should_receive(:collect!).and_raise(REXML::ParseException.new("ParseException"))
+    @feed.should_receive(:update_from_feed!).with(@feed_update).and_raise(REXML::ParseException.new("ParseException"))
     job = collection_jobs(:first_in_queue)
     job.execute
     job.collection_error.should_not be_nil
@@ -154,7 +165,7 @@ describe CollectionJob do
   end
   
   it "should increment error count for the feed" do
-    @feed.should_receive(:collect!).and_raise(REXML::ParseException.new("ParseException"))
+    @feed.should_receive(:update_from_feed!).with(@feed_update).and_raise(REXML::ParseException.new("ParseException"))
     @feed.should_receive(:increment_error_count)
     job = collection_jobs(:first_in_queue)
     job.execute

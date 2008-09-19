@@ -25,13 +25,14 @@ class CollectionJob < ActiveRecord::Base
   end
   
   def execute
-    raise SchedulingException, "Job already finsihed" unless self.completed_at.nil?
-    raise SchedulingException, "Job already started" unless self.started_at.nil?
+    raise SchedulingException, "Job already finished" unless self.completed_at.nil?
+    raise SchedulingException, "Job already started"  unless self.started_at.nil?
         
     begin
-      self.update_attribute(:started_at, Time.now.utc)
-      self.item_count = self.feed.collect!
+      start_job
+      run_job
       complete_job
+      self
     rescue ActiveRecord::StaleObjectError => e
       # Just re-raise this since it doesn't matter, something else is handling the job
       raise(e)
@@ -57,6 +58,19 @@ class CollectionJob < ActiveRecord::Base
   end
   
   private
+  def start_job
+    self.update_attribute(:started_at, Time.now.utc)
+  end
+  
+  def run_job
+    feed_update = FeedTools::Feed.open(self.feed.url)
+    new_items = self.feed.update_from_feed!(feed_update)
+    self.item_count = new_items.size
+    if collection_summary
+      collection_summary.increment_item_count(new_items.size) 
+    end
+  end
+  
   def complete_job
     self.completed_at = Time.now.utc
     self.save
