@@ -7,32 +7,77 @@
 
 class FeedItemAtomDocument < ActiveRecord::Base
   belongs_to :feed_item
+  attr_accessor :atom
   
-  def self.build_from_feed_item(feed_item_id, item, options = {})    
-    atom_entry = Atom::Entry.new do |entry|
-      entry.title = item.title
-      entry.id = "urn:peerworks.org:entry##{feed_item_id}"
-      entry.updated = item.time
-      entry.authors << Atom::Person.new(:name => item.author.name, :email => item.author.email) if item.author && item.author.name
-      entry.links << Atom::Link.new(:rel => 'self', 
-                                    :href => "#{options[:base]}/feed_items/#{feed_item_id}.atom")
-      entry.links << Atom::Link.new(:rel => 'alternate', :href => item.link)
-      entry.links << Atom::Link.new(:rel => 'http://peerworks.org/rel/spider', 
-                                    :href => "#{options[:base]}/feed_items/#{feed_item_id}/spider")
-      entry.summary = item.summary unless item.summary == item.content
+  class << self
+    def build_from_feed_item(feed_item_id, item, options = {}) 
+      atom_entry = Atom::Entry.new do |entry|
+        entry.id = "urn:peerworks.org:entry##{feed_item_id}"
+        entry.title = extract_title(item)
+        entry.updated = extract_time(item)
+      
+        if item.author_detail
+          entry.authors << Atom::Person.new(:name => item.author_detail.name, :email => item.author_detail.email)
+        elsif item.author
+          entry.authors << Atom::Person.new(:name => item.author)
+        end
+      
+        entry.links << Atom::Link.new(:rel => 'self', 
+                                      :href => "#{options[:base]}/feed_items/#{feed_item_id}.atom")
+        entry.links << Atom::Link.new(:rel => 'alternate', :href => item.link)
+        entry.links << Atom::Link.new(:rel => 'http://peerworks.org/rel/spider', 
+                                      :href => "#{options[:base]}/feed_items/#{feed_item_id}/spider")
+        entry.summary = item.summary unless item.summary == item.content
         
+        entry.content = get_content(item)      
+      end
+    
+      new(:atom_document => atom_entry.to_xml, :feed_item_id => feed_item_id, :atom => atom_entry)
+    end
+  
+    def get_content(item)    
+      content = item.content ? (item.content.first ? item.content.first.value : item.summary) : item.summary
+      if content
       # Content could be non-utf8 or contain non-printable characters due to a FeedTools pre 0.2.29 bug.
       # LibXML chokes on this so try and fix it.
-      if item.content
         begin
-          entry.content = Atom::Content::Html.new(Iconv.iconv('utf-8', 'utf-8', item.content).first.tr("\000-\011", ""))
+          Atom::Content::Html.new(Iconv.iconv('utf-8', 'utf-8', content).first.tr("\000-\011", ""))
         rescue Iconv::IllegalSequence
           # LATIN1 is the most likely, try that or fail
-          entry.content = Atom::Content::Html.new(Iconv.iconv('utf-8', 'LATIN1', item.content).first.tr("\000-\011", ""))
+          Atom::Content::Html.new(Iconv.iconv('utf-8', 'LATIN1', content).first.tr("\000-\011", ""))
         end
       end
     end
+  
+  
+    def extract_time(entry)
+      if entry.updated_time and (entry.updated_time.getutc < (Time.now.getutc.tomorrow))
+        entry.updated_time.getutc
+      elsif entry.feed and entry.feed.updated_time and (entry.feed.updated_time.getutc < Time.now.getutc.tomorrow)
+        entry.feed.updated_time.getutc
+      else
+        Time.now.utc
+      end    
+    end
     
-    new(:atom_document => atom_entry.to_xml, :feed_item_id => feed_item_id)
+    # Get the display title for this feed item.
+    def extract_title(entry)
+      if entry.title and not entry.title.empty?
+        entry.title
+      elsif entry.content && entry.content.first && entry.content.first.value.is_a?(String)
+        content = entry.content.first.value
+        
+        if content.match(/^<?p?>?<(strong|h1|h2|h3|h4|b)>([^<]*)<\/\1>/i)
+          $2
+        else
+          content.split(/\n|<br ?\/?>/).each do |line|
+            potential_title = line.gsub(/<\/?[^>]*>/, "").chomp # strip html
+            break potential_title if potential_title and not potential_title.empty?
+          end.split(/!|\?|\./).first
+        end
+      else
+        "Untitled"
+      end
+    end
   end
 end

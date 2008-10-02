@@ -8,11 +8,16 @@ require File.dirname(__FILE__) + '/../spec_helper'
 describe CollectionJob do
   fixtures :collection_jobs, :feeds, :collection_summaries
   
+  before(:all) do
+    @autodiscovered_atom = FeedParser.parse(File.open('spec/fixtures/autodiscover_atom.html'))
+    @slashdot = FeedParser.parse(File.open('spec/fixtures/slashdot.rss'))
+  end
+  
   before(:each) do
-    @feed_update = mock('feed_update')
-    @feed = mock(Feed, :update_from_feed! => [], :title => 'feed', :new_record? => false, :increment_error_count => nil, :url => '')
+    @feed_update = mock('feed_update', :feed => mock('feed', :null_object => true), :status => 200, :bozo => false, :entries => [])
+    @feed = mock_model(Feed, :update_from_feed! => true, :title => 'feed', :new_record? => false, :feed_items => [], :increment_error_count => nil, :url => '')
     Feed.stub!(:find).and_return(@feed)
-    FeedTools::Feed.stub!(:open).and_return(@feed_update)
+    FeedParser.stub!(:parse).and_return(@feed_update)
   end
   
   it "next_job_returns_first_job_in_queue" do
@@ -74,37 +79,76 @@ describe CollectionJob do
   end
   
   it "execute_sets_item_count" do
-    @feed.should_receive(:update_from_feed!).with(@feed_update).and_return(['a'] * 10)
+    pf = @slashdot
+    FeedParser.stub!(:parse).and_return(pf)
     job = collection_jobs(:first_in_queue)
     job.execute
-    assert_equal(10, job.item_count)    
+    assert_equal(1, job.item_count)    
   end
   
   it "should update the summary count" do    
-    @feed.should_receive(:update_from_feed!).with(@feed_update).and_return(['a'] * 15)
+    pf = @slashdot
+    FeedParser.stub!(:parse).and_return(pf)
     
     job = collection_jobs(:first_in_queue)
-    assert_difference(job.collection_summary, :item_count, 15) do
+    assert_difference(job.collection_summary, :item_count, 1) do
       job.execute
     end
   end
   
   it "execute_sets_item_count_message" do
-    @feed.should_receive(:update_from_feed!).with(@feed_update).and_return(['a'] * 10)
+    pf = @slashdot
+    FeedParser.stub!(:parse).and_return(pf)
     job = collection_jobs(:first_in_queue)
     job.execute
-    assert_equal("Collected 10 new items", job.message)
+    assert_equal("Collected 1 new items", job.message)
+  end
+  
+  it "should create new items"  do
+    pf = @slashdot
+    FeedParser.stub!(:parse).and_return(pf)
+    job = collection_jobs(:first_in_queue)
+    job.execute
+    
+    job.feed_items.size.should == pf.entries.size
+    job.feed_items.first.title.should == pf.entries.first.title
+    job.feed_items.first.feed.should == job.feed
+  end
+    
+  it "should perform atom autodiscovery if the result is html" do
+    job = collection_jobs(:first_in_queue)
+    FeedParser.should_receive(:parse).with(URI.parse('')).and_return(@autodiscovered_atom)
+    FeedParser.should_receive(:parse).with(URI.parse('http://example.org/index.xml')).and_return(mock('pf', :feed => mock('feed')))
+    job.execute
+  end
+
+  it "should update the link if redirect is permanent" do
+    mock_pf = mock('parsed_feed', :status => 301, :href => 'http://rss.slashdot.org/Slashdot/slashdot', :entries => [],
+                                :feed => mock('feed', :null_object => true), :bozo => false)
+    job = collection_jobs(:first_in_queue)
+    FeedParser.should_receive(:parse).and_return(mock_pf)
+    job.feed.should_receive(:update_url!).with('http://rss.slashdot.org/Slashdot/slashdot')
+    job.execute
+  end
+  
+  it "should not update the link redirect is temporary" do
+    mock_pf = mock('parsed_feed', :status => 302, :href => 'http://rss.slashdot.org/Slashdot/slashdot', :entries => [],
+                                :feed => mock('feed', :null_object => true), :bozo => false)
+    job = collection_jobs(:first_in_queue)
+    FeedParser.should_receive(:parse).and_return(mock_pf)
+    job.feed.should_not_receive(:update_url!).with('http://rss.slashdot.org/Slashdot/slashdot')
+    job.execute
   end
   
   it "failed_job_is_marked_as_completed" do
-    @feed.should_receive(:update_from_feed!).with(@feed_update).and_raise
+    @feed.should_receive(:update_from_feed!).with(@feed_update.feed).and_raise
     job = collection_jobs(:first_in_queue)
     assert_nothing_raised(Exception) { job.execute }
     assert_not_nil job.completed_at
   end
   
   it "failed_job_send_post_to_callback" do
-    @feed.should_receive(:update_from_feed!).with(@feed_update).and_raise
+    @feed.should_receive(:update_from_feed!).with(@feed_update.feed).and_raise
     job = collection_jobs(:first_in_queue)
     job.should_receive(:post_to_callback).once
     job.execute rescue nil  
@@ -143,31 +187,31 @@ describe CollectionJob do
   end
   
   it "failure_should_set_message" do
-    @feed.should_receive(:update_from_feed!).with(@feed_update).and_raise(RuntimeError.new("This is an error message"))
+    @feed.should_receive(:update_from_feed!).with(@feed_update.feed).and_raise(RuntimeError.new("This is an error message"))
     job = collection_jobs(:first_in_queue)
     job.execute
     assert_equal("This is an error message", job.collection_error.error_message)
   end
   
   it "failure_should_set_failed_flag" do
-    @feed.should_receive(:update_from_feed!).with(@feed_update).and_raise(RuntimeError)
+    @feed.should_receive(:update_from_feed!).with(@feed_update.feed).and_raise(RuntimeError)
     job = collection_jobs(:first_in_queue)
     job.execute
     assert(job.failed?)
   end
   
   it "should links collection errors to summary" do
-    @feed.should_receive(:update_from_feed!).with(@feed_update).and_raise(REXML::ParseException.new("ParseException"))
+    @feed.should_receive(:update_from_feed!).with(@feed_update.feed).and_raise(REXML::ParseException.new("ParseException"))
     job = collection_jobs(:first_in_queue)
     job.execute
     job.collection_error.should_not be_nil
-    job.collection_summary.collection_errors.include?(job.collection_error)
+    job.collection_summary.collection_errors.should include(job.collection_error)
   end
   
   it "should increment error count for the feed" do
-    @feed.should_receive(:update_from_feed!).with(@feed_update).and_raise(REXML::ParseException.new("ParseException"))
+    @feed.should_receive(:update_from_feed!).with(@feed_update.feed).and_raise(REXML::ParseException.new("ParseException"))
     @feed.should_receive(:increment_error_count)
     job = collection_jobs(:first_in_queue)
     job.execute
-  end
+  end  
 end

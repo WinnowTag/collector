@@ -22,139 +22,108 @@ class Feed < ActiveRecord::Base
   has_many :collection_errors, :through => :collection_jobs, :source => :collection_errors
   has_one  :last_error, :order => 'created_on desc'
   
-  # Return a list of Feeds that are active.
-  def self.active_feeds
-    find(:all, :order => "title ASC",
-          :conditions => ['active = ? and duplicate_id is NULL', true])
-  end
+  class << self
+    # Return a list of Feeds that are active.
+    def active_feeds
+      find(:all, :order => "title ASC",
+            :conditions => ['active = ? and duplicate_id is NULL', true])
+    end
+
+    def find_or_create_by_url(url)
+      returning(find_or_build_by_url(url)) do |feed|
+        feed.save if feed.new_record?
+      end
+    end
+
+    def find_or_build_by_url(url)
+      if feed = Feed.find_by_url_or_link(url)
+        # TODO Protect against duplicate loops
+        while feed.is_duplicate?
+          feed = feed.duplicate
+        end      
+      else
+        feed = self.new(:url => url)
+      end
   
-  def self.find_or_create_by_url(url)
-    returning(find_or_build_by_url(url)) do |feed|
-      feed.save if feed.new_record?
+      feed
+    end
+
+    def find_duplicates(options = {})
+      options_for_find = {
+        :select => 'DISTINCT feeds.*',
+        :joins => 'INNER JOIN feeds AS f2 on (feeds.title = f2.title OR feeds.link = f2.link) ' <<
+                  'AND feeds.id <> f2.id AND feeds.duplicate_id IS NULL AND f2.duplicate_id IS NULL'
+      }.merge(options)
+
+      if options_for_find[:per_page]
+        paginate(options_for_find.merge(:count => { :select => "DISTINCT feeds.id" }))
+      else
+        find(:all, options_for_find)
+      end
+    end
+
+    def find_duplicate(feed)
+      duplicate = Feed.find(:first, :conditions => ['(link = ? or url = ?) and id <> ?',
+                                        feed.link, feed.url, feed.id])
+
+      if duplicate
+        # Find the root duplicate
+        until duplicate.duplicate.nil?
+          duplicate = duplicate.duplicate
+        end
+      end
+  
+      duplicate
+    end
+
+    def find_by_url_or_link(url)
+      self.find(:first, :conditions => ['url = ? or link = ?', url, url])
+    end
+
+    def find_with_recent_errors(options = {})
+      options_for_find = {
+        :select => 'DISTINCT feeds.*',
+        :joins  => 'INNER JOIN collection_jobs AS cj ON feeds.id = cj.feed_id ' +
+                   'INNER JOIN collection_errors AS ce ON cj.id = ce.collection_job_id',
+        :conditions => ['cj.created_at >= ?', Time.now.ago(2.days).utc]
+      }.merge(options)
+
+      if options_for_find[:per_page]
+        paginate(options_for_find.merge(:count => { :select => "DISTINCT feeds.id" }))
+      else
+        find(:all, options_for_find)
+      end
+    end
+
+    def update_feed_item_counts
+      connection.execute <<-END
+        update feeds
+        set feed_items_count = (
+            select count(id)
+            from feed_items
+            where feed_id = feeds.id
+          );
+      END
+    end
+
+    # Create collection jobs for all active feeds.
+    #
+    def collect_all
+      returning(CollectionSummary.create) do |summary|
+        self.active_feeds.each do |feed|
+          feed.collection_jobs.create(:collection_summary => summary)
+        end      
+      end
     end
   end
   
-  def self.find_or_build_by_url(url)
-    if feed = Feed.find_by_url_or_link(url)
-      # TODO Protect against duplicate loops
-      while feed.is_duplicate?
-        feed = feed.duplicate
-      end      
-    else
-      feed = self.new(:url => url)
-    end
     
-    feed
-  end
-  
-  def self.find_duplicates(options = {})
-    options_for_find = {
-      :select => 'DISTINCT feeds.*',
-      :joins => 'INNER JOIN feeds AS f2 on (feeds.title = f2.title OR feeds.link = f2.link) ' <<
-                'AND feeds.id <> f2.id AND feeds.duplicate_id IS NULL AND f2.duplicate_id IS NULL'
-    }.merge(options)
-
-    if options_for_find[:per_page]
-      paginate(options_for_find.merge(:count => { :select => "DISTINCT feeds.id" }))
-    else
-      find(:all, options_for_find)
-    end
-  end
-  
-  def self.find_by_url_or_link(url)
-    self.find(:first, :conditions => ['url = ? or link = ?', url, url])
-  end
-  
-  def self.find_with_recent_errors(options = {})
-    options_for_find = {
-      :select => 'DISTINCT feeds.*',
-      :joins  => 'INNER JOIN collection_jobs AS cj ON feeds.id = cj.feed_id ' +
-                 'INNER JOIN collection_errors AS ce ON cj.id = ce.collection_job_id',
-      :conditions => ['cj.created_at >= ?', Time.now.ago(2.days).utc]
-    }.merge(options)
-
-    if options_for_find[:per_page]
-      paginate(options_for_find.merge(:count => { :select => "DISTINCT feeds.id" }))
-    else
-      find(:all, options_for_find)
-    end
-  end
-  
-  def self.update_feed_item_counts
-    connection.execute <<-END
-      update feeds
-      set feed_items_count = (
-          select count(id)
-          from feed_items
-          where feed_id = feeds.id
-        );
-    END
-  end
-  
-  # Create collection jobs for all active feeds.
+  # Updates this feed from a collected feed
   #
-  def self.collect_all
-    returning(CollectionSummary.create) do |summary|
-      self.active_feeds.each do |feed|
-        feed.collection_jobs.create(:collection_summary => summary)
-      end      
-    end
-  end
-  
-  def find_duplicate
-    duplicate = Feed.find(:first, :conditions => ['(link = ? or url = ?) and id <> ?',
-                                      self.link, self.url, self.id])
-    if duplicate
-      # Find the root duplicate
-      until duplicate.duplicate.nil?
-        duplicate = duplicate.duplicate
-      end
-    end
-    
-    duplicate
-  end
-  
-  def resolve_duplicate!
-    if dup = self.find_duplicate
-      logger.info "Feed(#{self.id}) found to be " +
-                  "a duplicate of #{dup.url} (#{dup.id}) and removed"
-      feed_items.each do |fi|
-        dup.feed_items << fi
-      end
-      self.duplicate = dup      
-    end
-  end
-  
-  def increment_error_count
-    begin
-      self.update_attribute(:collection_errors_count, self.collection_errors_count + 1)
-    rescue ActiveRecord::StaleObjectError
-      reload
-      retry
-    end
-  end
-  
-  # Same as collect but raises exceptions
   def update_from_feed!(feed)
-    new_feed_items = feed.items.map do |fi|
-      feed_item = FeedItem.create_from_feed_item(fi)
-      self.feed_items << feed_item if feed_item
-      feed_item
-    end.compact
-
-    reload
     self.title      = feed.title if feed.title
     self.sort_title = self.title.sub(/^(the|an|a) +/i, '').downcase if self.title
     self.link       = feed.link
-
-    # We may have auto-discovered a URL so update the record and check for a duplicate
-    if feed.href != self.url
-      original_url = self.url
-      self.write_attribute(:url, feed.href)
-      if resolve_duplicate!
-        self.write_attribute(:url, original_url)
-      end
-    end
     
     # if this the first collection - then check for duplicates
     if self.updated_on.nil?
@@ -162,7 +131,37 @@ class Feed < ActiveRecord::Base
     end
         
     self.save!
-    return new_feed_items
+  end
+  
+  def update_url!(new_url)
+    if new_url != self.url
+      original_url = self.url
+      self.write_attribute(:url, new_url)
+      if resolve_duplicate!
+        self.write_attribute(:url, original_url)
+      end
+      save!
+    end    
+  end
+
+  def resolve_duplicate!
+    if dup = Feed.find_duplicate(self)
+      logger.info "Feed(#{self.id}) found to be " +
+                  "a duplicate of #{dup.url} (#{dup.id}) and removed"
+      feed_items.each do |fi|
+        dup.feed_items << fi
+      end
+      self.duplicate = dup      
+    end
+  end  
+    
+  def increment_error_count
+    begin
+      self.update_attribute(:collection_errors_count, self.collection_errors_count + 1)
+    rescue ActiveRecord::StaleObjectError
+      reload
+      retry
+    end
   end
   
   # url attribute is immutable once set

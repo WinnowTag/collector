@@ -4,11 +4,13 @@
 # to use, modify, or create derivate works.
 # Please visit http://www.peerworks.org/contact for further information.
 class CollectionJob < ActiveRecord::Base
+  FEED_TYPES = ["application/rss+xml", "application/atom+xml"]
   class SchedulingException < StandardError; end
   belongs_to :feed
   belongs_to :collection_summary
   has_one :collection_error
   has_many :collection_errors
+  has_many :feed_items
   
   def self.completed_jobs_for_user(login)
     find(:all,
@@ -30,7 +32,8 @@ class CollectionJob < ActiveRecord::Base
         
     begin
       start_job
-      run_job
+      parsed_feed = fetch_feed
+      run_job(parsed_feed)
       complete_job
       self
     rescue ActiveRecord::StaleObjectError => e
@@ -54,7 +57,7 @@ class CollectionJob < ActiveRecord::Base
   end
   
   def message
-    "Collected #{item_count} new items" unless failed?
+    "Collected #{feed_items.size} new items" unless failed?
   end
   
   private
@@ -62,12 +65,23 @@ class CollectionJob < ActiveRecord::Base
     self.update_attribute(:started_at, Time.now.utc)
   end
   
-  def run_job
-    feed_update = FeedTools::Feed.open(self.feed.url)
-    new_items = self.feed.update_from_feed!(feed_update)
-    self.item_count = new_items.size
+  def run_job(parsed_feed)
+    if parsed_feed.status == 301
+      self.feed.update_url!(parsed_feed.href)
+    end
+    
+    parsed_feed.entries.each do |entry|
+      if feed_item = FeedItem.create_from_feed_item(entry)
+        self.feed.feed_items << feed_item
+        self.feed_items << feed_item
+      end
+    end
+    
+    self.feed.update_from_feed!(parsed_feed.feed)
+    self.item_count = self.feed_items.size
+    
     if collection_summary
-      collection_summary.increment_item_count(new_items.size) 
+      collection_summary.increment_item_count(self.item_count) 
     end
   end
   
@@ -75,6 +89,26 @@ class CollectionJob < ActiveRecord::Base
     self.completed_at = Time.now.utc
     self.save
     post_to_callback
+  end
+  
+  def fetch_feed
+    pf = FeedParser.parse(URI.parse(feed.url))
+    pf = auto_discover(pf) if pf.bozo    
+    pf
+  end
+  
+  def auto_discover(pf)
+    possible_link = pf.feed.links.select do |l|
+      l.rel == 'alternate' && FEED_TYPES.include?(l.type)
+    end.first
+    
+    if possible_link
+      autodiscovered = FeedParser.parse(URI.parse(possible_link.href))
+      raise "Autodiscovered link is not a valid feed either" if autodiscovered.bozo
+      autodiscovered
+    else
+      raise "No feed link found in non-feed resource"
+    end
   end
   
   def post_to_callback

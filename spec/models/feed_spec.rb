@@ -10,62 +10,15 @@ describe Feed do
   fixtures :feeds, :feed_items, :collection_errors, :feed_item_atom_documents
   
   describe 'collection' do  
-    it "adding_items" do
-      feed = stub('feed', :title => 'A Feed', 
-                  :link => 'http://test/site',
-                  :feed_data => '<feed><item></item></feed', 
-                  :href => 'http://test',
-                  :http_headers => {})
-      feed.stub!(:items).and_return([
-                          stub('item', :title => 'An Item',
-                               :link => 'http://test/item1',
-                               :time => Time.now,
-                               :author => stub('author', :name => 'Ghost', :email => nil),
-                               :summary => 'description of item',
-                               :content => 'longer content',
-                               :feed_data => '<item></item>',
-                               :id => nil)
-                        ])
-    
+    it "updating from feed" do
+      pf = FeedParser.parse(File.open('spec/fixtures/slashdot.rss'))
+          
       winnow_feed = Feed.create(:url => "http://test")
-      added_feed_items = winnow_feed.update_from_feed!(feed)
+      added_feed_items = winnow_feed.update_from_feed!(pf.feed)
     
-      assert_equal feed.title, winnow_feed.title
-      assert_equal feed.items.size, winnow_feed.feed_items.length
-      assert_equal feed.link, winnow_feed.link
-      assert_equal feed.title.sub(/^(the|an|a) +/i, '').downcase, winnow_feed.sort_title
-    
-      # check the returned items are the same as those stored
-      assert_equal feed.items.size, added_feed_items.size
-      first_returned_item = added_feed_items.first
-      first_feed_item = feed.items.first
-      assert_equal first_feed_item.title, first_returned_item.title
-      assert_equal first_feed_item.time, first_returned_item.item_updated
-    
-      # Make sure it is also in the DB
-      stored_feed_item = FeedItem.find_by_unique_id(first_returned_item.unique_id)
-      assert_equal first_feed_item.title, stored_feed_item.title
-      assert_equal first_feed_item.time.to_i, stored_feed_item.item_updated.to_i
-      assert_equal first_feed_item.summary, stored_feed_item.atom.summary
-      assert_equal winnow_feed, stored_feed_item.feed
-    
-      # Make sure adding it again produces no duplicates
-      previous_size = winnow_feed.feed_items.size
-      added_feed_items = winnow_feed.update_from_feed!(feed)
-      assert_equal previous_size, winnow_feed.feed_items.length
-    end
-  
-    def stub_collection(returning = [1,1])
-      feeds = [mock_model(Feed), mock_model(Feed)]
-      Feed.should_receive(:find).with(feeds.first.id).and_return(feeds.first)
-      Feed.should_receive(:find).with(feeds.last.id).and_return(feeds.last) unless returning.is_a?(Exception)
-    
-      if returning.is_a?(Exception)
-        feeds.first.should_receive(:collect).and_raise(returning)
-      else
-        feeds.each { |f| f.should_receive(:collect).and_return(returning.pop) }
-      end
-      Feed.should_receive(:active_feeds).and_return(feeds)
+      assert_equal pf.feed.title, winnow_feed.title
+      assert_equal pf.feed.link, winnow_feed.link
+      assert_equal pf.feed.title.sub(/^(the|an|a) +/i, '').downcase, winnow_feed.sort_title
     end
   
     it "collect_all_creates_new_collection_summary" do
@@ -139,42 +92,22 @@ describe Feed do
       dup2.save!
       assert_equal([feed, dup, dup2], Feed.find_duplicates(:order => 'id asc'))
     end
-  
-    it "collecting_html_link_updates_feeds_link_to_autodiscovered_url" do
-      mock_feed = mock('feed', :null_object => true, :items => [], :href => 'http://rss.slashdot.org/Slashdot/slashdot', :title => 'slashdot')
-      feed = Feed.create(:url => 'http://www.slashdot.org/')
-      feed.update_from_feed!(mock_feed)
-      assert_equal 'http://rss.slashdot.org/Slashdot/slashdot', feed.url
-    end
   end
   
-  describe 'collect! duplicate detection' do
+  describe 'update_from_feed! duplicate detection' do
     it "should detect duplicates by URL through autodiscovery" do
-      item = mock('item', :title => 'title', :id => 'uid', 
-                          :content => 'item', :link => 'http://example', :summary => 'item',
-                          :feed_data => 'data',
-                          :time => Time.now, :author => stub('author', :name => 'Bob', :email => nil))
-      feed = mock('feed', :items => [item], 
-                          :href => 'http://rss.slashdot.org/Slashdot/slashdot', 
-                          :title => 'slashdot',
-                          :feed_data => 'data',
-                          :link => 'http://slashdot.org/',
-                          :http_headers => {})
-    
       dup = Feed.create!(:url => 'http://www.slashdot.org/')
       target = Feed.create!(:url => 'http://rss.slashdot.org/Slashdot/slashdot')
     
-      dup.update_from_feed!(feed)
+      dup.update_url!('http://rss.slashdot.org/Slashdot/slashdot')
     
       dup = Feed.find(dup.id)
-      assert dup.is_duplicate?    
       assert_equal target, dup.duplicate
+      assert dup.is_duplicate?    
       assert_equal('http://www.slashdot.org/', dup.url)
-      #assert 0 < target.feed_items.length, "Feed2's feed_items was empty"
-      assert_equal [], dup.feed_items
     end  
 
-    it "should detect duplicates by link through auto discovery" do
+    it "should detect duplicates by link" do
       item = mock('item', :title => 'title', :id => 'uid', 
                           :content => 'item', :link => 'http://example', :summary => 'item',
                           :feed_data => 'data',
@@ -196,8 +129,6 @@ describe Feed do
       dup = Feed.find(dup.id)
       assert dup.is_duplicate?
       assert_equal target, dup.duplicate
-      assert 0 < target.feed_items.length, "Feed2's feed_items was empty"
-      assert [], dup.feed_items
       assert_equal dup.url, 'http://www.slashdot.org/'
     end
     

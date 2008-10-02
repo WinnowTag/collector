@@ -4,7 +4,6 @@
 # to use, modify, or create derivate works.
 # Please visit http://www.peerworks.org/contact for further information.
 
-
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe FeedItemAtomDocument do
@@ -18,9 +17,9 @@ describe FeedItemAtomDocument do
   
   describe '.create_from_feed_tools' do
     before(:each) do
-      feed_url = 'file:/' + File.join(File.expand_path(RAILS_ROOT), 'spec', 'fixtures', 'slashdot.rss')
-      feed = FeedTools::Feed.open(feed_url)      
-      @item = feed.items.first
+      feed_url = File.join(File.expand_path(RAILS_ROOT), 'spec', 'fixtures', 'slashdot.rss')
+      feed = FeedParser.parse(File.open(feed_url))      
+      @item = feed.entries.first
       @doc = FeedItemAtomDocument.build_from_feed_item(1234, @item, :base => 'http://collector.mindloom.org')
       @entry = Atom::Entry.load_entry(@doc.atom_document)
     end
@@ -42,15 +41,15 @@ describe FeedItemAtomDocument do
     end
     
     it "should have the updated date" do
-      @entry.updated.should == @item.time
+      @entry.updated.should == @item.updated_time
     end
     
     it "should have the author's name" do
-      @entry.authors.first.name.should == @item.author.name
+      @entry.authors.first.name.should == @item.author
     end
     
     it "should have the content" do
-      @entry.content.should == @item.content.gsub("\n", ' ')
+      @entry.content.should == @item.summary.gsub("\n", ' ')
     end
     
     it "should have the content type" do
@@ -72,19 +71,19 @@ describe FeedItemAtomDocument do
     
     describe 'without author' do
       before(:each) do        
-        @item.author = nil
+        @item.stub!(:author).and_return(nil)
         doc = FeedItemAtomDocument.build_from_feed_item("1234", @item, :base => 'http://blah')
         @entry = Atom::Entry.load_entry(doc.atom_document)
       end
       
-      it "should be have no authors" do
+      it "should have no authors" do
         @entry.should have(0).authors
       end
     end
   
     describe 'create_from_feed_tools with non-utf-8 content' do
       before(:each) do
-        @item.content = "This is not utf-8 because of this character: \225"
+        @item.stub!(:content).and_return([mock('content', :value => "This is not utf-8 because of this character: \225")])
         doc = FeedItemAtomDocument.build_from_feed_item("1234", @item, :base => 'http://blah')
         @entry = Atom::Entry.load_entry(doc.atom_document)
       end
@@ -96,7 +95,7 @@ describe FeedItemAtomDocument do
   
     describe "create_from_feed_tools with non-printable characters" do
       it "should remove them" do
-        @item.content = "This has a non\004-printable character"
+        @item.stub!(:content).and_return([mock('content', :value => "This has a non\004-printable character")])
         doc = FeedItemAtomDocument.build_from_feed_item("1234", @item, :base => 'http://blah')
         @entry = Atom::Entry.load_entry(doc.atom_document)
         @entry.content.should == "This has a non-printable character"
