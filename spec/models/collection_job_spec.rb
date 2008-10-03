@@ -15,8 +15,6 @@ describe CollectionJob do
   
   before(:each) do
     @feed_update = mock('feed_update', :feed => mock('feed', :null_object => true), :status => 200, :version => "rss", :entries => [])
-    @feed = mock_model(Feed, :update_from_feed! => true, :title => 'feed', :new_record? => false, :feed_items => [], :increment_error_count => nil, :url => '')
-    Feed.stub!(:find).and_return(@feed)
     FeedParser.stub!(:parse).and_return(@feed_update)
   end
   
@@ -117,7 +115,7 @@ describe CollectionJob do
     
   it "should perform atom autodiscovery if the result is html" do
     job = collection_jobs(:first_in_queue)
-    FeedParser.should_receive(:parse).with('').and_return(@autodiscovered_atom)
+    FeedParser.should_receive(:parse).with(job.feed.url).and_return(@autodiscovered_atom)
     FeedParser.should_receive(:parse).with('http://example.org/index.xml').and_return(mock('pf', :feed => mock('feed')))
     job.execute
   end
@@ -169,15 +167,15 @@ describe CollectionJob do
   end
   
   it "failed_job_is_marked_as_completed" do
-    @feed.should_receive(:update_from_feed!).with(@feed_update.feed).and_raise
     job = collection_jobs(:first_in_queue)
+    job.feed.should_receive(:update_from_feed!).with(@feed_update.feed).and_raise
     assert_nothing_raised(Exception) { job.execute }
     assert_not_nil job.completed_at
   end
   
   it "failed_job_send_post_to_callback" do
-    @feed.should_receive(:update_from_feed!).with(@feed_update.feed).and_raise
     job = collection_jobs(:first_in_queue)
+    job.feed.should_receive(:update_from_feed!).with(@feed_update.feed).and_raise
     job.should_receive(:post_to_callback).once
     job.execute rescue nil  
   end
@@ -215,31 +213,32 @@ describe CollectionJob do
   end
   
   it "failure_should_set_message" do
-    @feed.should_receive(:update_from_feed!).with(@feed_update.feed).and_raise(RuntimeError.new("This is an error message"))
     job = collection_jobs(:first_in_queue)
+    job.feed.should_receive(:update_from_feed!).with(@feed_update.feed).and_raise(RuntimeError.new("This is an error message"))
     job.execute
     assert_equal("This is an error message", job.collection_error.error_message)
   end
   
   it "failure_should_set_failed_flag" do
-    @feed.should_receive(:update_from_feed!).with(@feed_update.feed).and_raise(RuntimeError)
     job = collection_jobs(:first_in_queue)
+    job.feed.should_receive(:update_from_feed!).with(@feed_update.feed).and_raise(RuntimeError)
     job.execute
     assert(job.failed?)
   end
   
   it "should links collection errors to summary" do
-    @feed.should_receive(:update_from_feed!).with(@feed_update.feed).and_raise(REXML::ParseException.new("ParseException"))
     job = collection_jobs(:first_in_queue)
+    job.feed.should_receive(:update_from_feed!).with(@feed_update.feed).and_raise(REXML::ParseException.new("ParseException"))
     job.execute
     job.collection_error.should_not be_nil
     job.collection_summary.collection_errors.should include(job.collection_error)
   end
   
   it "should increment error count for the feed" do
-    @feed.should_receive(:update_from_feed!).with(@feed_update.feed).and_raise(REXML::ParseException.new("ParseException"))
-    @feed.should_receive(:increment_error_count)
     job = collection_jobs(:first_in_queue)
-    job.execute
+    assert_difference(job.feed, :collection_errors_count, 1) do
+      job.feed.should_receive(:update_from_feed!).with(@feed_update.feed).and_raise(REXML::ParseException.new("ParseException"))
+      job.execute
+    end
   end  
 end
