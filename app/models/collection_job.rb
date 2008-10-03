@@ -4,7 +4,10 @@
 # to use, modify, or create derivate works.
 # Please visit http://www.peerworks.org/contact for further information.
 class CollectionJob < ActiveRecord::Base
-  FEED_TYPES = ["application/rss+xml", "application/atom+xml"]
+  NOT_MODIFIED = 304  
+  MOVED_PERMANENTLY = 301
+  USER_AGENT = 'Peerworks Feed Collector/1.0.0 +http://peerworks.org'
+  FEED_TYPES = ["application/rss+xml", "application/atom+xml"]  
   class SchedulingException < StandardError; end
   belongs_to :feed
   belongs_to :collection_summary
@@ -33,7 +36,7 @@ class CollectionJob < ActiveRecord::Base
     begin
       start_job
       parsed_feed = fetch_feed
-      run_job(parsed_feed)
+      process_feed(parsed_feed) unless parsed_feed.status == NOT_MODIFIED
       complete_job
       self
     rescue ActiveRecord::StaleObjectError => e
@@ -66,7 +69,7 @@ class CollectionJob < ActiveRecord::Base
   end
     
   def fetch_feed
-    pf = FeedParser.parse(feed.url)
+    pf = FeedParser.parse(feed.url, get_request_options)
     pf = auto_discover(pf) if pf.version == ""
     self.http_response_code = pf.status
     self.http_etag = pf.etag if pf.respond_to?(:etag)
@@ -74,8 +77,19 @@ class CollectionJob < ActiveRecord::Base
     pf
   end
     
-  def run_job(parsed_feed)
-    if parsed_feed.status == 301
+  def get_request_options(include_caching_options = true)
+    returning({}) do |options|
+      options[:agent] = USER_AGENT
+      
+      if include_caching_options && feed.last_completed_job
+        options[:etag]     = feed.last_completed_job.http_etag
+        options[:modified] = feed.last_completed_job.http_last_modified
+      end
+    end
+  end
+  
+  def process_feed(parsed_feed)
+    if parsed_feed.status == MOVED_PERMANENTLY
       self.feed.update_url!(parsed_feed.href)
     end
     
@@ -106,7 +120,7 @@ class CollectionJob < ActiveRecord::Base
     end.first
     
     if possible_link
-      autodiscovered = FeedParser.parse(possible_link.href)
+      autodiscovered = FeedParser.parse(possible_link.href, get_request_options(false))
       raise "Autodiscovered link is not a valid feed either" if autodiscovered.bozo
       autodiscovered
     else

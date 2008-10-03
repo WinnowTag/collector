@@ -12,7 +12,7 @@ job_in_progress:
   collection_summary_id: 1
 job_completed:
   id: 2
-  feed_id: 2
+  feed_id: 1
   created_by: 
   created_at: <%= Time.now.ago(2.hours).to_formatted_s(:db) %> 
   updated_at: 

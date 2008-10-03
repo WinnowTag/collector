@@ -102,6 +102,27 @@ describe CollectionJob do
     assert_equal("Collected 1 new items", job.message)
   end
   
+  it "should use the etag from the last completed request" do
+    job = collection_jobs(:first_in_queue)
+    job.feed.last_completed_job.http_etag = 'blahblah'
+    FeedParser.should_receive(:parse).with(job.feed.url, hash_including(:etag => 'blahblah')).and_return(@feed_update)
+    job.execute
+  end
+  
+  it "should use the last modified time from the last completed request" do
+    now = Time.now.httpdate
+    job = collection_jobs(:first_in_queue)
+    job.feed.last_completed_job.http_last_modified = now
+    FeedParser.should_receive(:parse).with(job.feed.url, hash_including(:modified => now)).and_return(@feed_update)
+    job.execute
+  end
+  
+  it "should set the user agent" do
+    job = collection_jobs(:first_in_queue)
+    FeedParser.should_receive(:parse).with(job.feed.url, hash_including(:agent => 'Peerworks Feed Collector/1.0.0 +http://peerworks.org')).and_return(@feed_update)
+    job.execute
+  end
+  
   it "should create new items"  do
     pf = @slashdot
     FeedParser.stub!(:parse).and_return(pf)
@@ -115,8 +136,8 @@ describe CollectionJob do
     
   it "should perform atom autodiscovery if the result is html" do
     job = collection_jobs(:first_in_queue)
-    FeedParser.should_receive(:parse).with(job.feed.url).and_return(@autodiscovered_atom)
-    FeedParser.should_receive(:parse).with('http://example.org/index.xml').and_return(mock('pf', :feed => mock('feed')))
+    FeedParser.should_receive(:parse).with(job.feed.url, an_instance_of(Hash)).and_return(@autodiscovered_atom)
+    FeedParser.should_receive(:parse).with('http://example.org/index.xml', an_instance_of(Hash)).and_return(mock('pf', :feed => mock('feed')))
     job.execute
   end
 
@@ -126,6 +147,15 @@ describe CollectionJob do
     job = collection_jobs(:first_in_queue)
     FeedParser.should_receive(:parse).and_return(mock_pf)
     job.feed.should_receive(:update_url!).with('http://rss.slashdot.org/Slashdot/slashdot')
+    job.execute
+  end
+  
+  it "should not update the feed if response is 304" do
+    mock_pf = mock('parsed_feed', :status => 304, :href => 'http://rss.slashdot.org/Slashdot/slashdot', :entries => [],
+                                :feed => mock('feed', :null_object => true), :version => "rss")
+    job = collection_jobs(:first_in_queue)
+    FeedParser.should_receive(:parse).and_return(mock_pf)
+    job.feed.should_not_receive(:update_from_feed!)
     job.execute
   end
   
