@@ -64,7 +64,16 @@ class CollectionJob < ActiveRecord::Base
   def start_job
     self.update_attribute(:started_at, Time.now.utc)
   end
-  
+    
+  def fetch_feed
+    pf = FeedParser.parse(feed.url)
+    pf = auto_discover(pf) if pf.version == ""
+    self.http_response_code = pf.status
+    self.http_etag = pf.etag if pf.respond_to?(:etag)
+    self.http_last_modified = pf.modified_time.httpdate if pf.respond_to?(:modified_time)
+    pf
+  end
+    
   def run_job(parsed_feed)
     if parsed_feed.status == 301
       self.feed.update_url!(parsed_feed.href)
@@ -90,20 +99,14 @@ class CollectionJob < ActiveRecord::Base
     self.save
     post_to_callback
   end
-  
-  def fetch_feed
-    pf = FeedParser.parse(URI.parse(feed.url))
-    pf = auto_discover(pf) if pf.version == ""    
-    pf
-  end
-  
+
   def auto_discover(pf)
     possible_link = pf.feed.links.select do |l|
       l.rel == 'alternate' && FEED_TYPES.include?(l.type)
     end.first
     
     if possible_link
-      autodiscovered = FeedParser.parse(URI.parse(possible_link.href))
+      autodiscovered = FeedParser.parse(possible_link.href)
       raise "Autodiscovered link is not a valid feed either" if autodiscovered.bozo
       autodiscovered
     else

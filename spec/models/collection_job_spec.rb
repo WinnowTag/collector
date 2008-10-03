@@ -117,8 +117,8 @@ describe CollectionJob do
     
   it "should perform atom autodiscovery if the result is html" do
     job = collection_jobs(:first_in_queue)
-    FeedParser.should_receive(:parse).with(URI.parse('')).and_return(@autodiscovered_atom)
-    FeedParser.should_receive(:parse).with(URI.parse('http://example.org/index.xml')).and_return(mock('pf', :feed => mock('feed')))
+    FeedParser.should_receive(:parse).with('').and_return(@autodiscovered_atom)
+    FeedParser.should_receive(:parse).with('http://example.org/index.xml').and_return(mock('pf', :feed => mock('feed')))
     job.execute
   end
 
@@ -138,6 +138,34 @@ describe CollectionJob do
     FeedParser.should_receive(:parse).and_return(mock_pf)
     job.feed.should_not_receive(:update_url!).with('http://rss.slashdot.org/Slashdot/slashdot')
     job.execute
+  end
+  
+  it "should store the status of the request" do
+    mock_pf = mock('parsed_feed', :status => 200, :href => 'http://rss.slashdot.org/Slashdot/slashdot', :entries => [],
+                                :feed => mock('feed', :null_object => true), :version => "rss")
+    FeedParser.should_receive(:parse).and_return(mock_pf)
+    job = collection_jobs(:first_in_queue)
+    job.execute
+    job.http_response_code.should == 200
+  end
+  
+  it "should store the etag" do
+    mock_pf = mock('parsed_feed', :status => 200, :href => 'http://rss.slashdot.org/Slashdot/slashdot', :entries => [],
+                                :feed => mock('feed', :null_object => true), :version => "rss", :etag => 'blahblah')
+    FeedParser.should_receive(:parse).and_return(mock_pf)
+    job = collection_jobs(:first_in_queue)
+    job.execute
+    job.http_etag.should == 'blahblah'
+  end
+  
+  it "should store the last modified header" do
+    now = Time.now
+    mock_pf = mock('parsed_feed', :status => 200, :href => 'http://rss.slashdot.org/Slashdot/slashdot', :entries => [],
+                                :feed => mock('feed', :null_object => true), :version => "rss", :modified_time => now)
+    FeedParser.should_receive(:parse).and_return(mock_pf)
+    job = collection_jobs(:first_in_queue)
+    job.execute
+    job.http_last_modified.should == now.httpdate
   end
   
   it "failed_job_is_marked_as_completed" do
