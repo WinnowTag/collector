@@ -14,7 +14,7 @@ describe CollectionJob do
   end
   
   before(:each) do
-    @feed_update = mock('feed_update', :feed => mock('feed', :null_object => true), :status => 200, :bozo => false, :entries => [])
+    @feed_update = mock('feed_update', :feed => mock('feed', :null_object => true), :status => 200, :version => "rss", :entries => [])
     @feed = mock_model(Feed, :update_from_feed! => true, :title => 'feed', :new_record? => false, :feed_items => [], :increment_error_count => nil, :url => '')
     Feed.stub!(:find).and_return(@feed)
     FeedParser.stub!(:parse).and_return(@feed_update)
@@ -124,7 +124,7 @@ describe CollectionJob do
 
   it "should update the link if redirect is permanent" do
     mock_pf = mock('parsed_feed', :status => 301, :href => 'http://rss.slashdot.org/Slashdot/slashdot', :entries => [],
-                                :feed => mock('feed', :null_object => true), :bozo => false)
+                                :feed => mock('feed', :null_object => true), :version => "rss")
     job = collection_jobs(:first_in_queue)
     FeedParser.should_receive(:parse).and_return(mock_pf)
     job.feed.should_receive(:update_url!).with('http://rss.slashdot.org/Slashdot/slashdot')
@@ -133,7 +133,7 @@ describe CollectionJob do
   
   it "should not update the link redirect is temporary" do
     mock_pf = mock('parsed_feed', :status => 302, :href => 'http://rss.slashdot.org/Slashdot/slashdot', :entries => [],
-                                :feed => mock('feed', :null_object => true), :bozo => false)
+                                :feed => mock('feed', :null_object => true), :version => "rss")
     job = collection_jobs(:first_in_queue)
     FeedParser.should_receive(:parse).and_return(mock_pf)
     job.feed.should_not_receive(:update_url!).with('http://rss.slashdot.org/Slashdot/slashdot')

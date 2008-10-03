@@ -93,7 +93,7 @@ class CollectionJob < ActiveRecord::Base
   
   def fetch_feed
     pf = FeedParser.parse(URI.parse(feed.url))
-    pf = auto_discover(pf) if pf.bozo    
+    pf = auto_discover(pf) if pf.version == ""    
     pf
   end
   

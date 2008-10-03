@@ -7,21 +7,15 @@
 # Provides a representation of an item from an RSS/Atom feed.
 #
 # This class includes methods for:
-#
-# * Finding items based on taggings and other filters.
+#.
 # * Extracting an item from a FeedTools::Item object.
-# * Getting and producing the tokens for a feed item.
 #
 # The FeedItem class only stores summary metadata for a feed item, the actual
-# content is stored in the FeedItemContent class. This enables faster database
-# access on the smaller summary records and allows us to use a MyISAM table for
-# the content which can then be index using MySQL's Full Text Indexing.
+# content is stored in the FeedItemAtomDocument class as an Atom document. 
+# This enables faster database access on the smaller summary records.
+
+# See also FeedItemAtomDocument.
 #
-# Tokens are stored in a FeedItemTokensContainer.
-#
-# The original XML data is stored in a FeedItemXmlData.
-#
-# See also FeedItemContent, FeedItemXmlData and FeedItemTokensContainer.
 class FeedItem < ActiveRecord::Base
   validates_presence_of :link
   validates_uniqueness_of :unique_id, :link
@@ -107,6 +101,4 @@ class FeedItem < ActiveRecord::Base
       end
     end
   end
-    
- 
 end
