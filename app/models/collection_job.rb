@@ -115,16 +115,20 @@ class CollectionJob < ActiveRecord::Base
   end
   
   def complete_job
+    self.completed_at = Time.now.utc
+    self.save
+        
+    update_summary
+    post_to_callback
+  end
+
+  def update_summary
     if collection_summary
       collection_summary.increment_item_count(self.item_count)
       collection_summary.job_completed!
     end
-    
-    self.completed_at = Time.now.utc
-    self.save
-    post_to_callback
   end
-
+  
   def auto_discover(pf)
     possible_link = if pf.feed.links
       pf.feed.links.select do |l|
@@ -134,7 +138,7 @@ class CollectionJob < ActiveRecord::Base
     
     if possible_link
       autodiscovered = FeedParser.parse(possible_link.href, get_request_options(false))
-      raise "Autodiscovered link (#{possible_link}) is not a valid feed either" if autodiscovered.bozo
+      raise "Autodiscovered link (#{possible_link.href}) is not a valid feed either" if autodiscovered.bozo
       autodiscovered
     else
       raise "No feed link found in non-feed resource. This is a probably a web page without an auto-discovery link."
@@ -155,7 +159,7 @@ class CollectionJob < ActiveRecord::Base
                   to_xml(:only => [:feed_id, :message, :item_count, :completed_at],
                          :include => [:collection_error],
                          :root => 'collection-job-result'))
-      end
+      end      
     end
   end
 end
