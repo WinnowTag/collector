@@ -134,6 +134,15 @@ describe CollectionJob do
     job.feed_items.first.title.should == pf.entries.first.title
     job.feed_items.first.feed.should == job.feed
   end
+  
+  it "should record benchmark times" do
+    job = collection_jobs(:first_in_queue)
+    job.execute
+    job.utime.should_not be_nil
+    job.stime.should_not be_nil
+    job.rtime.should_not be_nil
+    job.ttime.should_not be_nil
+  end
     
   it "should perform atom autodiscovery if the result is html" do
     job = collection_jobs(:first_in_queue)

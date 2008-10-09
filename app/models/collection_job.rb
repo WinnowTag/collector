@@ -34,10 +34,18 @@ class CollectionJob < ActiveRecord::Base
     raise SchedulingException, "Job already started"  unless self.started_at.nil?
         
     begin
-      start_job
-      parsed_feed = fetch_feed
-      process_feed(parsed_feed) unless parsed_feed.status == NOT_MODIFIED
-      complete_job
+      bm = Benchmark.measure do
+        start_job
+        parsed_feed = fetch_feed
+        process_feed(parsed_feed) unless parsed_feed.status == NOT_MODIFIED
+        complete_job
+      end
+      
+      self.utime = bm.utime
+      self.stime = bm.stime
+      self.rtime = bm.real
+      self.ttime = bm.total
+      self.save!
       self
     rescue ActiveRecord::StaleObjectError => e
       # Just re-raise this since it doesn't matter, something else is handling the job

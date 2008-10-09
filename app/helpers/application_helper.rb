@@ -49,6 +49,8 @@ module ApplicationHelper
   def format_date(date, when_nil = "Never")
     if date.nil?
       when_nil
+    elsif date.is_a?(String)
+      Time.parse(date).to_formatted_s(:short) rescue when_nil
     else
       date.to_formatted_s(:short)
     end
