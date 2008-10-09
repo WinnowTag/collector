@@ -17,7 +17,7 @@ class ApplicationController < ActionController::Base
   
   include ExceptionNotifiable
   include AuthenticatedSystem
-  before_filter :login_from_cookie, :login_required, :flash_completed_collections, :set_time_zone
+  before_filter :login_from_cookie, :login_required, :set_time_zone
   
   SHOULD_BE_POST = {
         :text => 'Bad Request. Should be POST. ' +
@@ -33,20 +33,6 @@ class ApplicationController < ActionController::Base
       } unless defined?(MISSING_PARAMS)
   
 private
-  def flash_completed_collections
-    if current_user and params[:format] != 'atom'
-      jobs = CollectionJob.completed_jobs_for_user(current_user.login)
-    
-      if jobs.any?
-        flash.now[:notice] = jobs.map do |job|
-          job.update_attribute(:user_notified, true)
-          "Collection complete for #{job.feed.title}."
-        end.join(' ')
-      end
-    end
-    
-    return true
-  end
 
   def set_time_zone
     if current_user && !current_user.time_zone.blank?
