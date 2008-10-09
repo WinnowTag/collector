@@ -7,4 +7,8 @@ class CollectionError < ActiveRecord::Base
   include ExceptionRecorder
   belongs_to :collection_job
   belongs_to :collection_summary
+
+  def feed
+    collection_job and collection_job.feed or nil
+  end
 end

@@ -16,4 +16,11 @@ describe CollectionError do
     e = Exception.new("error message")
     assert_equal("error message", CollectionError.create(:exception => e).error_message)
   end
+  
+  it "should get to feed through job" do
+    feed = Feed.find(:first)
+    job = feed.collection_jobs.create
+    job.collection_error = CollectionError.create(:exception => Exception.new)
+    job.collection_error.feed.should == feed
+  end
 end
