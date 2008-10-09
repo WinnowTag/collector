@@ -24,7 +24,7 @@ class RefactorFeedItemsTable < ActiveRecord::Migration
     execute "ALTER TABLE feed_items CHANGE content_length content_length integer(11) default 0 AFTER atom_md5"
     execute "ALTER TABLE feed_items CHANGE created_on created_on datetime default NULL AFTER content_length"
          
-    add_index :feed_items, [:collection_id], :unique => true
+    add_index :feed_items, [:collection_id]
   end
 
   def self.down
