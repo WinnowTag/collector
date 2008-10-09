@@ -20,6 +20,7 @@ job_completed:
   completed_at: <%= Time.now.ago(30.minutes).to_formatted_s(:db) %>
   lock_version: 1
   state: completed
+  http_response_code: '200'
 first_in_queue:
   id: 3
   feed_id: 1
