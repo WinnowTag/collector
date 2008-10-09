@@ -16,6 +16,14 @@
 		<th>New Items</th>
 		<td><%= collection_summary.item_count %></td>
 	</tr>
+	<tr>
+		<th>Jobs Completed</th>
+		<td><%= collection_summary.completed_jobs.size %></td>
+	</tr>
+	<tr>
+		<th>Jobs Pending</th>
+		<td><%= collection_summary.pending_jobs.size %></td>
+	</tr>
 </table>
 
 <% if collection_summary.failed? -%>

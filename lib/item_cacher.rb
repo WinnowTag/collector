@@ -4,7 +4,14 @@
 # to use, modify, or create derivate works.
 # Please visit http://www.peerworks.org/contact for further information.
 ENV['RAILS_ENV'] ||= 'production'
-require File.join(File.dirname(__FILE__), '/../config/environment.rb')
+begin
+require File.join(File.dirname(__FILE__), '/../config/environment.rb') 
+rescue Exception => e
+  puts e.message
+  puts e.backtrace.join("\n") 
+  exit(1)
+end
+
 ActiveRecord::Base.logger = Logger.new(File.join(RAILS_ROOT, 'log', 'item_cache.log'), "daily")
 ActiveRecord::Base.logger.level = Logger::DEBUG
 
@@ -27,7 +34,7 @@ loop do
     if operation = ItemCacheOperation.next_job
       operation.execute
     end
-  rescue Exception => e
+  rescue StandardError => e
     ActiveRecord::Base.logger.warn("[ItemCache] Error executing job: #{e}")
   end
   sleep(0.1)

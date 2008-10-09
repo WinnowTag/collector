@@ -82,7 +82,7 @@ class CollectionJob < ActiveRecord::Base
     self.http_response_code = pf.status
     if self.http_response_code == '200'
       self.http_etag = pf.etag if pf.has_key?('etag')
-      self.http_last_modified = pf.modified_time.httpdate if pf.has_key?('modified_time')
+      self.http_last_modified = pf.modified_time.httpdate if pf.has_key?('modified_time') && pf.modified_time.respond_to?(:httpdate)
     end
     pf
   end
@@ -112,13 +112,14 @@ class CollectionJob < ActiveRecord::Base
     
     self.feed.update_from_feed!(parsed_feed.feed)
     self.item_count = self.feed_items.size
-    
-    if collection_summary
-      collection_summary.increment_item_count(self.item_count) 
-    end
   end
   
   def complete_job
+    if collection_summary
+      collection_summary.increment_item_count(self.item_count)
+      collection_summary.job_completed!
+    end
+    
     self.completed_at = Time.now.utc
     self.save
     post_to_callback
