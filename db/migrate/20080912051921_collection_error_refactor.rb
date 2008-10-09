@@ -15,6 +15,8 @@
 
 class CollectionErrorRefactor < ActiveRecord::Migration
   def self.up
+    # reset errors since we are restructring to the point where these can't be used
+    execute "delete from collection_errors"
     add_column :collection_errors, :collection_job_id, :integer, :default => nil
     remove_column :collection_errors, :feed_id
             
