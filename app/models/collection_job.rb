@@ -4,8 +4,8 @@
 # to use, modify, or create derivate works.
 # Please visit http://www.peerworks.org/contact for further information.
 class CollectionJob < ActiveRecord::Base
-  NOT_MODIFIED = 304  
-  MOVED_PERMANENTLY = 301
+  NOT_MODIFIED = '304'  
+  MOVED_PERMANENTLY = '301'
   USER_AGENT = 'Peerworks Feed Collector/1.0.0 +http://peerworks.org'
   FEED_TYPES = ["application/rss+xml", "application/atom+xml"]  
   class SchedulingException < StandardError; end
@@ -72,8 +72,10 @@ class CollectionJob < ActiveRecord::Base
     pf = FeedParser.parse(feed.url, get_request_options)
     pf = auto_discover(pf) if pf.version == ""
     self.http_response_code = pf.status
-    self.http_etag = pf.etag if pf.respond_to?(:etag)
-    self.http_last_modified = pf.modified_time.httpdate if pf.respond_to?(:modified_time)
+    if self.http_response_code == '200'
+      self.http_etag = pf.etag if pf.has_key?('etag')
+      self.http_last_modified = pf.modified_time.httpdate if pf.has_key?('modified_time')
+    end
     pf
   end
     

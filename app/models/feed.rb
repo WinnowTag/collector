@@ -21,7 +21,7 @@ class Feed < ActiveRecord::Base
   has_many :collection_jobs,   :dependent => :delete_all, :order => 'created_at desc'
   has_many :collection_errors, :through => :collection_jobs, :source => :collection_errors
   has_one  :last_error, :order => 'created_on desc'
-  has_one  :last_completed_job, :order => 'completed_at desc', :class_name => 'CollectionJob'
+  has_one  :last_completed_job, :order => 'completed_at desc', :conditions => "http_response_code = '200'", :class_name => 'CollectionJob'
   
   class << self
     # Return a list of Feeds that are active.
