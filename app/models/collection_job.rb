@@ -125,16 +125,18 @@ class CollectionJob < ActiveRecord::Base
   end
 
   def auto_discover(pf)
-    possible_link = pf.feed.links.select do |l|
-      l.rel == 'alternate' && FEED_TYPES.include?(l.type)
-    end.first
+    possible_link = if pf.feed.links
+      pf.feed.links.select do |l|
+        l.rel == 'alternate' && FEED_TYPES.include?(l.type)
+      end.first
+    end
     
     if possible_link
       autodiscovered = FeedParser.parse(possible_link.href, get_request_options(false))
-      raise "Autodiscovered link is not a valid feed either" if autodiscovered.bozo
+      raise "Autodiscovered link (#{possible_link}) is not a valid feed either" if autodiscovered.bozo
       autodiscovered
     else
-      raise "No feed link found in non-feed resource"
+      raise "No feed link found in non-feed resource. This is a probably a web page without an auto-discovery link."
     end
   end
   

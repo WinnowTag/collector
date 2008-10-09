@@ -4,6 +4,10 @@
 
 <table id="<%= "feed_#{@feed.id}" %>" class="property_table <%= "inactive_feed" unless @feed.active? %>">
 	<tr>
+		<th>URL</th>
+		<td><%= link_to(@feed.url) %></td>
+	</tr>
+	<tr>
 		<th>Last Retrieved</th>
 		<td class="date"><%= format_date(@feed.updated_on) %></td>
 	</tr>

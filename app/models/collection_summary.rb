@@ -5,6 +5,7 @@
 # Please visit http://www.peerworks.org/contact for further information.
 class CollectionSummary < ActiveRecord::Base
   has_many :collection_errors
+  has_many :collection_jobs, :order => "updated_at desc", :limit => 20
   
   def failed?
     !self.fatal_error_type.nil?
