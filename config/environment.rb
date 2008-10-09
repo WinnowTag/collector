@@ -25,14 +25,15 @@ Rails::Initializer.run do |config|
   # config.gem "bj"
   # config.gem "hpricot", :version => '0.6', :source => "http://code.whytheluckystiff.net"
   # config.gem "aws-s3", :lib => "aws/s3"
+  config.gem "hpricot", :version => "=0.6"
+  # This must go before rfeedparser otherwise we get a screwed up libxml
   config.gem "ratom", :version => "0.5.1", :lib => "atom/pub"
+  config.gem 'rfeedparser'
   config.gem "auth-hmac", :version => "1.0.0"
 
   # Must be compiled
   config.gem "mysql"
-  config.gem "hpricot"
-  config.gem "tzinfo", :version => "0.3.9"
-  config.gem 'rfeedparser'
+  config.gem "tzinfo", :version => ">= 0.3.9"
 
   # Only load the plugins named here, in the order given. By default, all plugins 
   # in vendor/plugins are loaded in alphabetical order.
