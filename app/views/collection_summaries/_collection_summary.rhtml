@@ -30,6 +30,6 @@
 <% unless collection_summary.collection_errors.empty? %>
 <h3>Collection Errors</h3>
 
-<%= render :partial => 'collection_errors/collection_errors_with_feeds', 
-	   :locals => { :collection_errors => collection_summary.collection_errors } %>
+<%= render :partial => 'collection_jobs/collection_jobs', 
+	   :locals => { :collection_jobs => collection_summary.collection_jobs } %>
 <% end -%>

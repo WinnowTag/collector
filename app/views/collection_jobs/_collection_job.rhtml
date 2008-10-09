@@ -1,6 +1,9 @@
 <tr class="collection_job <%= cycle("odd", "even") %> <%= "failed" if collection_job.failed? %>">
     <td><%=h collection_job.created_by %></td>
-	<td class="message"><%= collection_job.message %></td>
+		<td class="message"><%= collection_job.message %></td>
+		<td class="message"><%= collection_job.http_response_code %></td>
+		<td class="message"><%= collection_job.http_etag %></td>
+		<td class="message"><%= collection_job.http_last_modified %></td>
     <td class="date"><%=format_date collection_job.created_at %></td>
     <td class="date"><%=format_date collection_job.started_at, '-' %></td>
     <td class="date"><%=format_date collection_job.completed_at, '-' %></td>
