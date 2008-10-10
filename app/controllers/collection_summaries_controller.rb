@@ -11,11 +11,7 @@ class CollectionSummariesController < ApplicationController
     @title = "Collection Summaries"
     
     conditional_render(CollectionSummary.maximum(:updated_on)) do |since|
-      if since
-        @collection_summaries = CollectionSummary.find(:all, :order => 'created_on desc', :conditions => ['updated_on >= ?', since])
-      else
-        @collection_summaries = CollectionSummary.find(:all, :order => 'created_on desc')
-      end
+      @collection_summaries = CollectionSummary.find(:all, :order => 'created_on desc', :limit => 40)
 
       respond_to do |format|
         format.html # index.rhtml
