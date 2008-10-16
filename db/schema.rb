@@ -9,12 +9,12 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20080912051921) do
+ActiveRecord::Schema.define(:version => 20081009001913) do
 
   create_table "collection_errors", :force => true do |t|
-    t.integer  "collection_job_id",     :limit => 11
-    t.integer  "collection_summary_id", :limit => 11
-    t.string   "error_type",                          :null => false
+    t.integer  "collection_job_id"
+    t.integer  "collection_summary_id"
+    t.string   "error_type",            :null => false
     t.text     "error_message"
     t.datetime "created_on"
   end
@@ -22,13 +22,12 @@ ActiveRecord::Schema.define(:version => 20080912051921) do
   add_index "collection_errors", ["collection_job_id"], :name => "index_collection_errors_on_collection_job_id", :unique => true
 
   create_table "collection_jobs", :force => true do |t|
-    t.integer  "feed_id",               :limit => 11
-    t.integer  "collection_summary_id", :limit => 11
-    t.integer  "item_count",            :limit => 11, :default => 0
+    t.integer  "feed_id"
+    t.integer  "collection_summary_id"
     t.string   "http_response_code"
     t.string   "http_last_modified"
     t.string   "http_etag"
-    t.integer  "lock_version",          :limit => 11
+    t.integer  "lock_version"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "started_at"
@@ -37,21 +36,26 @@ ActiveRecord::Schema.define(:version => 20080912051921) do
     t.string   "created_by"
     t.string   "callback_url"
     t.string   "state"
+    t.integer  "item_count",            :default => 0
+    t.float    "utime"
+    t.float    "stime"
+    t.float    "rtime"
+    t.float    "ttime"
   end
 
   create_table "collection_summaries", :force => true do |t|
     t.string   "fatal_error_type"
     t.text     "fatal_error_message"
-    t.integer  "item_count",          :limit => 11, :default => 0
+    t.integer  "item_count",          :default => 0
     t.datetime "created_on"
     t.datetime "updated_on"
     t.datetime "completed_on"
   end
 
   create_table "failed_operations", :force => true do |t|
-    t.integer  "item_cache_id",           :limit => 11
-    t.integer  "item_cache_operation_id", :limit => 11
-    t.integer  "code",                    :limit => 11
+    t.integer  "item_cache_id"
+    t.integer  "item_cache_operation_id"
+    t.integer  "code"
     t.string   "message"
     t.text     "content"
     t.datetime "created_at"
@@ -61,7 +65,7 @@ ActiveRecord::Schema.define(:version => 20080912051921) do
   add_index "failed_operations", ["item_cache_id", "item_cache_operation_id"], :name => "failed_operations_index", :unique => true
 
   create_table "feed_item_atom_documents", :force => true do |t|
-    t.integer  "feed_item_id",  :limit => 11
+    t.integer  "feed_item_id"
     t.binary   "atom_document", :limit => 16777215
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -70,40 +74,40 @@ ActiveRecord::Schema.define(:version => 20080912051921) do
   add_index "feed_item_atom_documents", ["feed_item_id"], :name => "index_feed_item_atom_documents_on_feed_item_id", :unique => true
 
   create_table "feed_items", :force => true do |t|
-    t.integer  "feed_id",        :limit => 11, :default => 0
-    t.integer  "collection_id",  :limit => 11
+    t.integer  "feed_id",           :default => 0
+    t.integer  "collection_job_id"
     t.string   "title"
     t.string   "link"
     t.datetime "item_updated"
     t.string   "unique_id"
     t.string   "atom_md5"
-    t.integer  "content_length", :limit => 11, :default => 0
+    t.integer  "content_length",    :default => 0
     t.datetime "created_on"
     t.string   "sort_title"
   end
 
   add_index "feed_items", ["link"], :name => "index_feed_items_on_link", :unique => true
-  add_index "feed_items", ["collection_id"], :name => "index_feed_items_on_collection_id", :unique => true
   add_index "feed_items", ["item_updated"], :name => "index_feed_items_on_time"
   add_index "feed_items", ["feed_id"], :name => "index_feed_items_on_feed_id"
   add_index "feed_items", ["sort_title"], :name => "index_feed_items_on_title"
   add_index "feed_items", ["unique_id"], :name => "index_feed_items_on_unique_id"
   add_index "feed_items", ["content_length"], :name => "index_feed_items_on_content_length"
+  add_index "feed_items", ["collection_job_id"], :name => "index_feed_items_on_collection_job_id"
 
   create_table "feeds", :force => true do |t|
     t.string   "url"
     t.string   "title"
     t.string   "sort_title"
     t.string   "link"
-    t.boolean  "active",                                :default => true
-    t.integer  "duplicate_id",            :limit => 11
-    t.integer  "feed_items_count",        :limit => 11, :default => 0
-    t.integer  "collection_errors_count", :limit => 11, :default => 0
-    t.integer  "collections_count",       :limit => 11, :default => 0
+    t.boolean  "active",                  :default => true
+    t.integer  "duplicate_id"
+    t.integer  "feed_items_count",        :default => 0
+    t.integer  "collection_errors_count", :default => 0
+    t.integer  "collections_count",       :default => 0
     t.datetime "updated_on"
     t.datetime "created_on"
     t.string   "created_by"
-    t.integer  "lock_version",            :limit => 11, :default => 0
+    t.integer  "lock_version",            :default => 0
   end
 
   add_index "feeds", ["sort_title"], :name => "index_feeds_on_sort_title"
@@ -111,10 +115,10 @@ ActiveRecord::Schema.define(:version => 20080912051921) do
   add_index "feeds", ["link"], :name => "index_feeds_on_link"
 
   create_table "item_cache_operations", :force => true do |t|
-    t.string   "action",                                           :null => false
-    t.string   "actionable_type",                                  :null => false
-    t.integer  "actionable_id",   :limit => 11,                    :null => false
-    t.boolean  "done",                          :default => false, :null => false
+    t.string   "action",                             :null => false
+    t.string   "actionable_type",                    :null => false
+    t.integer  "actionable_id",                      :null => false
+    t.boolean  "done",            :default => false, :null => false
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -129,7 +133,7 @@ ActiveRecord::Schema.define(:version => 20080912051921) do
   end
 
   create_table "schema_info", :id => false, :force => true do |t|
-    t.integer "version", :limit => 11
+    t.integer "version"
   end
 
   create_table "sessions", :force => true do |t|
@@ -142,16 +146,16 @@ ActiveRecord::Schema.define(:version => 20080912051921) do
   add_index "sessions", ["session_id"], :name => "session_id_idx"
 
   create_table "spider_results", :force => true do |t|
-    t.integer  "feed_item_id",           :limit => 11
-    t.integer  "feed_id",                :limit => 11,                    :null => false
-    t.boolean  "failed",                               :default => false
+    t.integer  "feed_item_id"
+    t.integer  "feed_id",                                   :null => false
+    t.boolean  "failed",                 :default => false
     t.text     "failure_message"
     t.text     "content"
     t.text     "scraped_content"
     t.string   "url"
     t.string   "scraper"
-    t.integer  "content_length",         :limit => 11
-    t.integer  "scraped_content_length", :limit => 11
+    t.integer  "content_length"
+    t.integer  "scraped_content_length"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
