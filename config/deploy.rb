@@ -23,20 +23,20 @@ set :use_sudo, false
 # :primary => true.
 
 default_run_options[:pty] = true
-set :domain, "ds400-2.blueboxgrid.com"
 set :repository, "git@github.com:seangeo/collector.git"
 set :branch, "master"
 set :scm, "git"
 set :scm_verbose, true
-set :user, "mindloom"
-set :deploy_to, "/home/mindloom/collector.deploy"
+set :user, "peerworks"
+set :deploy_to, "/home/peerworks/collector.deploy"
 set :deploy_via, :remote_cache
 set :group, "collector"
 
-role :web, domain
-role :app, domain
-role :db,  domain, :primary => true
-
+role :web, "collector01.mindloom.org"
+role :web, "collector02.mindloom.org"
+role :app, "collector01.mindloom.org"
+role :app, "collector02.mindloom.org"
+role :db,  "db01.c43900.blueboxgrid.com", :primary => true
 
 # =============================================================================
 # OPTIONAL VARIABLES
@@ -106,7 +106,7 @@ after :deploy, :send_nofication
 
 namespace :deploy do
   [:start, :stop, :restart, :status].each do |t|
-    task t do
+    task t, :roles => :app do
       sudo "god #{t.to_s} #{group}"
     end
   end
