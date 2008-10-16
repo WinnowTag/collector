@@ -24,15 +24,6 @@ namespace :test do
   end 
 end
 
-require File.dirname(__FILE__) + '/../../vendor/plugins/rspec/lib/spec/rake/spectask'
-
-desc "Run all examples with RCov"
-Spec::Rake::SpecTask.new('rcov_for_cc') do |t|
-  t.spec_files = FileList['spec/controllers/**/*.rb', 'spec/helpers/*.rb', 'spec/models/*.rb', 'spec/views/*.rb']
-  t.rcov = true
-  t.rcov_opts = ['--exclude', 'spec']
-  t.rcov_dir = ENV['CC_BUILD_ARTIFACTS']
-end
 
 desc "Task for CruiseControl.rb"
 task :cruise do

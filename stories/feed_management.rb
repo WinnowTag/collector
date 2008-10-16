@@ -12,7 +12,7 @@ steps_for(:feed_management) do
     Feed.delete_all    
   end
   
-  Given('$n item caches?') do |n|
+  Given(/(no|\d+) item caches?/) do |n|
     if n == "no"
     elsif n == "1"
       ItemCache.delete_all
