@@ -33,9 +33,10 @@ loop do
     ActiveRecord::Base.connection.verify!(60)
     if operation = ItemCacheOperation.next_job
       operation.execute
+    else
+      sleep(5)
     end
   rescue StandardError => e
     ActiveRecord::Base.logger.warn("[ItemCache] Error executing job: #{e}")
   end
-  sleep(0.1)
 end
