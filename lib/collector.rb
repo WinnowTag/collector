@@ -42,19 +42,17 @@ loop do
     ActiveRecord::Base.connection.verify!(60)
     
     if children.size >= OPTIONS[:max_jobs]
-      sleep(0.5) # Give jobs a chance to complete
+      sleep(0.1) # Give jobs a chance to complete
       children = children.delete_if do |child|
         !Process.wait(child.handle, Process::WNOHANG).nil? rescue true
       end
     elsif collection_job = CollectionJob.next_job
-      children << spawn do
-        collection_job.execute
-      end
+      children << collection_job.execute(:spawn => true)
     else
       sleep(5)
     end
   
   rescue StandardError => e
-    ActiveRecord::Base.logger.warn("[Collection] Error executing job: #{e}")
+    ActiveRecord::Base.logger.warn("[#{Process.pid}] #{e}")
   end
 end

@@ -29,33 +29,39 @@ class CollectionJob < ActiveRecord::Base
          :order => 'created_at asc')
   end
   
-  def execute
+  def execute(options = {})
     raise SchedulingException, "Job already finished" unless self.completed_at.nil?
     raise SchedulingException, "Job already started"  unless self.started_at.nil?
+    method = options[:spawn] ? :spawn : :yield
+    start_job 
         
-    begin
-      bm = Benchmark.measure do
-        start_job
-        parsed_feed = fetch_feed
-        process_feed(parsed_feed) unless parsed_feed.status == NOT_MODIFIED
-        complete_job
-      end
+    spawn(:method => method) do
+      begin
+        logger.info("[#{Process.pid}] Collecting: #{feed.url}")
+
+        bm = Benchmark.measure do
+          parsed_feed = fetch_feed
+          process_feed(parsed_feed) unless parsed_feed.status == NOT_MODIFIED
+          complete_job
+        end
       
-      self.utime = bm.utime
-      self.stime = bm.stime
-      self.rtime = bm.real
-      self.ttime = bm.total
-      self.save!
-      self
-    rescue ActiveRecord::StaleObjectError => e
-      # Just re-raise this since it doesn't matter, something else is handling the job
-      raise(e)
-    rescue Exception => detail
-      self.feed.increment_error_count
-      self.collection_error = CollectionError.create(:error_type => detail.class.name, 
-                                                     :error_message => detail.message,
-                                                     :collection_summary => self.collection_summary)
-      complete_job
+        self.utime = bm.utime
+        self.stime = bm.stime
+        self.rtime = bm.real
+        self.ttime = bm.total
+        self.save!
+        self
+      rescue ActiveRecord::StaleObjectError => e
+        logger.info("[#{Process.pid}] Job processing clash for #{feed.url}")
+      rescue Exception => detail
+        self.feed.increment_error_count
+        self.collection_error = CollectionError.create(:error_type => detail.class.name, 
+                                                       :error_message => detail.message,
+                                                       :collection_summary => self.collection_summary)
+        complete_job
+      ensure
+        logger.info("[#{Process.pid}] Completed collecting #{feed.url}")
+      end
     end
   end
   
@@ -73,7 +79,11 @@ class CollectionJob < ActiveRecord::Base
   
   private
   def start_job
-    self.update_attribute(:started_at, Time.now.utc)
+    begin
+      self.update_attribute(:started_at, Time.now.utc)
+    rescue ActiveRecord::StaleObjectError => e
+      raise SchedulingException, "Start Job processing clash for #{feed.url}"
+    end
   end
     
   def fetch_feed

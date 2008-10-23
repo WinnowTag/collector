@@ -40,7 +40,7 @@ describe CollectionJob do
     job = CollectionJob.find(collection_jobs(:first_in_queue).id)
     stale_job = CollectionJob.find(collection_jobs(:first_in_queue).id)
     job.update_attribute(:started_at, Time.now)
-    assert_raise(ActiveRecord::StaleObjectError) { stale_job.execute }
+    assert_raise(CollectionJob::SchedulingException) { stale_job.execute }
   end
   
   it "executing_stale_job_should_not_post_to_callback" do
