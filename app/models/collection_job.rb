@@ -23,9 +23,11 @@ class CollectionJob < ActiveRecord::Base
       )
   end
   
-  def self.next_job
+  def self.next_job(opts = {})
+    options = {:number_of_schedulers => 1, :scheduler_index => 1}.update(opts)
     find(:first,
-         :conditions => 'started_at is null and completed_at is null',
+         :conditions => ['started_at is null and completed_at is null and id % ? = ?',
+                         options[:number_of_schedulers], options[:scheduler_index] - 1],
          :order => 'created_at asc')
   end
   
@@ -37,7 +39,7 @@ class CollectionJob < ActiveRecord::Base
         
     spawn(:method => method) do
       begin
-        logger.info("[#{Process.pid}] Collecting: #{feed.url}")
+        logger.info("[#{Process.pid}] Collecting: (job.id:#{id}) #{feed.url}")
 
         bm = Benchmark.measure do
           parsed_feed = fetch_feed
