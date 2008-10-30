@@ -12,7 +12,7 @@ rescue Exception => e
   exit(1)
 end
 
-ActiveRecord::Base.logger = Logger.new(File.join(RAILS_ROOT, 'log', 'item_cache.log'), "daily")
+ActiveRecord::Base.logger = Logger.new(File.join(RAILS_ROOT, 'log', 'item_cache.log'))
 ActiveRecord::Base.logger.level = Logger::DEBUG
 
 FileUtils.touch("/tmp/item-cacher.lock")

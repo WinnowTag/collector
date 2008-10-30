@@ -27,12 +27,12 @@ end.parse!
 
 require File.join(File.dirname(__FILE__), '/../config/environment.rb')
 include Spawn
-Spider.logger = Logger.new(File.join(RAILS_ROOT, "log", "spider-bg-collection.log"), 'daily')
+Spider.logger = Logger.new(File.join(RAILS_ROOT, "log", "spider-bg-collection.log"))
 
 if OPTIONS[:log_to_stdout]
   ActiveRecord::Base.logger = Logger.new(STDOUT, "daily")
 else
-  ActiveRecord::Base.logger = Logger.new(File.join(RAILS_ROOT, 'log', 'collection.log'), "daily")
+  ActiveRecord::Base.logger = Logger.new(File.join(RAILS_ROOT, 'log', 'collection.log'))
 end
 ActiveRecord::Base.logger.level = Logger::INFO
 children = []
