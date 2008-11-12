@@ -29,7 +29,7 @@ Rails::Initializer.run do |config|
   # This must go before rfeedparser otherwise we get a screwed up libxml
   config.gem "ratom", :version => "0.5.1", :lib => "atom/pub"
   config.gem 'rfeedparser'
-  config.gem "auth-hmac", :version => "1.0.0"
+  config.gem "auth-hmac", :version => "1.0.1"
 
   # Must be compiled
   config.gem "mysql"
