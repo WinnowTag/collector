@@ -14,6 +14,16 @@ module ApplicationHelper
     end.join    
     javascript_tag(javascript) unless javascript.blank?
   end
+  
+  def search_field_tag(name, value = nil, options = {})
+    options[:clear] ||= {}
+    options[:placeholder] ||= "Search..."
+    content_tag :div, 
+      content_tag(:span, nil, :class => "sbox_l") +      
+      tag(:input, :type => "search", :name => name, :id => name, :value =>  value, :results => 5, :placeholder => options[:placeholder], :autosave => name) +
+      content_tag(:span, nil, :class => "sbox_r srch_clear"),
+      :class => "applesearch clearfix"
+  end
 
   def duration(summary)
     unless summary.completed_on.nil?

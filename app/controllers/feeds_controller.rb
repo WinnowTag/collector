@@ -17,20 +17,24 @@ class FeedsController < ApplicationController
   def index
     respond_to do |wants|
       wants.html do       
-        @feeds = Feed.paginate(:conditions => @conditions,
-                               :per_page => 40, :page => params[:page],
-                               :order => sortable_order('feeds',  :model => Feed, :field => 'title', :sort_direction => :asc))
+        @feeds = Feed.paginate(
+          :conditions => @conditions, 
+          :order => sortable_order('feeds',  :model => Feed, :field => 'title', :sort_direction => :asc),
+          :per_page => 40, :page => params[:page]
+        )
       end
-      wants.text {render :text => Feed.find(:all, :order => 'feeds.id').map(&:url).join("\n")}
-      wants.xml {render :xml => Feed.find(:all).to_xml}
+      wants.text { render :text => Feed.find(:all, :order => 'feeds.id').map(&:url).join("\n") }
+      wants.xml  { render :xml => Feed.find(:all).to_xml }
     end
   end
   
   def with_recent_errors
     respond_to do |wants|
       wants.html do
-        @feeds = Feed.find_with_recent_errors(:per_page => 40, :page => params[:page],
-                                              :order  => sortable_order('feeds', :model => Feed, :field => 'title', :sort_direction => :asc))
+        @feeds = Feed.find_with_recent_errors(
+          :order  => sortable_order('feeds', :model => Feed, :field => 'title', :sort_direction => :asc),
+          :per_page => 40, :page => params[:page]
+        )
         render :action => 'index'
       end
       wants.xml { render :xml => Feed.find_with_recent_errors.to_xml }
@@ -40,8 +44,10 @@ class FeedsController < ApplicationController
   def duplicates
     respond_to do |wants|
       wants.html do
-        @feeds = Feed.find_duplicates(:per_page => 40, :page => params[:page],
-                                      :order  => sortable_order('feeds', :model => Feed, :field => 'title', :sort_direction => :asc))
+        @feeds = Feed.find_duplicates(
+          :order  => sortable_order('feeds', :model => Feed, :field => 'title', :sort_direction => :asc),
+          :per_page => 40, :page => params[:page]
+        )
         render :action => 'index'
       end
       wants.xml { render :xml => Feed.find_duplicates.to_xml }
@@ -85,9 +91,7 @@ class FeedsController < ApplicationController
           render :action => 'show'
         end
         wants.atom do
-           render :xml => @feed.to_atom(:base => "http://#{request.host}:#{request.port}",
-                                        :include_entries => true,
-                                        :page => params[:page])                                            
+           render :xml => @feed.to_atom(:base => "http://#{request.host}:#{request.port}", :include_entries => true, :page => params[:page])                
         end
         wants.xml { render :xml => @feed.to_xml }
       end
@@ -190,7 +194,7 @@ class FeedsController < ApplicationController
     @feed.destroy
     flash[:notice] = @feed.url + ' has been removed'
     
-    respond_to do |wants|
+    respond_to do |wants| 
       wants.html { redirect_to :back }
       wants.xml  { render :nothing => true }
     end

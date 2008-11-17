@@ -73,38 +73,6 @@ describe ItemCachesController do
     end
   end
 
-  describe "handling GET /item_caches/1" do
-
-    before(:each) do
-      @item_cache = mock_model(ItemCache)
-      ItemCache.stub!(:find).and_return(@item_cache)
-    end
-  
-    def do_get
-      get :show, :id => "1"
-    end
-
-    it "should be successful" do
-      do_get
-      response.should be_success
-    end
-  
-    it "should render show template" do
-      do_get
-      response.should render_template('show')
-    end
-  
-    it "should find the item_cache requested" do
-      ItemCache.should_receive(:find).with("1").and_return(@item_cache)
-      do_get
-    end
-  
-    it "should assign the found item_cache for the view" do
-      do_get
-      assigns[:item_cache].should equal(@item_cache)
-    end
-  end
-
   describe "handling GET /item_caches/1.xml" do
 
     before(:each) do

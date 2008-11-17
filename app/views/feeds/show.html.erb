@@ -1,6 +1,6 @@
-<div class="control_bar">
+<% content_for :header_controls do -%>
 	<%= link_to image_tag('cog.png') + 'Collect', collection_jobs_path(:feed_id => @feed.id), :method => :post %>
-</div>
+<% end -%>
 
 <table id="<%= "feed_#{@feed.id}" %>" class="property_table <%= "inactive_feed" unless @feed.active? %>">
 	<tr>

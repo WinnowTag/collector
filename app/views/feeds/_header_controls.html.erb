@@ -1,0 +1,9 @@
+<% form_tag feeds_path, :id => "text_filter_form", :onsubmit => "return false" do -%>
+  <%= search_field_tag "text_filter", params[:text_filter], :placeholder => "Seach Feeds..." %>
+<% end -%>
+
+<div class="toolbar right">
+  <%= rounded_button_link "Add Feed",     new_feed_url,               :icon => "add" %>
+  <%= rounded_button_link "Import Feeds", import_feeds_path,          :icon => "import" %>
+  <%= rounded_button_link "Export Feeds", formatted_feeds_path(:txt), :icon => "export" %>
+</div>

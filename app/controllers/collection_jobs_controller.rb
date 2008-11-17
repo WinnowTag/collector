@@ -17,7 +17,7 @@ class CollectionJobsController < ApplicationController
     end
     
     respond_to do |format|
-      format.html # index.rhtml
+      format.html
       format.xml  { render :xml => @collection_jobs.to_xml }
     end
   end
@@ -26,7 +26,7 @@ class CollectionJobsController < ApplicationController
     @collection_job = @feed.collection_jobs.find(params[:id])
 
     respond_to do |format|
-      format.html # show.rhtml
+      format.html
       format.xml  { render :xml => @collection_job.to_xml }
     end
   end

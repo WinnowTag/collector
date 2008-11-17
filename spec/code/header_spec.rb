@@ -7,8 +7,10 @@ require File.dirname(__FILE__) + '/../spec_helper'
 
 describe "headers" do
   it "all ruby files should have the kaphan foundation header" do
-    vendor = %w[lib/authenticated_system.rb lib/authenticated_test_helper.rb db/schema.rb 
-                lib/mongrel_health_check_handler.rb lib/tasks/rspec.rake]
+    vendor = %w[
+      lib/authenticated_system.rb lib/authenticated_test_helper.rb db/schema.rb lib/mongrel_health_check_handler.rb lib/tasks/rspec.rake
+      app/helpers/button_helper.rb
+    ]
     
     (Dir["{app,lib,db,profiling,spec,stories}/**/*.{rb,rake}"] - vendor).each do |filename|
       filename.should have_ruby_kaphan_header
@@ -27,7 +29,10 @@ describe "headers" do
   end
   
   it "all stylesheets files should have the kaphan foundation header" do
-    vendor = %w[public/stylesheets/all.css public/stylesheets/button.css public/stylesheets/defaults.css]
+    vendor = %w[
+      public/stylesheets/all.css
+      public/stylesheets/button.css public/stylesheets/defaults.css
+    ]
     
     (Dir["public/stylesheets/**/*.css"] - vendor).each do |filename|
       filename.should have_stylesheet_kaphan_header
