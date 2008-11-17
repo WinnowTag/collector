@@ -1,28 +1,28 @@
 <table class="property_table">
-    <tr>        
-        <th>URL</th>
-        <td><%= link_to @spider_result.url, @spider_result.url %></td>
-    </tr>
-    <tr>
-        <th>Feed</th>
-        <td><%= link_to @spider_result.feed.title, feed_path(@spider_result.feed) %></td>
-    </tr>
-    <tr>
-        <th>Spidered at</th>
-        <td><%= format_date @spider_result.created_at %></td>
-    </tr>
-    <tr>
-        <th>Scraper</th>
-        <td><%= @spider_result.scraper or 'None' %></td>
-    </tr>
-    <tr>
-        <th>Successful?</th>
-        <td><%= @spider_result.failed? ? @spider_result.failure_message : 'Yes' %></td>
-    </tr>
+  <tr>        
+    <th>URL</th>
+    <td><%= link_to @spider_result.url, @spider_result.url %></td>
+  </tr>
+  <tr>
+    <th>Feed</th>
+    <td><%= link_to @spider_result.feed.title, feed_path(@spider_result.feed) %></td>
+  </tr>
+  <tr>
+    <th>Spidered at</th>
+    <td><%= format_date @spider_result.created_at %></td>
+  </tr>
+  <tr>
+    <th>Scraper</th>
+    <td><%= @spider_result.scraper or 'None' %></td>
+  </tr>
+  <tr>
+    <th>Successful?</th>
+    <td><%= @spider_result.failed? ? @spider_result.failure_message : 'Yes' %></td>
+  </tr>
 </table>
 
 <% if @spider_result.scraped_content -%>
-<div style="margin: 15px; background-color: #eee; padding: 10px; border: 1px solid grey;">
+  <div style="margin: 15px; background-color: #eee; padding: 10px; border: 1px solid grey;">
     <%= @spider_result.scraped_content %>
-</div>
+  </div>
 <% end -%>

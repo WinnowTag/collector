@@ -1,23 +1,26 @@
-<div class="control_bar">
+<% content_for :header_controls do -%>
   <%= will_paginate(@spider_results) %>
-</div>
+<% end -%>
 
-<p>This table shows the spidering attempts performed by the collector. Spidering is triggered
-    when there are less than 60 tokens in a collected item.</p>
-<p>Each entry shows the feed the item was from and the URL that was spidered.
-    It also shows if the spidering was successful and if the item was collected
-    as a result of the spidering. You can click on the magnifying glass to see
-    the actual results of the spidering.</p>
+<p>
+  This table shows the spidering attempts performed by the collector. 
+  Spidering is triggered when there are less than 60 tokens in a collected item.
+</p>
+<p>
+  Each entry shows the feed the item was from and the URL that was spidered.
+  It also shows if the spidering was successful and if the item was collected as a result of the spidering. 
+  You can click on the magnifying glass to see the actual results of the spidering.
+</p>
     
 <table class="data_table">
-    <tr>
-        <th>Feed</th>
-        <th>URL</th>
-        <th>Successful?</th>
-        <th>Collected?</th>
-        <th>Scraper used</th>
-        <th>Fetched at</th>
-        <th>&nbsp;</th>
-    </tr>
-    <%= render :partial => 'spider_result', :collection => @spider_results %>
+  <tr>
+    <th>Feed</th>
+    <th>URL</th>
+    <th>Successful?</th>
+    <th>Collected?</th>
+    <th>Scraper used</th>
+    <th>Fetched at</th>
+    <th>&nbsp;</th>
+  </tr>
+  <%= render :partial => 'spider_result', :collection => @spider_results %>
 </table>

@@ -1,6 +1,9 @@
- • CollectionErrors - Delete controller, routes, and index/show views
- • CollectionJobs - Delete index/show views
+ • Log - delete
+ • CollectionErrors - delete
+ • CollectionJobs - delete index/show views
+ • ItemCache - beautify, delete REST
  • CollectionSummaries - beautify
  • FailedOperations - beautify
+ • Spiders - beautify
+
  • Feeds - do everything
- • ItemCache - beautify

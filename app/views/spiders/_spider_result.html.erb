@@ -1,9 +1,9 @@
 <tr class="<%= cycle('odd', 'even') %>">
-    <td><%= link_to spider_result.feed.title, feed_path(spider_result.feed) %></td>
-    <td><%= link_to truncate(spider_result.url, 50), spider_result.url, :target => '_blank' %></td>
-    <td><%= spider_result.failed? ? 'No' : 'Yes' %></td>
-    <td><%= spider_result.feed_item_id.nil? ? 'No' : 'Yes' %></td>
-    <td><%= spider_result.scraper or 'None' %></td>
-    <td><%= format_date spider_result.created_at %></td>
-    <td><%= link_to image_tag('show.png'), spider_path(spider_result) %></td>
+  <td><%= link_to spider_result.feed.title, feed_path(spider_result.feed) %></td>
+  <td><%= link_to truncate(spider_result.url, 50), spider_result.url, :target => '_blank' %></td>
+  <td><%= spider_result.failed? ? 'No' : 'Yes' %></td>
+  <td><%= spider_result.feed_item_id.nil? ? 'No' : 'Yes' %></td>
+  <td><%= spider_result.scraper or 'None' %></td>
+  <td><%= format_date spider_result.created_at %></td>
+  <td><%= link_to image_tag('show.png'), spider_path(spider_result) %></td>
 </tr>
