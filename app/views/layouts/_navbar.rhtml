@@ -4,6 +4,7 @@
       <li>Logged in as <%= current_user.login %></li>
       <li><%= link_to("Profile", :controller => "account", :action => "edit", :id => current_user.login) %></li>
       <li><%= link_to("Logout", :controller => "account", :action => "logout") %></li>
+      <li><%= link_to("About", :controller => "about") %></li>
     </ul>
 
   	<ul class="main clearfix">

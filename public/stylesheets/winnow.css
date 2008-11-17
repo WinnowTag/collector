@@ -334,6 +334,7 @@ body#login .container .form .content #invite_use {
 
 .navigation .extra li:last-child {
   padding-right: 0;
+  border: 0;
 }
 
 /*
