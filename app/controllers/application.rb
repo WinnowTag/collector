@@ -27,15 +27,8 @@ class ApplicationController < ActionController::Base
                  'sure you have Javascript enabled too! ', 
         :status => 400
       } unless defined?(SHOULD_BE_POST)
-  MISSING_PARAMS = {
-        :text => 'Bad Request. Missing Parameters. ' +
-                 'Please report this bug. Make ' +
-                 'sure you have Javascript enabled too! ', 
-        :status => 400
-      } unless defined?(MISSING_PARAMS)
   
 private
-
   def set_time_zone
     if current_user && !current_user.time_zone.blank?
       Time.zone = current_user.time_zone
