@@ -14,7 +14,7 @@ describe FailedOperationsController do
   
   describe "GET index" do
     before(:each) do
-      @item_cache = mock_model(ItemCache, :base_uri => 'http://example.org')
+      @item_cache = mock_model(ItemCache, :base_uri => 'http://example.org', :failed_operations => [])
       ItemCache.stub!(:find).with(@item_cache.id.to_s).and_return(@item_cache)
     end
     
@@ -23,9 +23,9 @@ describe FailedOperationsController do
       response.should be_success
     end
     
-    it "should set the @item_cache" do
+    it "should set the @failed_operations" do
       get 'index', :item_cache_id => @item_cache.id
-      assigns[:item_cache].should == @item_cache
+      assigns[:failed_operations].should == []
     end
   end
 end

@@ -1,10 +1,1 @@
-<% form_for(@item_cache) do |f| %>
-  	<fieldset>
-		<legend>Enter the base URL for an item cache</legend>
-		<p><%= f.label(:base_uri, "Base URI") %><%= f.text_field(:base_uri, :size => 65) %></p>
-		<p><label>&nbsp;</label>
-			<%= submit_tag "Create" %> 
-			<%= link_to "Cancel", feeds_url %>
-		</p>
-	</fieldset>
-<% end %>
+<%= render :partial => "form", :locals => { :item_cache => @item_cache } %>

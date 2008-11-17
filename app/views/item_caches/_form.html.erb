@@ -1,0 +1,14 @@
+<%= error_messages_for :item_cache %>
+
+<% form_for @item_cache do |f| %>
+  <fieldset>
+    <legend>Enter the base URL for an item cache</legend>
+  	<p>
+  	  <%= f.label :base_uri, "Base URI" %>
+  	  <%= f.text_field :base_uri, :size => 65 %>
+  	</p>
+  	<p>
+  	  <%= submit_tag "Create" %> or <%= link_to "cancel", item_caches_path %>
+  	</p>
+  </fieldset>
+<% end %>

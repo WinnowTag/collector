@@ -17,7 +17,6 @@ class ItemCachesController < ApplicationController
     @item_cache = ItemCache.find(params[:id])
 
     respond_to do |format|
-      format.html # show.html.erb
       format.xml  { render :xml => @item_cache }
     end
   end
@@ -69,8 +68,7 @@ class ItemCachesController < ApplicationController
   end
 
   def destroy
-    @item_cache = ItemCache.find(params[:id])
-    @item_cache.destroy
+    @item_cache = ItemCache.destroy(params[:id])
 
     respond_to do |format|
       format.html { redirect_to(item_caches_url) }

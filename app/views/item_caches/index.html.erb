@@ -1,22 +1,21 @@
-<div class="control_bar">
-<%= link_to 'New Item Cache', new_item_cache_path %>
-</div>
+<% content_for :header_controls do -%>
+  <%= link_to 'New Item Cache', new_item_cache_path %>
+<% end -%>
 
 <table class="data_table">
   <tr>
-      <th>Cache URI</th>
-      <th>Errors</th>
-      <th>&nbsp;</th>
-      <th>&nbsp;</th>
+    <th>Cache URI</th>
+    <th>Errors</th>
+    <th></th>
   </tr>
-
-<% for item_cache in @item_caches %>
-  <tr class="<%= cycle('odd', 'even') %>">
-    <td><%= link_to item_cache.base_uri, item_cache.base_uri %></td>
-    <td><%= link_to item_cache.failed_operations.size, item_cache_failed_operations_path(item_cache) %></td>
-    <td><%= link_to 'Edit', edit_item_cache_path(item_cache) %></td>
-    <td><%= link_to 'Destroy', item_cache, :confirm => 'Are you sure?', :method => :delete %></td>
-  </tr>
-<% end %>
+  <% for item_cache in @item_caches %>
+    <tr class="<%= cycle('odd', 'even') %>">
+      <td><%= link_to item_cache.base_uri, item_cache.base_uri %></td>
+      <td><%= link_to item_cache.failed_operations.size, item_cache_failed_operations_path(item_cache) %></td>
+      <td>
+        <%= link_to 'Edit', edit_item_cache_path(item_cache) %> |
+        <%= link_to 'Destroy', item_cache, :confirm => 'Are you sure?', :method => :delete %>
+      </td>
+    </tr>
+  <% end %>
 </table>
-
