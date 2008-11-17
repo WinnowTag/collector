@@ -1,4 +1,10 @@
 ActionController::Routing::Routes.draw do |map|
+  map.with_options :controller => "account" do |account_map|
+    account_map.login "account/login", :action => "login"
+    account_map.edit_account "account/edit", :action => "edit"
+    account_map.logout "account/logout", :action => "logout"
+  end
+
   map.resources :collection_summaries
   map.resources :collection_jobs
   map.resources :feeds, :collection => {

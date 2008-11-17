@@ -4,17 +4,8 @@
 # to use, modify, or create derivate works.
 # Please visit http://www.peerworks.org/contact for further information.
 class AccountController < ApplicationController
-  @@signup_disabled = true
-  cattr_accessor :signup_disabled
-  skip_before_filter :login_required, :except => [:edit] # don't need to login for any of these actions
+  skip_before_filter :login_required, :except => [:edit]
     
-  def index
-    redirect_to ''
-  end
-  
-  def welcome
-  end
-
   def edit
     if request.post?
       params[:current_user].delete(:login)
@@ -24,26 +15,7 @@ class AccountController < ApplicationController
       end
     end
   end
-  
-  def change_password
-    return unless request.post?
-    if User.authenticate(current_user.login, params[:old_password])
-      if (params[:password] == params[:password_confirmation])
-        current_user.password_confirmation = params[:password_confirmation]
-        current_user.password = params[:password]
-        flash[:notice] = current_user.save ?
-              "Password changed" :
-              "Password not changed"
-        redirect_to :back
-      else
-        flash[:notice] = "Password mismatch" 
-        @old_password = params[:old_password]
-      end
-    else
-      flash[:notice] = "Wrong password" 
-    end
-  end
-  
+    
   def login
     return unless request.post?
     self.current_user = User.authenticate(params[:login], params[:password])
@@ -64,20 +36,6 @@ class AccountController < ApplicationController
     end
   end
 
-  def signup
-    if signup_disabled
-      flash[:error] = "Signup is currently disabled.  Please contact info@peerworks.org for more information."
-      redirect_to :back and return
-    end
-    @user = User.new(params[:user])
-    return unless request.post?
-    @user.save!
-    redirect_back_or_default(:controller => '/account', :action => 'welcome')
-    flash[:notice] = "Thanks for signing up!"
-  rescue ActiveRecord::RecordInvalid
-    render :action => 'signup'
-  end
-  
   def logout
     self.current_user.forget_me if logged_in?
     cookies.delete :auth_token
