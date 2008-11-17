@@ -4,14 +4,12 @@
 # to use, modify, or create derivate works.
 # Please visit http://www.peerworks.org/contact for further information.
 class CollectionSummariesController < ApplicationController
-  exempt_from_layout :rxml
-
   def index
     conditional_render(CollectionSummary.maximum(:updated_on)) do |since|
-      @collection_summaries = CollectionSummary.find(:all, :order => 'created_on desc', :limit => 40)
+      @collection_summaries = CollectionSummary.find(:all, :order => 'created_on DESC', :limit => 40)
 
       respond_to do |format|
-        format.html # index.rhtml
+        format.html
         format.xml  { render :xml => @collection_summaries.to_xml }
         format.atom { render :action => 'atom'}
       end
@@ -22,7 +20,7 @@ class CollectionSummariesController < ApplicationController
     @collection_summary = CollectionSummary.find(params[:id])
 
     respond_to do |format|
-      format.html # show.rhtml
+      format.html
       format.xml  { render :xml => @collection_summary.to_xml }
     end
   end

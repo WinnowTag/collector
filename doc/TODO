@@ -1,2 +1,3 @@
  • CollectionErrors - Delete controller, routes, and index/show views
- 
+ • CollectionJobs - Delete index/show views
+ • CollectionSummaries - beautify

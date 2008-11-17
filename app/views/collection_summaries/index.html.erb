@@ -1,0 +1,25 @@
+<table class="data_table">
+  <tr>
+    <th style="width: 50px">&nbsp;</th>
+    <th>Started on</th>
+    <th>Completed on</th>
+    <th>Duration</th>
+    <th class="number">New Items</th>
+    <th class="number">Errors</th>
+  </tr>
+  <% for collection_summary in @collection_summaries %>
+    <tr class="<%= cycle('odd', 'even') %> <%= 'failed' if collection_summary.failed? %>">
+      <td>
+        <%= link_to image_tag('show.png', :size => '16x16'), collection_summary_path(collection_summary) -%>
+        <% if collection_summary.failed? %>
+          <%= image_tag('error.png', :size => '16x16', :alt => '*', :title => "Collection Error Occurred", :class => 'blank') %>
+        <% end %>
+      </td>
+      <td><%=format_date collection_summary.created_on %></td>
+      <td><%=format_date collection_summary.completed_on %></td>
+      <td><%= duration(collection_summary) %></td>
+      <td class="number"><%=h collection_summary.item_count %></td>
+      <td class="number"><%=h collection_summary.collection_errors.size %></td>
+    </tr>
+  <% end %>
+</table>
