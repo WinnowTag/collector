@@ -8,10 +8,6 @@ require File.dirname(__FILE__) + '/../spec_helper'
 describe AccountController do
   fixtures :users
 
-  before(:each) do
-    AccountController.signup_disabled = false
-  end
-
   it "should_login_and_redirect" do
     post :login, :login => 'admin', :password => 'test'
     assert session[:user]
@@ -22,46 +18,6 @@ describe AccountController do
     post :login, :login => 'admin', :password => 'bad password'
     assert_nil session[:user]
     assert_response :success
-  end
-
-  it "should_allow_signup" do
-    assert_difference User, :count do
-      create_user
-      assert_response :redirect
-      assert_nil session[:user]
-    end
-  end
-
-  it "should_require_login_on_signup" do
-    assert_no_difference User, :count do
-      create_user(:login => nil)
-      assert assigns(:user).errors.on(:login)
-      assert_response :success
-    end
-  end
-
-  it "should_require_password_on_signup" do
-    assert_no_difference User, :count do
-      create_user(:password => nil)
-      assert assigns(:user).errors.on(:password)
-      assert_response :success
-    end
-  end
-
-  it "should_require_password_confirmation_on_signup" do
-    assert_no_difference User, :count do
-      create_user(:password_confirmation => nil)
-      assert assigns(:user).errors.on(:password_confirmation)
-      assert_response :success
-    end
-  end
-
-  it "should_require_email_on_signup" do
-    assert_no_difference User, :count do
-      create_user(:email => nil)
-      assert assigns(:user).errors.on(:email)
-      assert_response :success
-    end
   end
 
   it "should_logout" do
@@ -90,7 +46,7 @@ describe AccountController do
   it "should_login_with_cookie" do
     users(:admin).remember_me
     @request.cookies["auth_token"] = cookie_for(:admin)
-    get :index
+    get :edit, :id => users(:admin).login
     assert @controller.send(:logged_in?)
   end
 
@@ -98,14 +54,14 @@ describe AccountController do
     users(:admin).remember_me
     users(:admin).update_attribute :remember_token_expires_at, 5.minutes.ago.utc
     @request.cookies["auth_token"] = cookie_for(:admin)
-    get :index
+    get :edit, :id => users(:admin).login
     assert !@controller.send(:logged_in?)
   end
 
   it "should_fail_cookie_login" do
     users(:admin).remember_me
     @request.cookies["auth_token"] = auth_token('invalid_auth_token')
-    get :index
+    get :edit, :id => users(:admin).login
     assert !@controller.send(:logged_in?)
   end
  
@@ -139,9 +95,9 @@ describe AccountController do
   it "should_allow_password_change" do
     referer("")
     post :login, :login => 'admin', :password => 'test'
-    post :change_password, { :old_password => 'test', :password => 'newpassword', :password_confirmation => 'newpassword' }
+    post :edit, :current_user => { :password => 'newpassword', :password_confirmation => 'newpassword' }
     assert_equal 'newpassword', assigns(:current_user).password
-    assert_equal "Password changed", flash[:notice]
+    assert_equal "Information updated", flash[:notice]
     assert_redirected_to ''
     post :logout
     assert_nil session[:user]
@@ -153,19 +109,11 @@ describe AccountController do
   it "non_matching_passwords_should_not_change" do
     post :login, :login => 'admin', :password => 'test'
     assert session[:user]
-    post :change_password, { :old_password => 'test', :password => 'newpassword', :password_confirmation => 'test' }
+    post :edit, :current_user => { :password => 'newpassword', :password_confirmation => 'test' }
     assert_not_equal 'newpassword', assigns(:current_user).password
     assert_equal "Password mismatch", flash[:notice]
   end
 
-  it "incorrect_old_password_does_not_change" do
-    post :login, :login => 'admin', :password => 'test'
-    assert session[:user]
-    post :change_password, { :old_password => 'wrongpassword', :password => 'newpassword', :password_confirmation => 'newpassword' }
-    assert_not_equal 'newpassword', assigns(:current_user).password
-    assert_equal "Wrong password", flash[:notice]
-  end
-    
   it "login_updates_logged_in_at_time" do
     previous_login_time = User.find_by_login('admin').logged_in_at
     post :login, :login => 'admin', :password => 'test'
@@ -173,24 +121,12 @@ describe AccountController do
     assert_not_equal previous_login_time, User.find_by_login('admin').logged_in_at
   end
   
-  it "disable_signup" do
-    AccountController.signup_disabled = true
-    referer('')
-    get :signup
-    assert_redirected_to ''
+protected
+  def auth_token(token)
+    CGI::Cookie.new('name' => 'auth_token', 'value' => token)
   end
   
-  protected
-    def create_user(options = {})
-      post :signup, :user => { :login => 'quire', :email => 'quire@example.com', :firstname => 'Qu', :lastname => 'Ire',
-        :password => 'quire', :password_confirmation => 'quire' }.merge(options)
-    end
-    
-    def auth_token(token)
-      CGI::Cookie.new('name' => 'auth_token', 'value' => token)
-    end
-    
-    def cookie_for(user)
-      auth_token users(user).remember_token
-    end
+  def cookie_for(user)
+    auth_token users(user).remember_token
+  end
 end
