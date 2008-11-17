@@ -19,7 +19,7 @@ class FeedsController < ApplicationController
       wants.html do       
         @feeds = Feed.paginate(
           :conditions => @conditions, 
-          :order => sortable_order('feeds',  :model => Feed, :field => 'title', :sort_direction => :asc),
+          :order => sortable_order('feeds', :model => Feed, :field => 'title', :sort_direction => :asc),
           :per_page => 40, :page => params[:page]
         )
       end
@@ -35,7 +35,6 @@ class FeedsController < ApplicationController
           :order  => sortable_order('feeds', :model => Feed, :field => 'title', :sort_direction => :asc),
           :per_page => 40, :page => params[:page]
         )
-        render :action => 'index'
       end
       wants.xml { render :xml => Feed.find_with_recent_errors.to_xml }
     end
@@ -48,7 +47,6 @@ class FeedsController < ApplicationController
           :order  => sortable_order('feeds', :model => Feed, :field => 'title', :sort_direction => :asc),
           :per_page => 40, :page => params[:page]
         )
-        render :action => 'index'
       end
       wants.xml { render :xml => Feed.find_duplicates.to_xml }
     end

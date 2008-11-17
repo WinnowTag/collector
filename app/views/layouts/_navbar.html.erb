@@ -8,7 +8,7 @@
     </ul>
 
   	<ul class="main clearfix">
-      <li><%= link_to("All Feeds", feeds_path, :class => tab_selected('feeds', "index")) %></li>
+      <li><%= link_to("Feeds", feeds_path, :class => tab_selected('feeds', "index")) %></li>
       <li><%= link_to("Problem Feeds", with_recent_errors_feeds_path, :class => tab_selected('feeds', 'with_recent_errors')) %></li>
   	  <li><%= link_to("Duplicate Feeds", duplicates_feeds_path, :class => tab_selected('feeds', 'duplicates')) %></li>
   	  <li><%= link_to("Collection History", collection_summaries_path, :class => tab_selected('collection_summaries')) %></li>

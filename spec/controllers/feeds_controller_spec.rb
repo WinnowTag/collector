@@ -45,7 +45,7 @@ describe FeedsController do
       job.collection_error = CollectionError.create(:exception => Exception.new('test'))
       feed.save!
       get :with_recent_errors
-      assert_template 'index'
+      assert_template 'with_recent_errors'
       assert_equal([Feed.find(1)], assigns(:feeds))
     end
   
@@ -55,7 +55,7 @@ describe FeedsController do
       dup.link = feed.link
       dup.save!
       get :duplicates
-      assert_template 'index'
+      assert_template 'duplicates'
       assert_equal([feed, dup].sort_by{|a| a.id}, assigns(:feeds).sort_by{|a| a.id})
     end
     

@@ -1,5 +1,7 @@
 <% content_for :header_controls do -%>
-  <%= link_to 'New Item Cache', new_item_cache_path %>
+  <div class="toolbar right">
+    <%= rounded_button_link 'New Item Cache', new_item_cache_path, :icon => "add" %>
+  </div>
 <% end -%>
 
 <table class="data_table">
