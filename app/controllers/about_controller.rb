@@ -4,9 +4,7 @@
 # to use, modify, or create derivate works.
 # Please visit http://www.peerworks.org/contact for further information.
 class AboutController < ApplicationController
-
   def index
-    @title = 'About Winnow'
     @about = `svn info #{__FILE__}`
     
     if @about =~ /Revision: ([\d]+)/
@@ -19,7 +17,5 @@ class AboutController < ApplicationController
   end
   
   def help
-    @title = "Winnow User Documentation"
-    render :action => 'help', :layout => 'popup'
   end
 end

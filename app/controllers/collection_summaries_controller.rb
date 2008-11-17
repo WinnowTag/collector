@@ -5,11 +5,8 @@
 # Please visit http://www.peerworks.org/contact for further information.
 class CollectionSummariesController < ApplicationController
   exempt_from_layout :rxml
-  # GET /collection_summaries
-  # GET /collection_summaries.xml
+
   def index
-    @title = "Collection Summaries"
-    
     conditional_render(CollectionSummary.maximum(:updated_on)) do |since|
       @collection_summaries = CollectionSummary.find(:all, :order => 'created_on desc', :limit => 40)
 
@@ -21,11 +18,8 @@ class CollectionSummariesController < ApplicationController
     end
   end
 
-  # GET /collection_summaries/1
-  # GET /collection_summaries/1.xml
   def show
     @collection_summary = CollectionSummary.find(params[:id])
-    @title = "Collection for #{@collection_summary.created_on.to_formatted_s(:long)}"
 
     respond_to do |format|
       format.html # show.rhtml
@@ -33,7 +27,7 @@ class CollectionSummariesController < ApplicationController
     end
   end
   
-  private
+private
   def conditional_render(last_modified)   
      since = Time.rfc2822(request.env['HTTP_IF_MODIFIED_SINCE']) rescue nil
 

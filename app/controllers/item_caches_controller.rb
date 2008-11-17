@@ -4,10 +4,7 @@
 # to use, modify, or create derivate works.
 # Please visit http://www.peerworks.org/contact for further information.
 class ItemCachesController < ApplicationController
-  # GET /item_caches
-  # GET /item_caches.xml
   def index
-    @title = 'Item Caches'
     @item_caches = ItemCache.find(:all)
 
     respond_to do |format|
@@ -16,8 +13,6 @@ class ItemCachesController < ApplicationController
     end
   end
 
-  # GET /item_caches/1
-  # GET /item_caches/1.xml
   def show
     @item_cache = ItemCache.find(params[:id])
 
@@ -27,10 +22,7 @@ class ItemCachesController < ApplicationController
     end
   end
 
-  # GET /item_caches/new
-  # GET /item_caches/new.xml
   def new
-    @title = 'Create Item Cache'
     @item_cache = ItemCache.new
 
     respond_to do |format|
@@ -39,13 +31,10 @@ class ItemCachesController < ApplicationController
     end
   end
 
-  # GET /item_caches/1/edit
   def edit
     @item_cache = ItemCache.find(params[:id])
   end
 
-  # POST /item_caches
-  # POST /item_caches.xml
   def create
     @item_cache = ItemCache.new(params[:item_cache])
 
@@ -64,8 +53,6 @@ class ItemCachesController < ApplicationController
     end
   end
 
-  # PUT /item_caches/1
-  # PUT /item_caches/1.xml
   def update
     @item_cache = ItemCache.find(params[:id])
 
@@ -81,8 +68,6 @@ class ItemCachesController < ApplicationController
     end
   end
 
-  # DELETE /item_caches/1
-  # DELETE /item_caches/1.xml
   def destroy
     @item_cache = ItemCache.find(params[:id])
     @item_cache.destroy

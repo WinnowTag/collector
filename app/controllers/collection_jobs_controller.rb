@@ -31,8 +31,6 @@ class CollectionJobsController < ApplicationController
     end
   end
 
-  # POST /collection_jobs
-  # POST /collection_jobs.xml
   def create
     @collection_job = @feed.collection_jobs.build(params[:collection_job])
     @collection_job.created_by ||= current_user.login
@@ -52,8 +50,6 @@ class CollectionJobsController < ApplicationController
     end
   end
 
-  # DELETE /collection_jobs/1
-  # DELETE /collection_jobs/1.xml
   def destroy
     @collection_job = @feed.collection_jobs.find(params[:id])
     @collection_job.destroy
@@ -64,7 +60,7 @@ class CollectionJobsController < ApplicationController
     end
   end
   
-  private
+private
   def find_feed
     @feed = Feed.find(params[:feed_id]) if params[:feed_id]    
   end

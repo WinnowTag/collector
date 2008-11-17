@@ -6,8 +6,6 @@
 class CollectionErrorsController < ApplicationController
   before_filter :find_feed
   
-  # GET /collection_errors
-  # GET /collection_errors.xml
   def index
     if @feed
       @collection_errors = @feed.collection_errors
@@ -21,8 +19,6 @@ class CollectionErrorsController < ApplicationController
     end
   end
 
-  # GET /collection_errors/1
-  # GET /collection_errors/1.xml
   def show
     @collection_error = CollectionError.find(params[:id])
 
@@ -32,7 +28,7 @@ class CollectionErrorsController < ApplicationController
     end
   end 
   
-  private
+private
   def find_feed
     @feed = Feed.find(params[:feed_id]) if params[:feed_id]
     true

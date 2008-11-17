@@ -1,0 +1,74 @@
+/* Copyright (c) 2008 The Kaphan Foundation
+ *
+ * Possession of a copy of this file grants no permission or license
+ * to use, modify, or create derivate works.
+ * Please visit http://www.peerworks.org/contact for further information.
+ */
+div.slider {
+  padding: 1px 0;
+}
+ 
+div.slider_track {
+	z-index: 11;
+	width: 100px;
+  height: 17px;
+  background-image: url(../images/slider_bg.png);
+  background-position: left center;
+  background-repeat: no-repeat;
+	cursor: pointer;
+	position: relative;
+}
+
+div.slider_handle {
+	z-index: 12;
+	width: 7px;
+	height: 19px;
+	background-color: #1010C8;
+	position: absolute;
+	top: -1px;
+	opacity: 0.6;
+	filter:alpha(opacity=6);
+	cursor: pointer;
+}
+
+div.bias_marker {
+	z-index: 5;
+	width: 1px;
+	height: 15px;
+	background-color: #555;
+	position: absolute;
+	top: 1px;
+	cursor: pointer;
+	margin-left: 3px;
+}
+
+div.bias_marker.zero_point_nine {
+	height: 7px;
+	top: 5px;
+}
+
+div.bias_marker.one_point_zero {
+	width: 3px;
+	height: 9px;
+	top: 4px;
+	margin-left: 2px;
+}
+
+div.bias_marker.one_point_one {
+	height: 11px;
+	top: 3px;
+}
+
+div.bias_marker.one_point_two {
+	height: 13px;
+	top: 2px;
+}
+
+div.slider_track.disabled div.slider_handle {
+	background-color:  #555;
+	cursor: default;
+}
+
+div.slider_track.disabled, div.slider_track.disabled div.bias_marker {
+	cursor: default;
+}

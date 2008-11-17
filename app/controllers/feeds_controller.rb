@@ -17,7 +17,6 @@ class FeedsController < ApplicationController
   def index
     respond_to do |wants|
       wants.html do       
-        @title = 'winnow feeds'    
         @feeds = Feed.paginate(:conditions => @conditions,
                                :per_page => 40, :page => params[:page],
                                :order => sortable_order('feeds',  :model => Feed, :field => 'title', :sort_direction => :asc))
@@ -30,7 +29,6 @@ class FeedsController < ApplicationController
   def with_recent_errors
     respond_to do |wants|
       wants.html do
-        @title = "Problem Feeds"
         @feeds = Feed.find_with_recent_errors(:per_page => 40, :page => params[:page],
                                               :order  => sortable_order('feeds', :model => Feed, :field => 'title', :sort_direction => :asc))
         render :action => 'index'
@@ -42,7 +40,6 @@ class FeedsController < ApplicationController
   def duplicates
     respond_to do |wants|
       wants.html do
-        @title = "Possible Duplicates"
         @feeds = Feed.find_duplicates(:per_page => 40, :page => params[:page],
                                       :order  => sortable_order('feeds', :model => Feed, :field => 'title', :sort_direction => :asc))
         render :action => 'index'
@@ -52,7 +49,6 @@ class FeedsController < ApplicationController
   end
   
   def new
-    @title = "winnow feeds: add a feed"
     @feed = Feed.new(params[:feed])    
   end
   
@@ -86,7 +82,6 @@ class FeedsController < ApplicationController
     else
       respond_to do |wants|
         wants.html do
-          @title = (@feed.title or "Uncollected Feed")
           render :action => 'show'
         end
         wants.atom do
@@ -153,7 +148,6 @@ class FeedsController < ApplicationController
   #
   # Might need to consder how to report which actual feeds fail for what reasons.
   def import
-    @title = 'add feeds'
     if request.post?
       unless params[:feed] and params[:feed][:urls]
         flash.now[:error] = 'You must enter at least one feed url'
@@ -202,7 +196,7 @@ class FeedsController < ApplicationController
     end
   end
   
-  private
+private
   def setup_search_term
     @search_term = params[:search_term]
     unless @search_term.nil? or @search_term.empty?

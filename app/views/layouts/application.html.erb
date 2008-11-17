@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+  <title>Winnow Collector</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <%= javascript_include_tag :defaults, :winnow, :cache => true %>
+  <%= stylesheet_link_tag :winnow, :cache => true %>
+  <% javascript_tag do -%>
+    document.observe('dom:loaded', Content.setup);
+    document.observe('dom:loaded', AppleSearch.setup);
+  <% end -%>
+  <%= yield(:head) %>
+</head>
+<body id="<%= yield(:body) %>">
+  <%= render :partial => 'layouts/navbar' %>
+  
+  <% if header_controls = yield(:header_controls) -%>
+    <div id="header_controls" class="clearfix"><%= header_controls %></div>
+  <% end -%>
+
+  <% if sidebar_content = yield(:sidebar) -%>
+    <div id="sidebar"><%= sidebar_content %></div>
+    <div id="sidebar_control"></div>  
+  <% end -%>
+
+  <div id="container">
+    <div id="content" class="clearfix">
+      <%= yield %>
+    </div>
+
+    <% if footer_content = yield(:footer) -%>
+      <div id="footer" class="clearfix"><%= footer_content %></div>
+    <% end -%>
+  </div>
+  
+  <div id="messages" style="display:none">
+    <a href="#" class="close">close</a>
+    <div class="content"></div>
+  </div>
+  
+  <%= show_flash_messages %>
+</body>
+</html>
+

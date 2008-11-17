@@ -5,14 +5,10 @@
  * Please visit http://www.peerworks.org/contact for further information.
  */
 table.data_table, table.property_table {
-	width: 98%;
+	width: 100%;
 	background: white;
 	border-bottom: 2px solid #ddd;
-	margin-top: 10px;
-	clear:  both;
 	border-spacing: 0px;
-	margin-left: 10px;
-	margin-right: 10px;
 }
 
 table.property_table {
@@ -22,6 +18,7 @@ table.property_table {
 
 th {
 	text-align: left;
+	padding: 5px;
 }
 
 th.indented {
@@ -31,7 +28,6 @@ th.indented {
 table.data_table th, table.property_table th {
 	color: #444;
 	font-size: 90%;
-	font-weight: 650;
 	text-transform: uppercase;
 	border-bottom: 2px solid #ddd;
 }
@@ -42,8 +38,27 @@ table.data_table td.indented {
 
 table.data_table td {
 	background: white;
-	padding: 5px;
+  padding: 5px;
 	vertical-align: top;
+}
+
+table#tags.data_table td {
+  padding: 5px 5px 0 5px;
+}
+
+table#tags.data_table tr.comment td {
+  padding: 0px 5px 5px 5px;
+}
+
+table.data_table tr.comment {
+	font-style: italic;
+	color: #444;
+	font-size: 90%;
+}
+
+table.data_table tr.comment img {
+  cursor: pointer;
+  vertical-align: middle;
 }
 
 table.property_table td {
@@ -52,16 +67,33 @@ table.property_table td {
   text-align: right;
 }
 
-th.control_icons, td.control_icons {
-	text-align: right;
-	width: 64px;
+th.view_state {
+	white-space: nowrap;
+}
+
+td.view_state {
+	text-align: left;
+	white-space: nowrap;
 }
 
 td.number, th.number, 
 td.date, th.date {
 	text-align: right;
-  width: 7em;
+  width: 12em;
 }
+
+th.sensitivity {
+  text-align: center;
+}
+
+th.sensitivity, td.sensitivity {
+  width: 90px;
+}
+
+tbody#content {
+	padding: 0;
+}
+
 
 table.data_table th.table_break {
 	padding-top: 10px;
@@ -80,10 +112,7 @@ tr.even td {
 	background: #ddd;
 }
 
-tr.odd td {
-	border-top: 1px solid #ddd;
+.data_table td.tag img {
+  vertical-align: bottom;
 }
-
-table td.even {
-	background: #ddd;
-}
+table.data_table td:last-child { padding-right: 20px;} /*prevent Mozilla scrollbar from hiding cell content*/

@@ -7,7 +7,6 @@ class SpidersController < ApplicationController
   def index
     respond_to do |wants|
       wants.html do
-        @title = 'Spidering Results'
         @spider_results = SpiderResult.paginate(:select => 'id, url, failed, feed_item_id, scraper, created_at, feed_id',
                                                 :per_page => 40, :page => params[:page],
                                                 :order => 'created_at desc')
@@ -16,12 +15,10 @@ class SpidersController < ApplicationController
   end
   
   def show
-    @title = 'Spider Result'
     @spider_result = SpiderResult.find(params[:id])
   end
   
   def scraper_stats
-    @title = 'Scraper Stats'
     @scraper_stats = SpiderResult.find(:all, 
                               :select => 'scraper, count(*) as count',
                               :group => 'scraper', 
@@ -35,7 +32,6 @@ class SpidersController < ApplicationController
   end
   
   def test
-    @title = "Spider Testing"
     if params[:url]
       @result = Spider.spider(params[:url])
       render :action => 'result'
