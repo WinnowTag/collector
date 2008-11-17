@@ -5,6 +5,6 @@
 # Please visit http://www.peerworks.org/contact for further information.
 class FailedOperationsController < ApplicationController
   def index        
-    @item_cache = ItemCache.find(params[:item_cache_id])
+    @failed_operations = ItemCache.find(params[:item_cache_id]).failed_operations.paginate(:page => params[:page])
   end
 end
