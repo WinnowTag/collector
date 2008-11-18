@@ -9,7 +9,7 @@ class ApplicationController < ActionController::Base
   # See ActionController::RequestForgeryProtection for details
   # Uncomment the :secret if you're not using the cookie session store
   # protect_from_forgery # :secret => '080aa774f53be2c661d1f81457c4ee46'
-
+  
   # See ActionController::Base for details 
   # Uncomment this to filter the contents of submitted sensitive data parameters
   # from your application log (in this case, all fields with names like "password"). 
@@ -18,16 +18,16 @@ class ApplicationController < ActionController::Base
   include ExceptionNotifiable
   include AuthenticatedSystem
   helper_method :controller_name, :action_name, :render_to_string
-  
+
   before_filter :login_from_cookie, :login_required, :set_time_zone
-  
+
   SHOULD_BE_POST = {
         :text => 'Bad Request. Should be POST. ' +
                  'Please report this bug. Make ' +
                  'sure you have Javascript enabled too! ', 
         :status => 400
       } unless defined?(SHOULD_BE_POST)
-  
+
 private
   def set_time_zone
     if current_user && !current_user.time_zone.blank?
