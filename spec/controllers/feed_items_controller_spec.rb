@@ -6,6 +6,12 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
 describe FeedItemsController do
+  fixtures :users
+  
+  before(:each) do
+    login_as(:admin)
+  end
+
   describe "GET show" do
     before(:each) do
       @feed_item = mock_model(FeedItem)
