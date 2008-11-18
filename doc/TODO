@@ -1,12 +1,10 @@
  • Feeds
    • index - destroy, inactive (and sort), created by, # collections, duplicates
    • duplicates - combine with index
-   • CollectionErrors
-   • CollectionJobs
+   • show - CollectionErrors, CollectionJobs
  • CollectionSummaries
-   • index - fatal error type and message, jobs, failed, confirm sorting by errors_count works
-   • CollectionErrors
-   • CollectionJobs
+   • index - STYLE, title?, fatal error type and message, jobs, failed, confirm sorting by errors_count works
+   • show - CollectionErrors, CollectionJobs
  • ItemCache  
  • FailedOperations
  • Spiders
