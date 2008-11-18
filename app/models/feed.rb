@@ -80,11 +80,7 @@ class Feed < ActiveRecord::Base
                   'AND feeds.id <> f2.id AND feeds.duplicate_id IS NULL AND f2.duplicate_id IS NULL'
       }.merge(options)
 
-      if options_for_find[:per_page]
-        paginate(options_for_find.merge(:count => { :select => "DISTINCT feeds.id" }))
-      else
-        find(:all, options_for_find)
-      end
+      find(:all, options_for_find)
     end
 
     def active_feeds

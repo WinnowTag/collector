@@ -32,10 +32,7 @@ class FeedsController < ApplicationController
   def duplicates
     respond_to do |wants|
       wants.html do
-        @feeds = Feed.find_duplicates(
-          :order  => sortable_order('feeds', :model => Feed, :field => 'title', :sort_direction => :asc),
-          :per_page => 40, :page => params[:page]
-        )
+        @feeds = Feed.find_duplicates(:order  => "feeds.title")
       end
       wants.xml { render :xml => Feed.find_duplicates.to_xml }
     end
