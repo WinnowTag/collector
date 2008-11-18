@@ -15,11 +15,12 @@ module FeedsHelper
     
     feed_link + ' ' + feed_home_link + ' ' + feed_page_link
   end
-
   
   def activate_feed_control(feed)
-    check_box_tag("activate[#{feed.id}]", true, feed.active?, :id => "activate_#{feed.id}") +
-		  observe_field("activate_#{feed.id}", :url => {:action => 'update', :id => feed},
-		 		            :with => "'feed[active]=' + $('activate_#{feed.id}').checked")
+    check_box_tag("activate[#{feed.id}]", true, feed.active?, :id => "activate_#{feed.id}") <<
+    observe_field("activate_#{feed.id}", 
+      :url => {:action => 'update', :id => feed}, 
+      :with => "'feed[active]=' + $('activate_#{feed.id}').checked"
+    )
   end
 end

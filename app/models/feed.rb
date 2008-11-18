@@ -17,7 +17,7 @@ class Feed < ActiveRecord::Base
   attr_readonly(:uri)
   before_create :generate_uri
   belongs_to :duplicate, :class_name => 'Feed'
-  has_many	:feed_items, :dependent => :delete_all
+  has_many :feed_items, :dependent => :delete_all
   validates_uniqueness_of :url, :message => 'Feed already exists'
   validate :url_is_not_from_winnow
   attr_accessible :url, :active
