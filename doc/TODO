@@ -1,5 +1,10 @@
- • Feeds - beautify
- • CollectionSummaries - beautify
- • ItemCache - beautify
- • FailedOperations - beautify
- • Spiders - beautify
+ • Account - edit
+ • Feeds
+   • CollectionErrors
+   • CollectionJobs
+ • CollectionSummaries
+   • CollectionErrors
+   • CollectionJobs
+ • ItemCache
+ • FailedOperations
+ • Spiders
