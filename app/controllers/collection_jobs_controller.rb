@@ -17,8 +17,7 @@ class CollectionJobsController < ApplicationController
     end
     
     respond_to do |format|
-      format.html
-      format.xml  { render :xml => @collection_jobs.to_xml }
+      format.xml { render :xml => @collection_jobs.to_xml }
     end
   end
 
@@ -26,8 +25,7 @@ class CollectionJobsController < ApplicationController
     @collection_job = @feed.collection_jobs.find(params[:id])
 
     respond_to do |format|
-      format.html
-      format.xml  { render :xml => @collection_job.to_xml }
+      format.xml { render :xml => @collection_job.to_xml }
     end
   end
 
@@ -41,10 +39,10 @@ class CollectionJobsController < ApplicationController
         format.html { redirect_to feed_url(@feed) }
         format.xml  { head :created, :location => feed_collection_job_url(@feed, @collection_job) }
       else
-        format.html { 
+        format.html do
           flash[:error] = "Something went wrong creating a collection job"
           redirect_to :back 
-        }
+        end
         format.xml  { render :xml => @collection_job.errors.to_xml, :status => 422 }
       end
     end
