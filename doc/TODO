@@ -1,6 +1,6 @@
  • Account - edit
  • Feeds
-   - index - destroy, inactive, more sorts
+   - index - destroy, inactive (and sort)
    • CollectionErrors
    • CollectionJobs
  • CollectionSummaries

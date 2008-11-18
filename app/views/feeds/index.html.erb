@@ -3,7 +3,7 @@
 		var itemBrowser;
 		document.observe('dom:loaded', function() {
 			itemBrowser = new ItemBrowser('feeds', 'content', { orders: {
-			  asc:       ["title", "feed_items_count"], 
+			  asc:       ["title", "feed_items_count", "collection_errors_count"], 
 			  desc:      ["created_on", "updated_on"],
 			  "default": "title"
 			}});

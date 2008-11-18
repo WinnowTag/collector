@@ -47,7 +47,7 @@ class Feed < ActiveRecord::Base
       end
   
       order = case options[:order]
-      when "title", "created_on", "updated_on", "feed_items_count"
+      when "title", "created_on", "updated_on", "feed_items_count", "collection_errors_count"
         "feeds.#{options[:order]}"
       else
         "feeds.title"
