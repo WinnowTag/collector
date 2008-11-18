@@ -25,11 +25,14 @@ Rails::Initializer.run do |config|
   # config.gem "bj"
   # config.gem "hpricot", :version => '0.6', :source => "http://code.whytheluckystiff.net"
   # config.gem "aws-s3", :lib => "aws/s3"
+  config.gem "auth-hmac", :version => "1.0.1"
+  config.gem "fiveruns_manage"
   config.gem "hpricot", :version => "=0.6"
   # This must go before rfeedparser otherwise we get a screwed up libxml
   config.gem "ratom", :version => "0.5.1", :lib => "atom/pub"
-  config.gem 'rfeedparser'
-  config.gem "auth-hmac", :version => "1.0.1"
+  config.gem "rfeedparser"
+  # config.gem "rspec"
+  # config.gem "rspec-rails"
 
   # Must be compiled
   config.gem "mysql"

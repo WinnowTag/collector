@@ -52,9 +52,7 @@ module Fiveruns
         if ::Fiveruns::Manage::Targets.current?
           ::Fiveruns::Manage::Plugin.target.logger
         else
-          l = Logger.new(STDERR)
-          l.level = Logger::WARN
-          l
+          Logger.new(STDERR)
         end
       end
       
