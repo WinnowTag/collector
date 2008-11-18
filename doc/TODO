@@ -1,8 +1,6 @@
  • Account - edit
  • Feeds
-   - sort controls
-   - scrolling pagination
-   - index - destroy, inactive
+   - index - sort buttons, scrolling pagination, destroy, inactive
    • CollectionErrors
    • CollectionJobs
  • CollectionSummaries

@@ -81,6 +81,7 @@ Spec::Runner.configure do |config|
       :link => "http://#{unique_id}.example.com",
       :title => "#{unique_id} Example",
       :feed_items_count => 0,
+      :created_on => Time.now,
       :updated_on => Time.now,
       :collection_errors_count => 0
     }.merge(attributes)
