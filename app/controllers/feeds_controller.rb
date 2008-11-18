@@ -9,7 +9,6 @@ class FeedsController < ApplicationController
   verify :only => :destroy, :method => :delete, :render => SHOULD_BE_POST
   verify :only => [:collect, :update], :method => :post, :render => SHOULD_BE_POST
   verify :only => [:show, :collect, :update], :params => :id, :redirect_to => {:action => 'index'}
-  before_filter :setup_sortable_headers, :only => [:index, :with_recent_errors, :duplicates]
   skip_before_filter :login_required
   before_filter :login_required_unless_hmac_authenticated
   
@@ -27,18 +26,6 @@ class FeedsController < ApplicationController
       end
       wants.text { render :text => Feed.find(:all, :order => 'feeds.id').map(&:url).join("\n") }
       wants.xml  { render :xml => Feed.find(:all).to_xml }
-    end
-  end
-  
-  def with_recent_errors
-    respond_to do |wants|
-      wants.html do
-        @feeds = Feed.find_with_recent_errors(
-          :order  => sortable_order('feeds', :model => Feed, :field => 'title', :sort_direction => :asc),
-          :per_page => 40, :page => params[:page]
-        )
-      end
-      wants.xml { render :xml => Feed.find_with_recent_errors.to_xml }
     end
   end
   
@@ -189,13 +176,5 @@ class FeedsController < ApplicationController
       wants.html { redirect_to :back }
       wants.xml  { render :nothing => true }
     end
-  end
-  
-private
-  def setup_sortable_headers
-    add_to_sortable_columns('feeds', :model => Feed, :field => 'title', :alias => 'title')
-    add_to_sortable_columns('feeds', :field => 'feed_items_count', :alias => 'item_count')
-    add_to_sortable_columns('feeds', :field => 'updated_on', :alias => 'updated_on')
-    add_to_sortable_columns('feeds', :field => 'collection_errors_count', :alias => 'error_count')
   end
 end

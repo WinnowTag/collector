@@ -34,16 +34,6 @@ describe FeedsController do
       end
     end
   
-    it "with_recent_errors_shows_feeds_with_recent_errors_once" do
-      feed = Feed.find(1)
-      job = feed.collection_jobs.create!
-      job.collection_error = CollectionError.create(:exception => Exception.new('test'))
-      feed.save!
-      get :with_recent_errors
-      assert_template 'with_recent_errors'
-      assert_equal([Feed.find(1)], assigns(:feeds))
-    end
-  
     it "duplicates_shows_duplicates" do
       feed = Feed.find(1)
       dup = Feed.new(:url => 'http://foo')

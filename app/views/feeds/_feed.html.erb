@@ -15,6 +15,10 @@
         <p>Errors</p>
         <strong><%= feed.collection_errors_count %></strong>
       </div>
+      <div class="count">
+        <p>Last Error</p>
+        <strong><%= format_date(feed.collection_errors.latest ? feed.collection_errors.latest.created_on : nil) %></strong>
+      </div>
       <div class="date">
          <p>Created</p> 
          <strong><%= format_date(feed.created_on) %></strong>
