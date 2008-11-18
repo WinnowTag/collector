@@ -8,11 +8,11 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :collection_summaries
   map.resources :collection_jobs
   map.resources :feeds, :collection => {
-                  :import             => :any,
-                  :with_recent_errors => :get,
-                  :duplicates         => :get,
-                  :import_opml        => :post
-                } do |feeds|
+                          :import             => :any,
+                          :with_recent_errors => :get,
+                          :duplicates         => :get,
+                          :import_opml        => :post
+                        } do |feeds|
     feeds.resources :collection_jobs
   end
   map.resources :feed_items, :member => {
@@ -23,10 +23,9 @@ ActionController::Routing::Routes.draw do |map|
   end
   
   map.resources :protectors do |protectors|
-    protectors.resources :protected_items,
-                :collection => {
-                  :delete_all => :delete
-                }
+    protectors.resources :protected_items, :collection => {
+                                             :delete_all => :delete
+                                           }
   end
   map.resources :spiders, :collection => {
                             :test => :any,
