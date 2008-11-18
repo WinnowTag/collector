@@ -10,3 +10,6 @@
  • ItemCache  
  • FailedOperations
  • Spiders
+
+ • Remove will_paginate
+ • Fix authentication on controller with hmac

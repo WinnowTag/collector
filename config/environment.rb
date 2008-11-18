@@ -74,9 +74,4 @@ Rails::Initializer.run do |config|
 
   # Activate observers that should always be running
   config.active_record.observers = :item_cache_observer
-
-  config.after_initialize do 
-    ActionView::Helpers::AssetTagHelper.register_javascript_expansion :collector => ["slider"]
-    ActionView::Helpers::AssetTagHelper.register_stylesheet_expansion :collector => ["collector", "tables"]
-  end
 end
