@@ -36,16 +36,6 @@ module ApplicationHelper
     end
   end
   
-  def unescape(value)
-    if value
-      value.gsub(/&lt;/,   "<"). 
-          gsub(/&gt;/,   ">"). 
-          gsub(/&quot;/, '"'). 
-          gsub(/&apos;/, "'"). 
-          gsub(/&amp;/,  "&")
-    end
-  end
-  
   def format_date(date, when_nil = "Never")
     if date.nil?
       when_nil

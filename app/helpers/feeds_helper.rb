@@ -4,22 +4,18 @@
 # to use, modify, or create derivate works.
 # Please visit http://www.peerworks.org/contact for further information.
 module FeedsHelper
-  def short_feed_link(feed)
-    link_to(truncate((feed.title.nil? ? feed.url : feed.title), 90), feed_path(feed))    
-  end
-  
   def feed_link(feed)
-    feed_page_link   = link_to(truncate((feed.title.nil? ? feed.url : feed.title), 100), feed_path(feed))
-    feed_source_link = link_to(image_tag('feed.png', :size => '16x16', :class => 'feed_icon'), feed.url, :target => '_blank')
+    feed_link = link_to("Feed", feed.url, :target => "_blank", :class => "feed")
+    feed_home_link = feed.link ? 
+                        link_to("Feed Home", feed.link, :target => "_blank", :class => "home") : 
+                        content_tag('span', '', :class => 'blank')
+
+    # TODO: sanitize
+    feed_page_link = link_to(feed.title_or_url, feed_path(feed))
     
-    if feed.link
-      feed_home_page_link = link_to(image_tag('house_go.png'), feed.link, :target => '_blank', :title => "Visit the feed's home page") 
-    else
-      feed_home_page_link = image_tag('blank.gif', :size => '16x16', :class => 'blank')
-    end
-      
-    feed_source_link + feed_home_page_link + feed_page_link
+    feed_link + ' ' + feed_home_link + ' ' + feed_page_link
   end
+
   
   def activate_feed_control(feed)
     check_box_tag("activate[#{feed.id}]", true, feed.active?, :id => "activate_#{feed.id}") +

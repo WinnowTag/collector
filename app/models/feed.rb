@@ -27,6 +27,10 @@ class Feed < ActiveRecord::Base
   has_one  :last_error, :order => 'created_on desc'
   has_one  :last_completed_job, :order => 'completed_at desc', :conditions => "http_response_code = '200'", :class_name => 'CollectionJob'
   
+  def title_or_url
+    title.blank? ? url : title
+  end
+  
   class << self
     def find_by_uri(uri)
       returning(find(:first, :conditions => ['uri = ?', uri])) do |feed|

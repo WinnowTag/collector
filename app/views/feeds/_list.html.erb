@@ -1,23 +1,32 @@
-<%= will_paginate(feeds) %>
+<% for feed in feeds -%>
+  <%#= link_to "Destroy", feed_path(feed), :method => :delete, :confirm => "Do you really want to delete '#{feed.title_or_url}'?", :title => "Destroy '#{feed.title_or_url}'" %>
 
-<table class="data_table">
-  <tr>
-	  <th><%= link_to "Title", sort_param('feeds', :alias => 'title') %></th>
-	  <th class="number"><%= link_to "Items", sort_param('feeds', :alias => 'item_count')%></th>
-	  <th class="number"><%= link_to "Errors", sort_param('feeds', :alias => 'error_count'), :title => "Number of recent errors" %></th>
-	  <th class="date"><%= link_to "Last Updated", sort_param('feeds', :alias => 'updated_on')%></th>
-	  <th>&nbsp;</th>
-  </tr>
-  <% for feed in feeds %>
-    <tr id="<%= "feed_#{feed.id}" %>" class="<%= cycle("odd", "even") %>">
-      <td><%= feed_link(feed) %></td>
-  	  <td class="number"><%= feed.feed_items_count %></td>
-  	  <td class="number"><%= feed.collection_errors_count %></td>
-    	<td class="date"><%= format_date(feed.updated_on) %></td>
-      <td class="control_icons" style="width: 14px">
-    		<%= link_to image_tag('delete.png'), feed_path(feed), :method => :delete, 
-    				:confirm => "Do you really want to delete #{unescape(feed.title)}?", :title => "Destroy '#{feed.title or feed.url}'" %>
-  	  </td>
-    </tr>
-  <% end %>
-</table>
+  <div id="<%= dom_id(feed) %>" class="feed record clearfix <%#= feed_classes(feed) %>">
+    <div class="summary clearfix">        
+      <div class="info">
+        <!-- <div class="details">
+          <p>&nbsp;</p>
+          <strong><%#= globally_exclude_check_box(feed) %> <%#= _(:globally_exclude) %></strong>
+        </div> -->
+        <div class="count">
+          <p>Items</p>
+          <strong><%= feed.feed_items_count %></strong>
+        </div>
+        <div class="count">
+          <p>Errors</p>
+          <strong><%= feed.collection_errors_count %></strong>
+        </div>
+        <div class="date">
+           <p>Created</p> 
+           <strong><%= format_date(feed.created_on) %></strong>
+        </div>
+        <div class="date">
+           <p>Updated</p> 
+           <strong><%= format_date(feed.updated_on) %></strong>
+        </div>
+      </div>    
+
+      <h4 class="clearfix"><%= feed_link(feed) %></h4>
+    </div>
+  </div>
+<% end -%>
