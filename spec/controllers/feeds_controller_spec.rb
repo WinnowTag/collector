@@ -22,7 +22,7 @@ describe FeedsController do
       @request.session[:user] = nil
       assert_difference(Feed, :count) do
         post :create, :feed => {:url => "http://newfeed"}
-        assert_redirected_to feeds_url
+        assert_response 201
         assert Feed.find_by_url("http://newfeed")
       end
     end
@@ -88,7 +88,7 @@ describe FeedsController do
   
     it "should fail when created with an invalid url" do
       post :create, :feed => {:url => '####'}
-      response.should render_template('feeds/new')
+      assert_response 422
     end
     
     it "should set created_by on the feed if it is provided" do
@@ -144,15 +144,9 @@ describe FeedsController do
       end
     end
   
-    it "should render the import form in response to GET /import" do
-      get :import
-      response.should be_success
-      response.should render_template('feeds/import')
-    end
-  
     it "should fail when importing without a feed[urls]" do
       post :import
-      response.should render_template('feeds/import')
+      response.should redirect_to(feeds_path)
     end
   
     it "post_import_with_single_url" do
@@ -175,17 +169,15 @@ describe FeedsController do
     it "should fail when importing a duplicate" do
       Feed.create!(:url => 'http://rss.slashdot.org/Slashdot/slashdot')
       post :import, :feed => {:urls => 'http://rss.slashdot.org/Slashdot/slashdot'}
-      response.should render_template('feeds/import')
-      # TODO get this working
-      #flash.now[:error].should == '1 Feed already exists'
+      response.should render_template('feeds/index')
+      flash[:error].should == '1 Feed already exists'
     end
   
     it "importing_duplicate_multiple_feeds_fails" do
       Feed.create(:url => 'http://rss.slashdot.org/Slashdot/slashdot')
       post :import, :feed => {:urls => "http://rss.slashdot.org/Slashdot/slashdot\nhttp://rss.slashdot.org/Slashdot/slashdotDevelopers"}
-      response.should render_template('feeds/import')
-      # TODO fix expections for flash.now[:error]
-      # flash[:error].should == '1 Feed already exists'
+      response.should render_template('feeds/index')
+      flash[:error].should == '1 Feed already exists'
       flash[:notice].should == '1 new feed added'
     end
 
@@ -255,7 +247,7 @@ describe FeedsController do
   
     it "update_with_protected_attributes_fails" do
       post :update, :id => 1, :feed => {:title => 'Title', :url => 'http://test', :active => true}
-      assert_redirected_to feeds_url
+      response.should be_success
       assert_not_equal("http://test", Feed.find(1).url)
     end
   

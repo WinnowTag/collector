@@ -3,7 +3,41 @@
 <% end -%>
 
 <div class="toolbar right">
-  <%= rounded_button_link "Add Feed",     new_feed_url,               :icon => "add" %>
-  <%= rounded_button_link "Import Feeds", import_feeds_path,          :icon => "import" %>
+  <%= rounded_button_function "Add / Import Feeds", "$('add_feed').toggle()", :icon => "add" %>
   <%= rounded_button_link "Export Feeds", formatted_feeds_path(:txt), :icon => "export" %>
+</div>
+
+<div id="add_feed" style="clear:both;<%= flash[:error] || params[:feed] ? '' : 'display:none' %>">
+  <fieldset class="full">
+    <legend>Add / Import Feeds</legend>
+
+    <% form_for :feed, :url => import_feeds_path do |f| %>
+      <p>
+        This form allows you to import multiple feeds. 
+        The feeds will not be collected, you can either wait until the nightly collection does it, 
+        or manually collect the feeds from the <%= link_to 'Feeds', feeds_path %> page. 
+        Sorting by time updated is a good way to find feeds that need collecting.
+      </p>
+      <p>
+      	<%= text_area_tag 'feed[urls]', @urls, :rows => 10, :cols => 70 %><br/>
+        <%= submit_tag "Add Feeds" %>
+      </p>
+    <% end %>
+
+    <!-- <% form_tag import_feeds_path, :method => :post, :multipart => true do -%>
+      <p>
+        You can upload an OPML file containing a list of feeds. 
+        Most feed readers support exporting subscription lists in OPML format so you can easily add your feeds to Winnow.
+      </p>
+      <p>
+        <%= file_field_tag 'opml', :size => 60 %>
+        <%= submit_tag "Upload" %>
+      </p>
+    <% end -%> -->
+    
+    <p>Drag this button to your bookmark bar, then when you find a site you want to add to Winnow, just click the button.</p>
+    
+    <%= link_to "Add to Winnow", bookmarklet_js, :class => "bookmarklet", :title => "Add to Winnow", 
+                  :onclick => "Message.add('error', 'Drag this button to your bookmark or right click and select \'Bookmark This Link\''); return false;" %>
+  </fieldset>
 </div>

@@ -16,13 +16,7 @@ class FeedsController < ApplicationController
   
   def index
     respond_to do |wants|
-      wants.html do       
-        @feeds = Feed.paginate(
-          :conditions => @conditions, 
-          :order => sortable_order('feeds', :model => Feed, :field => 'title', :sort_direction => :asc),
-          :per_page => 40, :page => params[:page]
-        )
-      end
+      wants.html { setup_index }
       wants.text { render :text => Feed.find(:all, :order => 'feeds.id').map(&:url).join("\n") }
       wants.xml  { render :xml => Feed.find(:all).to_xml }
     end
@@ -65,13 +59,10 @@ class FeedsController < ApplicationController
         @feed.created_by = params[:feed][:created_by]
         
         if @feed.save
-          wants.html { redirect_to feeds_url }
           wants.xml do
             head :created, :location => feed_url(:id => @feed.uri)
           end
         else
-          flash.now[:error] = @feed.errors.full_messages.join("<br/")
-          wants.html { render :action => 'new' }
           wants.xml  { render :xml => @feed.errors.to_xml, :status => 422 }
         end
       end
@@ -104,11 +95,9 @@ class FeedsController < ApplicationController
         
     respond_to do |wants|
       if @feed.update_attributes(params[:feed])
-        wants.html { redirect_to feeds_url }
         wants.xml  { render :nothing => true }
         wants.js
       else
-        wants.html { redirect_to feeds_url }
         wants.xml  { render :xml => @feed.errors.to_xml }
         wants.js
       end
@@ -150,16 +139,14 @@ class FeedsController < ApplicationController
   #
   # Might need to consder how to report which actual feeds fail for what reasons.
   def import
-    if request.post?
-      unless params[:feed] and params[:feed][:urls]
-        flash.now[:error] = 'You must enter at least one feed url'
-        render(:action => 'import') and return
-      end
-      
+    if params[:feed].blank? or params[:feed][:urls].blank?
+      flash[:error] = 'You must enter at least one feed url'
+      redirect_to feeds_path
+    else
       failed_urls = []
       failure_messages = Hash.new(0)
       created_feeds = []
-      
+    
       # create all the feeds
       params[:feed][:urls].split.each do |url|
         feed = Feed.new(:url => url)
@@ -170,27 +157,26 @@ class FeedsController < ApplicationController
           failure_messages[feed.errors.on(:url)] = failure_messages[feed.errors.on(:url)].succ
         end
       end
-      
-      flash[:notice] = pluralize(created_feeds.size, 'new feed') + ' added'
-                    
+
       unless failed_urls.empty?
-        flash.now[:error] = failure_messages.inject([]) do |arr, msg_entry|
-          arr << pluralize(msg_entry[1], msg_entry[0])
-          arr
-        end
+        flash.now[:error] = failure_messages.map do |failure_message|
+          pluralize(failure_message[1], failure_message[0])
+        end.join("<br/>")
+        flash.now[:notice] = "#{pluralize(created_feeds.size, 'new feed')} added" if created_feeds.size > 0
         @urls = failed_urls.join("\n")
-        render(:action => 'import') and return
+        setup_index
+        render :action => 'index'
+      else
+        flash[:notice] = "#{pluralize(created_feeds.size, 'new feed')} added"
+        redirect_to feeds_path
       end
-      
-      redirect_to feeds_url
     end
   end
 
   # Removes a feed and redirects back to list
   def destroy
-    @feed = Feed.find(params[:id])
-    @feed.destroy
-    flash[:notice] = @feed.url + ' has been removed'
+    @feed = Feed.destroy(params[:id])
+    flash[:notice] = "#{@feed.url} has been removed"
     
     respond_to do |wants| 
       wants.html { redirect_to :back }
@@ -199,6 +185,15 @@ class FeedsController < ApplicationController
   end
   
 private
+  def setup_index
+    @feeds = Feed.paginate(
+      :conditions => @conditions, 
+      :order => sortable_order('feeds', :model => Feed, :field => 'title', :sort_direction => :asc),
+      :per_page => 40, :page => params[:page]
+    )
+    @urls = [params[:feed] && params[:feed][:url]].compact
+  end
+
   def setup_search_term
     @search_term = params[:search_term]
     unless @search_term.nil? or @search_term.empty?

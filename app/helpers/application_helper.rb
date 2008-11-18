@@ -24,6 +24,10 @@ module ApplicationHelper
       content_tag(:span, nil, :class => "sbox_r srch_clear"),
       :class => "applesearch clearfix"
   end
+  
+  def bookmarklet_js
+    "javascript:window.location='#{feeds_url}?feed[url]='+window.location;"
+  end
 
   def duration(summary)
     unless summary.completed_on.nil?
