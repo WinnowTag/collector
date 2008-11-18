@@ -6,8 +6,7 @@
    • index - STYLE, title?, fatal error type and message, jobs, failed, confirm sorting by errors_count works
    • show - CollectionErrors, CollectionJobs
  • ItemCache  
-   • index - STYLE, edit/destroy, inline new?
- • FailedOperations
+   • index - STYLE, edit/destroy, inline new?, FailedOperations
  • Spiders
 
  • Remove will_paginate
