@@ -218,18 +218,24 @@ var ItemBrowser = Class.create({
   },
 
   bindTextFilterEvents: function() {
-    $("text_filter_form").observe("submit", function() {
-      this.addFilters({text_filter: $F('text_filter')});
-    }.bind(this));
+    var text_filter_form = $("text_filter_form");
+    if(text_filter_form) {
+      text_filter_form.observe("submit", function() {
+        this.addFilters({text_filter: $F('text_filter')});
+      }.bind(this));
+    }
   },
   
   bindTextFilterClearEvents: function() {
-    var clear_button = $("text_filter").next(".srch_clear");
-    if(clear_button) {
-      clear_button.observe("click", function() {
-        // TODO: don't do this if the button was not active
-        this.addFilters({text_filter: null});
-      }.bind(this));
+    var text_filter = $("text_filter");
+    if(text_filter) {
+      var clear_button = text_filter.next(".srch_clear");
+      if(clear_button) {
+        clear_button.observe("click", function() {
+          // TODO: don't do this if the button was not active
+          this.addFilters({text_filter: null});
+        }.bind(this));
+      }
     }
   },
 

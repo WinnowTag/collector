@@ -6,12 +6,21 @@
 class CollectionSummariesController < ApplicationController
   def index
     conditional_render(CollectionSummary.maximum(:updated_on)) do |since|
-      @collection_summaries = CollectionSummary.find(:all, :order => 'created_on DESC', :limit => 40)
+      find_collection_summaries = lambda {
+        CollectionSummary.search(:order => params[:order], :direction => params[:direction], :limit => 40, :offset => params[:offset])
+      }
 
       respond_to do |format|
         format.html
-        format.xml  { render :xml => @collection_summaries.to_xml }
-        format.atom { render :action => 'atom'}
+        format.json do
+          @collection_summaries = find_collection_summaries.call
+          @full = @collection_summaries.size < 40
+        end
+        format.xml  { render :xml => find_collection_summaries.call.to_xml }
+        format.atom do
+          @collection_summaries = find_collection_summaries.call
+          render :action => 'atom'
+        end
       end
     end
   end

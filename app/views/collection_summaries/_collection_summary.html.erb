@@ -1,0 +1,30 @@
+<div id="<%= dom_id(collection_summary) %>" class="collection_summary record clearfix <%#= collection_summary_classes(collection_summary) %>">
+  <div class="summary clearfix">        
+    <div class="info">
+      <div class="count">
+        <p>Items</p>
+        <strong><%= collection_summary.item_count %></strong>
+      </div>
+      <div class="count">
+        <p>Errors</p>
+        <strong><%= collection_summary.collection_errors.count %></strong>
+      </div>
+      <div class="count">
+        <p>Started</p>
+        <strong><%= format_date(collection_summary.created_on) %></strong>
+      </div>
+      <div class="date">
+         <p>Completed</p> 
+         <strong><%= format_date(collection_summary.completed_on) %></strong>
+      </div>
+      <div class="date">
+         <p>Duration</p> 
+         <strong><%= collection_summary.duration %></strong>
+      </div>
+    </div>    
+
+    <h4 class="clearfix">
+      <%= link_to "#{format_date(collection_summary.created_on)} - #{format_date(collection_summary.completed_on)}", collection_summary %>
+    </h4>
+  </div>
+</div>

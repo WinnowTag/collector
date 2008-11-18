@@ -1,0 +1,6 @@
+<%= {
+  :full => @full,
+  :items => @collection_summaries.map do |collection_summary|
+    { :id => dom_id(collection_summary), :content => render_to_string(:partial => 'collection_summary.html.erb', :object => collection_summary) }
+  end
+}.to_json %>

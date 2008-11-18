@@ -14,8 +14,7 @@ describe CollectionSummariesController do
 
   it "should_get_index" do
     get :index
-    assert_response :success
-    assert assigns(:collection_summaries)
+    response.should be_success
   end
 
   # TODO: Move to view spec

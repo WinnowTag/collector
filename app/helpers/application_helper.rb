@@ -29,13 +29,6 @@ module ApplicationHelper
     "javascript:window.location='#{feeds_url}?feed[url]='+window.location;"
   end
 
-  def duration(summary)
-    unless summary.completed_on.nil?
-      seconds = (summary.completed_on - summary.created_on).to_i
-      "#{seconds / 1.hour} hours, #{(seconds % 1.hour) / 1.minute} minutes"
-    end
-  end
-  
   def format_date(date, when_nil = "Never")
     if date.nil?
       when_nil
