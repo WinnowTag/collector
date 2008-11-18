@@ -1,5 +1,16 @@
+<% content_for :head do -%>
+  <% javascript_tag do -%>
+		var itemBrowser;
+		document.observe('dom:loaded', function() {
+			itemBrowser = new ItemBrowser('feeds', 'content', { orders: {
+			  asc:       ["title", "feed_items_count"], 
+			  desc:      ["created_on", "updated_on"],
+			  "default": "title"
+			}});
+		});
+  <% end -%>
+<% end -%>
+
 <% content_for :header_controls do -%>
   <%= render :partial => "header_controls" %>
 <% end -%>
-
-<%= render :partial => "list", :locals => { :feeds => @feeds } %>

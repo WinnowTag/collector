@@ -17,7 +17,7 @@ class ApplicationController < ActionController::Base
   
   include ExceptionNotifiable
   include AuthenticatedSystem
-  helper_method :controller_name, :action_name
+  helper_method :controller_name, :action_name, :render_to_string
   
   before_filter :login_from_cookie, :login_required, :set_time_zone
   

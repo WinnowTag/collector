@@ -38,7 +38,29 @@ class Feed < ActiveRecord::Base
       end
     end
     
-    # Return a list of Feeds that are active.
+    def search(options = {})
+      conditions, values = ['duplicate_id IS NULL'], []
+    
+      unless options[:text_filter].blank?
+        conditions << '(feeds.title LIKE ? OR feeds.url LIKE ?)'
+        values << "%#{options[:text_filter]}%" << "%#{options[:text_filter]}%"
+      end
+  
+      order = case options[:order]
+      when "title", "created_on", "updated_on", "feed_items_count"
+        "feeds.#{options[:order]}"
+      else
+        "feeds.title"
+      end
+    
+      case options[:direction]
+      when "asc", "desc"
+        order = "#{order} #{options[:direction].upcase}"
+      end
+    
+      find(:all, :conditions => [conditions.join(" AND "), *values], :order => order, :limit => options[:limit], :offset => options[:offset])
+    end
+
     def active_feeds
       find(:all, :order => "title ASC",
             :conditions => ['active = ? and duplicate_id is NULL', true])

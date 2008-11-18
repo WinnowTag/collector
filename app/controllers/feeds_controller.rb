@@ -9,14 +9,22 @@ class FeedsController < ApplicationController
   verify :only => :destroy, :method => :delete, :render => SHOULD_BE_POST
   verify :only => [:collect, :update], :method => :post, :render => SHOULD_BE_POST
   verify :only => [:show, :collect, :update], :params => :id, :redirect_to => {:action => 'index'}
-  before_filter :setup_search_term, :only => [:index]
   before_filter :setup_sortable_headers, :only => [:index, :with_recent_errors, :duplicates]
   skip_before_filter :login_required
   before_filter :login_required_unless_hmac_authenticated
   
   def index
     respond_to do |wants|
-      wants.html { setup_index }
+      wants.html do
+        @urls = [params[:feed] && params[:feed][:url]].compact
+      end
+      wants.json do
+        @feeds = Feed.search(
+          :text_filter => params[:text_filter],
+          :order => params[:order], :direction => params[:direction], 
+          :limit => 40, :offset => params[:offset])
+        @full = @feeds.size < 40
+      end
       wants.text { render :text => Feed.find(:all, :order => 'feeds.id').map(&:url).join("\n") }
       wants.xml  { render :xml => Feed.find(:all).to_xml }
     end
@@ -164,7 +172,6 @@ class FeedsController < ApplicationController
         end.join("<br/>")
         flash.now[:notice] = "#{pluralize(created_feeds.size, 'new feed')} added" if created_feeds.size > 0
         @urls = failed_urls.join("\n")
-        setup_index
         render :action => 'index'
       else
         flash[:notice] = "#{pluralize(created_feeds.size, 'new feed')} added"
@@ -185,24 +192,6 @@ class FeedsController < ApplicationController
   end
   
 private
-  def setup_index
-    @feeds = Feed.paginate(
-      :conditions => @conditions, 
-      :order => sortable_order('feeds', :model => Feed, :field => 'title', :sort_direction => :asc),
-      :per_page => 40, :page => params[:page]
-    )
-    @urls = [params[:feed] && params[:feed][:url]].compact
-  end
-
-  def setup_search_term
-    @search_term = params[:search_term]
-    unless @search_term.nil? or @search_term.empty?
-      @conditions = ['(title like ? or url like ?) and duplicate_id is NULL', "%#{@search_term}%", "%#{@search_term}%"]
-    else
-      @conditions = ['duplicate_id is NULL']
-    end
-  end
-  
   def setup_sortable_headers
     add_to_sortable_columns('feeds', :model => Feed, :field => 'title', :alias => 'title')
     add_to_sortable_columns('feeds', :field => 'feed_items_count', :alias => 'item_count')

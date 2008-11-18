@@ -4,8 +4,8 @@
 # to use, modify, or create derivate works.
 # Please visit http://www.peerworks.org/contact for further information.
 module ApplicationHelper
-  def tab_selected(controller, action = nil)
-    "selected" if controller_name == controller and (action.nil? or action_name == action)
+  def tab_selected(controller, *actions)
+    "selected" if controller_name == controller and (actions.blank? or actions.include?(action_name))
   end
   
   def show_flash_messages

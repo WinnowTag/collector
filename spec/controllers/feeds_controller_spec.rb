@@ -34,11 +34,6 @@ describe FeedsController do
       end
     end
   
-    it "index_sets_feeds_instance_variable" do
-      get :index
-      assert_equal(Feed.count(:conditions => ['duplicate_id is NULL']), assigns(:feeds).size)
-    end
-  
     it "with_recent_errors_shows_feeds_with_recent_errors_once" do
       feed = Feed.find(1)
       job = feed.collection_jobs.create!
