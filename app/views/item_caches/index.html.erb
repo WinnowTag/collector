@@ -4,20 +4,20 @@
   </div>
 <% end -%>
 
-<table class="data_table">
-  <tr>
-    <th>Cache URI</th>
-    <th>Errors</th>
-    <th></th>
-  </tr>
-  <% for item_cache in @item_caches %>
-    <tr class="<%= cycle('odd', 'even') %>">
-      <td><%= link_to item_cache.base_uri, item_cache.base_uri %></td>
-      <td><%= link_to item_cache.failed_operations.size, item_cache_failed_operations_path(item_cache) %></td>
-      <td>
-        <%= link_to 'Edit', edit_item_cache_path(item_cache) %> |
-        <%= link_to 'Destroy', item_cache, :confirm => 'Are you sure?', :method => :delete %>
-      </td>
-    </tr>
-  <% end %>
-</table>
+<% for item_cache in @item_caches -%>
+  <!-- <%= link_to 'Edit', edit_item_cache_path(item_cache) %> |
+  <%= link_to 'Destroy', item_cache, :confirm => 'Are you sure?', :method => :delete %> -->
+
+  <div id="<%= dom_id(item_cache) %>" class="item_cache record clearfix">
+    <div class="summary clearfix">        
+      <div class="info">
+        <div class="count">
+          <p>Errors</p>
+          <strong><%= link_to item_cache.failed_operations.size, item_cache_failed_operations_path(item_cache) %></strong>
+        </div>
+      </div>    
+
+      <h4 class="clearfix"><%= link_to item_cache.base_uri, item_cache.base_uri %></h4>
+    </div>
+  </div>
+<% end -%>
