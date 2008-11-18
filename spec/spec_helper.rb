@@ -66,6 +66,10 @@ Spec::Runner.configure do |config|
     end
   end
   
+  def current_user
+    @controller.send(:current_user)
+  end
+  
   def valid_feed_item_attributes(attributes = {})
     unique_id = rand(10000)
     { :link => "http://#{unique_id}.example.com", 

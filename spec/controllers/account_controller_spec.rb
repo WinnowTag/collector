@@ -107,11 +107,15 @@ describe AccountController do
   end
 
   it "non_matching_passwords_should_not_change" do
-    post :login, :login => 'admin', :password => 'test'
-    assert session[:user]
+    login_as :admin
+    
+    current_user.should be_authenticated("test")
+
     post :edit, :current_user => { :password => 'newpassword', :password_confirmation => 'test' }
-    assert_not_equal 'newpassword', assigns(:current_user).password
-    assert_equal "Password mismatch", flash[:notice]
+    response.should be_success
+
+    current_user.should be_authenticated("test")
+    current_user.should_not be_authenticated("newpassword")
   end
 
   it "login_updates_logged_in_at_time" do
