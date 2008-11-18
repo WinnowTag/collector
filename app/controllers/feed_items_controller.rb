@@ -4,8 +4,6 @@
 # to use, modify, or create derivate works.
 # Please visit http://www.peerworks.org/contact for further information.
 class FeedItemsController < ApplicationController
-  skip_before_filter :login_required
-  
   def show
     @feed_item = FeedItem.find(params[:id])
     respond_to do |wants|
