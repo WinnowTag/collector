@@ -1,9 +1,8 @@
  • Log - delete?
- • CollectionErrors - delete?
  • CollectionJobs - delete index/show views?
 
- • ItemCache - beautify, delete REST?
+ • Feeds - beautify
  • CollectionSummaries - beautify
+ • ItemCache - beautify, delete REST?
  • FailedOperations - beautify
  • Spiders - beautify
- • Feeds - beautify

@@ -14,7 +14,6 @@ ActionController::Routing::Routes.draw do |map|
                   :import_opml        => :post
                 } do |feeds|
     feeds.resources :collection_jobs
-    feeds.resources :collection_errors
   end
   map.resources :feed_items, :member => {
                   :spider => :get
