@@ -44,64 +44,6 @@ describe ItemCachesController do
     end
   end
 
-  describe "handling GET /item_caches.xml" do
-
-    before(:each) do
-      @item_cache = mock_model(ItemCache, :to_xml => "XML")
-      ItemCache.stub!(:find).and_return(@item_cache)
-    end
-  
-    def do_get
-      @request.env["HTTP_ACCEPT"] = "application/xml"
-      get :index
-    end
-  
-    it "should be successful" do
-      do_get
-      response.should be_success
-    end
-
-    it "should find all item_caches" do
-      ItemCache.should_receive(:find).with(:all).and_return([@item_cache])
-      do_get
-    end
-  
-    it "should render the found item_caches as xml" do
-      @item_cache.should_receive(:to_xml).and_return("XML")
-      do_get
-      response.body.should == "XML"
-    end
-  end
-
-  describe "handling GET /item_caches/1.xml" do
-
-    before(:each) do
-      @item_cache = mock_model(ItemCache, :to_xml => "XML")
-      ItemCache.stub!(:find).and_return(@item_cache)
-    end
-  
-    def do_get
-      @request.env["HTTP_ACCEPT"] = "application/xml"
-      get :show, :id => "1"
-    end
-
-    it "should be successful" do
-      do_get
-      response.should be_success
-    end
-  
-    it "should find the item_cache requested" do
-      ItemCache.should_receive(:find).with("1").and_return(@item_cache)
-      do_get
-    end
-  
-    it "should render the found item_cache as xml" do
-      @item_cache.should_receive(:to_xml).and_return("XML")
-      do_get
-      response.body.should == "XML"
-    end
-  end
-
   describe "handling GET /item_caches/new" do
 
     before(:each) do
