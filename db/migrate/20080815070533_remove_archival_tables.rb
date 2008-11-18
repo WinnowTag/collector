@@ -3,8 +3,6 @@
 # Possession of a copy of this file grants no permission or license
 # to use, modify, or create derivate works.
 # Please visit http://www.peerworks.org/contact for further information.
-
-
 class RemoveArchivalTables < ActiveRecord::Migration
   def self.up
     execute "insert ignore into feed_items select * from feed_items_archives;"

@@ -3,7 +3,6 @@
 # Possession of a copy of this file grants no permission or license
 # to use, modify, or create derivate works.
 # Please visit http://www.peerworks.org/contact for further information.
-
 class CreateFeedItemAtomDocuments < ActiveRecord::Migration
   def self.up
     create_table :feed_item_atom_documents do |t|
