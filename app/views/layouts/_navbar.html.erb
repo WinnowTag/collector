@@ -1,21 +1,21 @@
 <% if current_user -%>
   <div id="navigation" class="navigation clearfix">
-  	<ul class="extra">
+    <ul class="extra">
       <li>Logged in as <%= current_user.login %></li>
       <li><%= link_to("Profile", edit_account_path(:id => current_user)) %></li>
       <li><%= link_to("Logout", logout_path) %></li>
       <li><%= link_to("About", :controller => "about") %></li>
     </ul>
 
-  	<ul class="main clearfix">
+    <ul class="main clearfix">
       <li><%= link_to("Feeds", feeds_path, :class => tab_selected('feeds', 'index', 'show')) %></li>
-  	  <li><%= link_to("Duplicates", duplicates_feeds_path, :class => tab_selected('feeds', 'duplicates')) %></li>
-  	  <li><%= link_to("Collection History", collection_summaries_path, :class => tab_selected('collection_summaries')) %></li>
+      <li><%= link_to("Duplicates", duplicates_feeds_path, :class => tab_selected('feeds', 'duplicates')) %></li>
+      <li><%= link_to("Collection History", collection_summaries_path, :class => tab_selected('collection_summaries')) %></li>
       <li><%= link_to("Item Cache", item_caches_path, :class => tab_selected('item_caches')) %></li>
       <li><%= link_to("Spider Results", spiders_path, :class => tab_selected('spiders', 'index')) %></li>
       <li><%= link_to("Scraper Statistics", scraper_stats_spiders_path, :class => tab_selected('spiders', 'scraper_stats')) %></li>
       <li><%= link_to("Spider Testing Tool", test_spiders_path, :class => tab_selected('spiders', 'test')) %></li>
       <li><%= link_to("Help", {:controller => "about", :action => "help"}, :target => "_blank", :class => "help") %></li>
-  	</ul>
-	</div>
+    </ul>
+  </div>
 <% end -%>

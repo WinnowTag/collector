@@ -1,13 +1,13 @@
 <% content_for :head do -%>
   <% javascript_tag do -%>
-		var itemBrowser;
-		document.observe('dom:loaded', function() {
-			itemBrowser = new ItemBrowser('feeds', 'content', { orders: {
-			  asc:       ["title", "feed_items_count", "collection_errors_count"], 
-			  desc:      ["collection_errors_created_on", "created_on", "updated_on"],
-			  "default": "title"
-			}});
-		});
+    var itemBrowser;
+    document.observe('dom:loaded', function() {
+      itemBrowser = new ItemBrowser('feeds', 'content', { orders: {
+        asc:       ["title", "feed_items_count", "collection_errors_count"], 
+        desc:      ["collection_errors_created_on", "created_on", "updated_on"],
+        "default": "title"
+      }});
+    });
   <% end -%>
 <% end -%>
 

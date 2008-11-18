@@ -1,26 +1,26 @@
 <% content_for :header_controls do -%>
   <div class="toolbar right">
-  	<%= rounded_button_link 'Collect', collection_jobs_path(:feed_id => @feed.id), :method => :post %>
+    <%= rounded_button_link 'Collect', collection_jobs_path(:feed_id => @feed.id), :method => :post %>
   </div>
 <% end -%>
 
 <table id="<%= "feed_#{@feed.id}" %>" class="property_table <%= "inactive_feed" unless @feed.active? %>">
-	<tr>
-		<th>URL</th>
-		<td><%= link_to(@feed.url) %></td>
-	</tr>
-	<tr>
-		<th>Last Retrieved</th>
-		<td class="date"><%= format_date(@feed.updated_on) %></td>
-	</tr>
-	<tr>
-		<th>Number of Feed Items</th>
-		<td class="number"><%= @feed.feed_items.size %></td>
-	</tr>
-	<tr>
-		<th>Active</th>
-		<td><%= activate_feed_control @feed%></td>
-	</tr>
+  <tr>
+    <th>URL</th>
+    <td><%= link_to(@feed.url) %></td>
+  </tr>
+  <tr>
+    <th>Last Retrieved</th>
+    <td class="date"><%= format_date(@feed.updated_on) %></td>
+  </tr>
+  <tr>
+    <th>Number of Feed Items</th>
+    <td class="number"><%= @feed.feed_items.size %></td>
+  </tr>
+  <tr>
+    <th>Active</th>
+    <td><%= activate_feed_control @feed%></td>
+  </tr>
   <tr>
     <th>Created by</th>
     <td><%= @feed.created_by %></td>

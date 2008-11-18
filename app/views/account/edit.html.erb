@@ -2,38 +2,38 @@
 
 <% form_for :current_user do |f| %>
   <fieldset class="profile">
-  	<legend>Account Details</legend>
-  	
-  	<p>
-  	  <%= f.label :login, "Login" %>
-  	  <%= f.text_field :login, :disabled => true %>
-  	</p>
-  	<p>
-  	  <%= f.label :password, "Password" %>
-  	  <%= f.password_field :password %>
-  	</p>
-  	<p>
-  	  <%= f.label :password_confirmation, "Password Confirmation" %>
-  	  <%= f.password_field :password_confirmation %>
-  	</p>
-  	<p>
-  	  <%= f.label :email, "Email" %>
-  	  <%= f.text_field :email %>
-  	</p>
-  	<p>
-  	  <%= f.label :firstname, "First Name" %>
-  	  <%= f.text_field :firstname %>
-  	</p>
-  	<p>
-  	  <%= f.label :lastname, "Last Name" %>
-  	  <%= f.text_field :lastname %>
-  	</p>
-  	<p>
+    <legend>Account Details</legend>
+    
+    <p>
+      <%= f.label :login, "Login" %>
+      <%= f.text_field :login, :disabled => true %>
+    </p>
+    <p>
+      <%= f.label :password, "Password" %>
+      <%= f.password_field :password %>
+    </p>
+    <p>
+      <%= f.label :password_confirmation, "Password Confirmation" %>
+      <%= f.password_field :password_confirmation %>
+    </p>
+    <p>
+      <%= f.label :email, "Email" %>
+      <%= f.text_field :email %>
+    </p>
+    <p>
+      <%= f.label :firstname, "First Name" %>
+      <%= f.text_field :firstname %>
+    </p>
+    <p>
+      <%= f.label :lastname, "Last Name" %>
+      <%= f.text_field :lastname %>
+    </p>
+    <p>
       <%= f.label :time_zone, "Time Zone" %>
       <%= f.time_zone_select :time_zone, TZInfo::Timezone.us_zones, :model => TZInfo::Timezone, :include_blank => true %>
-  	</p>
-  	<p>
-  	  <%= submit_tag "Save" %>
-  	</p>
+    </p>
+    <p>
+      <%= submit_tag "Save" %>
+    </p>
   </fieldset>
 <% end %>

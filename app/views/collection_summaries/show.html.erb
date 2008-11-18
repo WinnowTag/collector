@@ -3,30 +3,30 @@
 <% end -%>
 
 <table class="property_table">
-	<tr>
-		<th>Started</th>
-		<td><%= @collection_summary.created_on.to_formatted_s(:long) %></td>
-	</tr>
-	<tr>
-		<th>Completed</th>
-		<td><%= @collection_summary.completed_on.to_formatted_s(:long) if @collection_summary.completed_on %></td>
-	</tr>
-	<tr>
-		<th>Duration</th>
-		<td><%= duration(@collection_summary) %></td>
-	</tr>
-	<tr>
-		<th>New Items</th>
-		<td><%= @collection_summary.item_count %></td>
-	</tr>
-	<tr>
-		<th>Jobs Completed</th>
-		<td><%= @collection_summary.completed_jobs.size %></td>
-	</tr>
-	<tr>
-		<th>Jobs Pending</th>
-		<td><%= @collection_summary.pending_jobs.size %></td>
-	</tr>
+  <tr>
+    <th>Started</th>
+    <td><%= @collection_summary.created_on.to_formatted_s(:long) %></td>
+  </tr>
+  <tr>
+    <th>Completed</th>
+    <td><%= @collection_summary.completed_on.to_formatted_s(:long) if @collection_summary.completed_on %></td>
+  </tr>
+  <tr>
+    <th>Duration</th>
+    <td><%= duration(@collection_summary) %></td>
+  </tr>
+  <tr>
+    <th>New Items</th>
+    <td><%= @collection_summary.item_count %></td>
+  </tr>
+  <tr>
+    <th>Jobs Completed</th>
+    <td><%= @collection_summary.completed_jobs.size %></td>
+  </tr>
+  <tr>
+    <th>Jobs Pending</th>
+    <td><%= @collection_summary.pending_jobs.size %></td>
+  </tr>
 </table>
 
 <% if @collection_summary.failed? -%>

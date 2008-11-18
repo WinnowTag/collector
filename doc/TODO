@@ -1,12 +1,11 @@
- • Account - edit
  • Feeds
-   - index - destroy, inactive (and sort)
-   - duplicates - combine with index
+   • index - destroy, inactive (and sort)
+   • duplicates - combine with index
    • CollectionErrors
    • CollectionJobs
  • CollectionSummaries
    • CollectionErrors
    • CollectionJobs
- • ItemCache
+ • ItemCache  
  • FailedOperations
  • Spiders
