@@ -26,12 +26,13 @@ Rails::Initializer.run do |config|
   # config.gem "hpricot", :version => '0.6', :source => "http://code.whytheluckystiff.net"
   # config.gem "aws-s3", :lib => "aws/s3"
   config.gem "fiveruns_manage"
-  config.gem "ratom", :lib => "atom/pub" # libxml-ruby
+  config.gem "ratom", :lib => "atom/pub"
   config.gem "rfeedparser" # rchardet, character-encodings, htmltools, htmlentities, addressable
 
   # Must be compiled
   config.gem "auth-hmac"
   config.gem "hpricot", :version => "0.6" # need 0.6 for rfeedparser
+  config.gem "libxml-ruby", :version => "0.8.3", :lib => "libxml"
   config.gem "mysql"
   config.gem "tzinfo", :version => ">= 0.3.9"
   config.gem "uuidtools"
