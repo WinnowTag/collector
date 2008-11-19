@@ -1,7 +1,7 @@
  • Feeds
-   • index - destroy, inactive - sort, additional fields (http://trac.winnow.peerworks.org/ticket/890#comment:20)
+   • index - destroy, inactive - sort, created by
    • duplicates - combine with index
-   • show - CollectionErrors, CollectionJobs
+   • show - CollectionErrors, CollectionJobs, link to FeedItems in Winnow
  • CollectionSummaries
    • index - STYLE, title?, fatal error type and message, jobs, failed, confirm sorting by errors_count works
    • show - CollectionErrors, CollectionJobs
