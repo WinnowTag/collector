@@ -9,15 +9,10 @@ Rake::Task[:default].prerequisites.clear
 
 task :default do
   Rake::Task['spec'].invoke
-  Rake::Task['test:stories'].invoke
+  Rake::Task['features'].invoke
 end
 
 namespace :test do  
-  desc "Run stories"
-  task :stories do
-    system("ruby stories/all.rb")
-  end
-  
   desc 'Test the classifier.'
   task :classifier do
     sh "cd vendor/bayes && rake"
