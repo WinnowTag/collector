@@ -30,6 +30,7 @@ Rails::Initializer.run do |config|
   config.gem "hpricot", :version => "0.6" # need 0.6 for rfeedparser
   config.gem "ratom", :lib => "atom/pub"
   config.gem "rfeedparser" # dependencies: addressable character-encodings htmlentities htmltools rchardet
+  config.gem "tzinfo"
 
   # Must be compiled
   config.gem "libxml-ruby", :version => "0.8.3", :lib => "libxml"
