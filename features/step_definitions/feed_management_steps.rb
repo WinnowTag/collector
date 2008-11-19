@@ -26,7 +26,7 @@ When('I add the feed $url') do |url|
 end
 
 Then("I'm redirected to the feed") do
-  follow_redirect!
+  assert_response :created
 end
 
 Then('there is another feed in the system') do
