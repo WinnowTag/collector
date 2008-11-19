@@ -1,5 +1,5 @@
  • Feeds
-   • index - destroy, inactive (and sort), additional fields (http://trac.winnow.peerworks.org/ticket/890#comment:20)
+   • index - destroy, inactive - sort, additional fields (http://trac.winnow.peerworks.org/ticket/890#comment:20)
    • duplicates - combine with index
    • show - CollectionErrors, CollectionJobs
  • CollectionSummaries
