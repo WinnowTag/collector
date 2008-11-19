@@ -25,10 +25,6 @@ module ApplicationHelper
       :class => "applesearch clearfix"
   end
   
-  def bookmarklet_js
-    "javascript:window.location='#{feeds_url}?feed[url]='+window.location;"
-  end
-
   def format_date(date, when_nil = "Never")
     if date.nil?
       when_nil

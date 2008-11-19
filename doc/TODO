@@ -11,5 +11,3 @@
 
  • Remove will_paginate
  • Fix authentication on controller with hmac
- • Fix features
- • upgrade rails, then try freezing more gems
