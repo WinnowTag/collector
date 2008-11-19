@@ -41,16 +41,12 @@ class CollectionJob < ActiveRecord::Base
       begin
         logger.info("[#{Process.pid}] Collecting: (job.id:#{id}) #{feed.url}")
 
-        bm = Benchmark.measure do
+        self.bm = Benchmark.measure do
           parsed_feed = fetch_feed
           process_feed(parsed_feed) unless parsed_feed.status == NOT_MODIFIED
           complete_job
         end
-      
-        self.utime = bm.utime
-        self.stime = bm.stime
-        self.rtime = bm.real
-        self.ttime = bm.total
+
         self.save!
         self
       rescue ActiveRecord::StaleObjectError => e
@@ -173,5 +169,13 @@ class CollectionJob < ActiveRecord::Base
                          :root => 'collection-job-result'))
       end      
     end
+  end
+  
+  def bm=(bm)
+    self.utime = bm.utime
+    self.stime = bm.stime
+    self.rtime = bm.real
+    self.ttime = bm.total
+    bm
   end
 end

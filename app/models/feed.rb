@@ -126,12 +126,13 @@ class Feed < ActiveRecord::Base
     self.sort_title = self.title.sub(/^(the|an|a) +/i, '').downcase if self.title
     self.link       = feed.link
     
-    # if this the first collection - then check for duplicates
-    if self.updated_on.nil?
-      resolve_duplicate!
-    end
+    resolve_duplicate! if first_collection?
         
     self.save!
+  end
+  
+  def first_collection?
+    self.updated_on.nil?
   end
   
   def update_url!(new_url)
