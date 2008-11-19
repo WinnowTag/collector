@@ -20,4 +20,8 @@ module FeedsHelper
     check_box_tag dom_id(feed, "activate"), "1", feed.active?,
       :onclick => remote_function(:url => feed_path(feed), :method => "put", :with => "{'feed[active]': this.checked}")
   end
+  
+  def feed_classes(feed)
+    "inactive" unless feed.active?
+  end
 end

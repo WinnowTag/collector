@@ -3,12 +3,8 @@
 # Possession of a copy of this file grants no permission or license
 # to use, modify, or create derivate works.
 # Please contact info@peerworks.org for further information.
-if flash[:error]
-  page.call 'alert', flash[:error]
+if @feed.active?
+  page[dom_id(@feed)].remove_class_name 'inactive'
 else
-  if @feed.active?
-    page["feed_#{@feed.id}"].remove_class_name 'inactive_feed'
-  else
-    page["feed_#{@feed.id}"].add_class_name 'inactive_feed'
-  end
+  page[dom_id(@feed)].add_class_name 'inactive'
 end

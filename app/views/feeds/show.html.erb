@@ -4,7 +4,7 @@
   </div>
 <% end -%>
 
-<table id="<%= "feed_#{@feed.id}" %>" class="property_table <%= "inactive_feed" unless @feed.active? %>">
+<table id="<%= "feed_#{@feed.id}" %>" class="property_table <%= "inactive" unless @feed.active? %>">
   <tr>
     <th>URL</th>
     <td><%= link_to(@feed.url) %></td>

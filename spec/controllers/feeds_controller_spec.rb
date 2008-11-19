@@ -112,11 +112,6 @@ describe FeedsController do
       end
     end
         
-    it "destroy_fails_with_get" do
-      get :destroy
-      assert_response 400
-    end
-  
     it "destroy_works_with_post" do
       referer('/feeds')
       feed = Feed.create(:url => 'http://rss.slashdot.org/Slashdot/slashdot')
@@ -179,11 +174,6 @@ describe FeedsController do
       end
     end
   
-    it "show_without_id_redirects_to_index" do
-      get :show
-      assert_redirected_to feeds_url
-    end
-  
     it "show_returns_xml" do
       accept("text/xml")
       get :show, :id => 1
@@ -220,18 +210,8 @@ describe FeedsController do
       assert_redirected_to feed_url(feed.duplicate)    
     end
   
-    it "update_with_get_redirects_to_index" do
-      get :update, :id => 1
-      assert_response 400
-    end
-  
-    it "update_without_id_redirects_to_index" do
-      post :update
-      assert_redirected_to feeds_url
-    end
-  
     it "update_with_protected_attributes_fails" do
-      post :update, :id => 1, :feed => {:title => 'Title', :url => 'http://test', :active => true}
+      put :update, :id => 1, :feed => {:title => 'Title', :url => 'http://test', :active => true}
       response.should be_success
       assert_not_equal("http://test", Feed.find(1).url)
     end

@@ -18,11 +18,11 @@ Given(/(no|\d+) item caches?/) do |n|
 end
 
 Given('I am a logged in user') do
-  post '/account/login', :login => 'admin', :password => 'test'
+  post login_path, :login => 'admin', :password => 'test'
 end
     
 When('I add the feed $url') do |url|
-  post '/feeds', :feed => {:url => url}    
+  post feeds_path, :feed => {:url => url}    
 end
 
 Then("I'm redirected to the feed") do

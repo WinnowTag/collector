@@ -1,6 +1,6 @@
 <%#= link_to "Destroy", feed_path(feed), :method => :delete, :confirm => "Do you really want to delete '#{feed.title_or_url}'?", :title => "Destroy '#{feed.title_or_url}'" %>
 
-<div id="<%= dom_id(feed) %>" class="feed record clearfix <%#= feed_classes(feed) %>">
+<div id="<%= dom_id(feed) %>" class="feed record clearfix <%= feed_classes(feed) %>">
   <div class="summary clearfix">        
     <div class="info">
       <div class="details">
