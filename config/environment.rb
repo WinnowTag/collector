@@ -25,13 +25,13 @@ Rails::Initializer.run do |config|
   # config.gem "bj"
   # config.gem "hpricot", :version => '0.6', :source => "http://code.whytheluckystiff.net"
   # config.gem "aws-s3", :lib => "aws/s3"
-  config.gem "auth-hmac"
   config.gem "fiveruns_manage"
-  config.gem "hpricot", :version => "0.6" # need 0.6 for rfeedparser
   config.gem "ratom", :lib => "atom/pub"
   config.gem "rfeedparser"
 
   # Must be compiled
+  config.gem "auth-hmac"
+  config.gem "hpricot", :version => "0.6" # need 0.6 for rfeedparser
   config.gem "mysql"
   config.gem "tzinfo", :version => ">= 0.3.9"
   config.gem "uuidtools"
