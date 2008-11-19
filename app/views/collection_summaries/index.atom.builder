@@ -3,9 +3,9 @@ xml.instruct!
 xml.feed "xmlns" => "http://www.w3.org/2005/Atom" do
 
   xml.title   "Winnow Collection History"
-  xml.link    "rel" => "self", "href" => url_for(:only_path => false, :controller => 'collection_summaries', :format => 'atom')
-  xml.link    "rel" => "alternate", "href" => url_for(:only_path => false, :controller => 'collection_summaries')
-  xml.id      url_for(:only_path => false, :controller => 'collection_summaries')
+  xml.link    "rel" => "self", "href" => formatted_collection_summaries_url(:atom)
+  xml.link    "rel" => "alternate", "href" => collection_summaries_url
+  xml.id      collection_summaries_url
   xml.updated @collection_summaries.first.updated_on.strftime("%Y-%m-%dT%H:%M:%SZ") if @collection_summaries.any?
   xml.author  { xml.name "Peerworks" }
 

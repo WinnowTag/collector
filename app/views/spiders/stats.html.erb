@@ -11,7 +11,7 @@
     <th>Scraper</th>
     <th>Items scraped</th>
   </tr>
-  <% @scraper_stats.each do |stat| -%>
+  <% @stats.each do |stat| -%>
     <tr class="<%= cycle('odd', 'even') %>">
       <td><%= stat.scraper or 'Not Scraped' %></td>
       <td><%= stat.count %></td>

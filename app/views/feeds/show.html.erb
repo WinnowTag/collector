@@ -1,6 +1,6 @@
 <% content_for :header_controls do -%>
   <div class="toolbar right">
-    <%= rounded_button_link 'Collect', collection_jobs_path(:feed_id => @feed.id), :method => :post %>
+    <%= rounded_button_link 'Collect', feed_collection_jobs_path(@feed.id), :method => :post %>
   </div>
 <% end -%>
 
@@ -19,7 +19,7 @@
   </tr>
   <tr>
     <th>Active</th>
-    <td><%= activate_feed_control @feed%></td>
+    <td><%= active_check_box @feed %></td>
   </tr>
   <tr>
     <th>Created by</th>

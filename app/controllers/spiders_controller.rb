@@ -15,8 +15,8 @@ class SpidersController < ApplicationController
     @spider_result = SpiderResult.find(params[:id])
   end
   
-  def scraper_stats
-    @scraper_stats = SpiderResult.find(:all, :select => 'scraper, COUNT(*) AS count', :group => 'scraper', :order => 'count DESC')
+  def stats
+    @stats = SpiderResult.find(:all, :select => 'scraper, COUNT(*) AS count', :group => 'scraper', :order => 'count DESC')
     @unscrapable_feeds = SpiderResult.find(:all, 
       :select => 'feed_id, COUNT(*) AS count', :conditions => ['failed = ?', true],
       :group => 'feed_id', :order => 'count DESC', :limit => 25

@@ -6,9 +6,6 @@
 class FeedsController < ApplicationController
   include ActionView::Helpers::TextHelper  
   with_auth_hmac HMAC_CREDENTIALS['winnow'], :only => []
-  verify :only => :destroy, :method => :delete, :render => SHOULD_BE_POST
-  verify :only => [:collect, :update], :method => :post, :render => SHOULD_BE_POST
-  verify :only => [:show, :collect, :update], :params => :id, :redirect_to => {:action => 'index'}
   skip_before_filter :login_required
   before_filter :login_required_unless_hmac_authenticated
   

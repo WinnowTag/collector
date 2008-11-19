@@ -19,7 +19,6 @@ class CollectionSummariesController < ApplicationController
         format.xml  { render :xml => find_collection_summaries.call.to_xml }
         format.atom do
           @collection_summaries = find_collection_summaries.call
-          render :action => 'atom'
         end
       end
     end

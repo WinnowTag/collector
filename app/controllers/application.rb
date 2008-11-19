@@ -21,13 +21,6 @@ class ApplicationController < ActionController::Base
 
   before_filter :login_from_cookie, :login_required, :set_time_zone
 
-  SHOULD_BE_POST = {
-        :text => 'Bad Request. Should be POST. ' +
-                 'Please report this bug. Make ' +
-                 'sure you have Javascript enabled too! ', 
-        :status => 400
-      } unless defined?(SHOULD_BE_POST)
-
 private
   def set_time_zone
     if current_user && !current_user.time_zone.blank?
