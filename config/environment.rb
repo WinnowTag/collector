@@ -26,8 +26,8 @@ Rails::Initializer.run do |config|
   # config.gem "hpricot", :version => '0.6', :source => "http://code.whytheluckystiff.net"
   # config.gem "aws-s3", :lib => "aws/s3"
   config.gem "fiveruns_manage"
-  config.gem "ratom", :lib => "atom/pub"
-  config.gem "rfeedparser"
+  config.gem "ratom", :lib => "atom/pub" # libxml-ruby
+  config.gem "rfeedparser" # rchardet, character-encodings, htmltools, htmlentities, addressable
 
   # Must be compiled
   config.gem "auth-hmac"
