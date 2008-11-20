@@ -1,7 +1,6 @@
  • Feeds
-   • index - destroy
    • duplicates - combine with index
-   • show - CollectionErrors, CollectionJobs, link to FeedItems in Winnow
+   • show - destroy, duplicate(s), feed_items, spider_results (and count, and latest), collection_jobs (and count, and latest), collection_errors
  • CollectionSummaries
    • index - STYLE, title?, fatal error type and message, jobs, failed, confirm sorting by errors_count works
    • show - CollectionErrors, CollectionJobs
@@ -10,3 +9,5 @@
  • Spiders
 
  • Remove will_paginate
+
+
