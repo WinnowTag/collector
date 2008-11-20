@@ -8,7 +8,8 @@ var ItemBrowser = Class.create({
     this.options = {
       controller: name,
       url: name,
-      orders: {}
+      orders: {},
+      modes: []
     };
     Object.extend(this.options, options || {});
     
@@ -137,6 +138,14 @@ var ItemBrowser = Class.create({
     this.container.update('');
   },
   
+  modes: function() {
+    return this.options.modes;
+  },
+  
+  defaultMode: function() {
+    return this.options.modes.first();
+  },
+  
   orders: function() {
     return (this.options.orders.asc || []).concat(this.options.orders.desc || []);
   },
@@ -183,6 +192,28 @@ var ItemBrowser = Class.create({
     Cookie.set(this.name + "_filters", $H(this.filters).toQueryString(), 365);
   },
   
+  styleModes: function() {
+    if(this.filters.mode) {
+      this.modes().without(this.filters.mode).each(function(mode) {
+        $("mode_" + mode).removeClassName("selected")
+      });
+    
+      var mode_control = $("mode_" + this.filters.mode);
+      if(mode_control) {
+        mode_control.addClassName("selected");
+      }
+    } else if(this.defaultMode()) {
+      this.modes().without(this.defaultMode()).each(function(mode) {
+        $("mode_" + mode).removeClassName("selected")
+      });
+    
+      var mode_control = $("mode_" + this.defaultMode());
+      if(mode_control) {
+        mode_control.addClassName("selected");
+      }
+    }
+  },
+  
   styleOrders: function() {
     this.orders().each(function(order) {
       var order_control = $("order_" + order);
@@ -208,6 +239,15 @@ var ItemBrowser = Class.create({
     }
   },
   
+  bindModeFiltersEvents: function() {
+    this.modes().each(function(mode) {
+      var mode_control = $("mode_" + mode);
+      if(mode_control) {
+        mode_control.observe("click", this.addFilters.bind(this, {mode: mode}));
+      }
+    }.bind(this));
+  },
+
   bindOrderFilterEvents: function() {
     this.orders().each(function(order) {
       var order_control = $("order_" + order);
@@ -240,11 +280,12 @@ var ItemBrowser = Class.create({
   },
 
   initializeFilters: function() {
+    this.bindModeFiltersEvents();
     this.bindOrderFilterEvents();
     this.bindTextFilterEvents();
     this.bindTextFilterClearEvents();
 
-    this.filters = { order: this.defaultOrder(), direction: this.defaultDirection() };
+    this.filters = { order: this.defaultOrder(), direction: this.defaultDirection(), mode: this.defaultMode() };
     
     if(location.hash.gsub('#', '').blank() && Cookie.get(this.name + "_filters")) {
       this.setFilters(Cookie.get(this.name + "_filters").toQueryParams());
@@ -267,6 +308,7 @@ var ItemBrowser = Class.create({
   },
 
   styleFilters: function() {
+    this.styleModes();
     this.styleOrders();
 
     var text_filter = $("text_filter");
