@@ -20,7 +20,11 @@
         <strong><%= format_date(feed.collection_errors.latest ? feed.collection_errors.latest.created_on : nil) %></strong>
       </div>
       <div class="date">
-         <p>Created</p> 
+         <p>Created By</p> 
+         <strong><%=h feed.created_by %></strong>
+      </div>
+      <div class="date">
+         <p>Created At</p> 
          <strong><%= format_date(feed.created_on) %></strong>
       </div>
       <div class="date">
