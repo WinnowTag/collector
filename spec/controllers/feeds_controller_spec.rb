@@ -34,26 +34,6 @@ describe FeedsController do
       end
     end
   
-    it "duplicates_shows_duplicates" do
-      feed = Feed.find(1)
-      dup = Feed.new(:url => 'http://foo')
-      dup.link = feed.link
-      dup.save!
-      get :duplicates
-      assert_template 'duplicates'
-      assert_equal([feed, dup].sort_by{|a| a.id}, assigns(:feeds).sort_by{|a| a.id})
-    end
-    
-    it "duplicates_doesnt_show_duplicate_tombstones" do
-      feed = Feed.find(1)
-      dup = Feed.new(:url => 'http://foo')
-      dup.link = feed.link
-      dup.duplicate = feed
-      dup.save!
-      get :duplicates
-      assert_equal([], assigns[:feeds])
-    end
-  
     it "list_provides_text_format" do
       accept('text/plain')
       get :index

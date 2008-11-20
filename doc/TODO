@@ -1,13 +1,16 @@
  • Feeds
-   • duplicates - combine with index
+   • index - remove 2 fields
    • show - destroy, duplicate(s), feed_items, spider_results (and count, and latest), collection_jobs (and count, and latest), collection_errors
  • CollectionSummaries
    • index - STYLE, title?, fatal error type and message, jobs, failed, confirm sorting by errors_count works
    • show - CollectionErrors, CollectionJobs
  • ItemCache  
    • index - STYLE, edit/destroy, inline new?, FailedOperations
- • Spiders
+ • Spiders - combine pages
 
  • Remove will_paginate
 
 
+
+Sync css/js/images with winnow
+Add modes to Item Browser and pass them in

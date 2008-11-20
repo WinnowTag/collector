@@ -16,22 +16,13 @@ class FeedsController < ApplicationController
       end
       wants.json do
         @feeds = Feed.search(
-          :text_filter => params[:text_filter],
+          :text_filter => params[:text_filter], :mode => params[:mode],
           :order => params[:order], :direction => params[:direction], 
           :limit => 40, :offset => params[:offset])
         @full = @feeds.size < 40
       end
       wants.text { render :text => Feed.find(:all, :order => 'feeds.id').map(&:url).join("\n") }
       wants.xml  { render :xml => Feed.find(:all).to_xml }
-    end
-  end
-  
-  def duplicates
-    respond_to do |wants|
-      wants.html do
-        @feeds = Feed.find_duplicates(:order  => "feeds.title")
-      end
-      wants.xml { render :xml => Feed.find_duplicates.to_xml }
     end
   end
   

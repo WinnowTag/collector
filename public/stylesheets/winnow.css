@@ -1930,6 +1930,10 @@ body#info .messages ul li.sidebar_message .date {
   background-image: url(../images/trained.png);
 }
 
+.button .icon.duplicates {
+  background-image: url(../images/duplicates.png);
+}
+
 .button .icon.import {
   background-image: url(../images/import.png);
 }

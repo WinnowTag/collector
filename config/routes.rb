@@ -11,7 +11,7 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :collection_jobs
   map.resources :collection_summaries
   map.resources :feed_items, :member => { :spider => :get }
-  map.resources :feeds, :collection => { :duplicates => :get, :import => :post, :import_opml => :post } do |feeds_map|
+  map.resources :feeds, :collection => { :import => :post, :import_opml => :post } do |feeds_map|
     feeds_map.resources :collection_jobs
   end
   map.resources :item_caches do |item_caches_map|

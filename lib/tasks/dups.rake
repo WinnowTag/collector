@@ -70,7 +70,7 @@ namespace :dup do
   end
   
   def get_duplicate_groups
-    dups = Feed.find_duplicates()
+    dups = Feed.search(:mode => "duplicates")
     groups = dups.group_by(&:title)
     groups.map do |(title, feeds)|
       title if feeds.size < 2

@@ -7,8 +7,13 @@
   <%= rounded_button_link "Export Feeds", formatted_feeds_path(:txt), :icon => "export" %>
 
   <div class="group">
-    <label>Sort</label>
+    <label>Show</label>
+    <%= rounded_button_function "All",        "", :icon => "all",        :id => "mode_all", :class => "first" %>
+    <%= rounded_button_function "Duplicates", "", :icon => "duplicates", :id => "mode_duplicates" %>
+  </div>
 
+  <div class="group">
+    <label>Sort</label>
     <%= rounded_button_function "Title",        "", :icon => "", :id => "order_title", :class => "first order" %>
     <%= rounded_button_function "Active",       "", :icon => "", :id => "order_active", :class => "order" %>
     <%= rounded_button_function "Items",        "", :icon => "", :id => "order_feed_items_count", :class => "order" %>

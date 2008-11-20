@@ -42,15 +42,20 @@ class Feed < ActiveRecord::Base
     end
     
     def search(options = {})
-      joins, conditions, values = [], ['duplicate_id IS NULL'], []
+      joins, conditions, values = [], ['feeds.duplicate_id IS NULL'], []
     
       unless options[:text_filter].blank?
         conditions << '(feeds.title LIKE ? OR feeds.url LIKE ?)'
         values << "%#{options[:text_filter]}%" << "%#{options[:text_filter]}%"
       end
+      
+      case options[:mode]
+      when "duplicates"
+        joins << "INNER JOIN feeds AS f2 ON (feeds.title = f2.title OR feeds.link = f2.link) AND feeds.id <> f2.id AND feeds.duplicate_id IS NULL AND f2.duplicate_id IS NULL"
+      end
   
       order = case options[:order]
-      when "title", "active", "created_by", "created_on", "updated_on", "feed_items_count", "collection_errors_count"
+      when "id", "title", "active", "created_by", "created_on", "updated_on", "feed_items_count", "collection_errors_count"
         "feeds.#{options[:order]}"
       when "collection_errors_created_on"
         joins  << "LEFT JOIN collection_jobs ON feeds.id = collection_jobs.feed_id " 
@@ -70,16 +75,6 @@ class Feed < ActiveRecord::Base
         :conditions => [conditions.join(" AND "), *values], 
         :order => order, :limit => options[:limit], :offset => options[:offset]
       )
-    end
-
-    def find_duplicates(options = {})
-      options_for_find = {
-        :select => 'DISTINCT feeds.*',
-        :joins => 'INNER JOIN feeds AS f2 on (feeds.title = f2.title OR feeds.link = f2.link) ' <<
-                  'AND feeds.id <> f2.id AND feeds.duplicate_id IS NULL AND f2.duplicate_id IS NULL'
-      }.merge(options)
-
-      find(:all, options_for_find)
     end
 
     def active_feeds
