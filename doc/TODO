@@ -1,5 +1,5 @@
  • Feeds
-   • index - destroy, inactive - sort, created by
+   • index - destroy, created by
    • duplicates - combine with index
    • show - CollectionErrors, CollectionJobs, link to FeedItems in Winnow
  • CollectionSummaries

@@ -50,7 +50,7 @@ class Feed < ActiveRecord::Base
       end
   
       order = case options[:order]
-      when "title", "created_on", "updated_on", "feed_items_count", "collection_errors_count"
+      when "title", "active", "created_on", "updated_on", "feed_items_count", "collection_errors_count"
         "feeds.#{options[:order]}"
       when "collection_errors_created_on"
         joins  << "LEFT JOIN collection_jobs ON feeds.id = collection_jobs.feed_id " 
