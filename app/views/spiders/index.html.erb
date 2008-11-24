@@ -12,15 +12,4 @@
   You can click on the magnifying glass to see the actual results of the spidering.
 </p>
     
-<table class="data_table">
-  <tr>
-    <th>Feed</th>
-    <th>URL</th>
-    <th>Successful?</th>
-    <th>Collected?</th>
-    <th>Scraper used</th>
-    <th>Fetched at</th>
-    <th>&nbsp;</th>
-  </tr>
-  <%= render :partial => 'spider_result', :collection => @spider_results %>
-</table>
+<%= render :partial => "spider_results", :locals => { :spider_results => @spider_results } %>

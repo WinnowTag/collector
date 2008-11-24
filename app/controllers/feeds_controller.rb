@@ -158,7 +158,7 @@ class FeedsController < ApplicationController
     flash[:notice] = "#{@feed.url} has been removed"
     
     respond_to do |wants| 
-      wants.html { redirect_to :back }
+      wants.html { redirect_to feeds_path }
       wants.xml  { render :nothing => true }
     end
   end

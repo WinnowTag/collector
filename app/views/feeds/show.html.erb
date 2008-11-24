@@ -1,36 +1,29 @@
+<% content_for :body, "feeds" %>
+
 <% content_for :header_controls do -%>
+  <div class="toolbar">
+    <%= rounded_button_link 'Collect', feed_collection_jobs_path(@feed), :method => :post, :icon => "collect" %>
+  </div>
   <div class="toolbar right">
-    <%= rounded_button_link 'Collect', feed_collection_jobs_path(@feed.id), :method => :post %>
+    <%= rounded_button_link 'Destroy', feed_path(@feed), :method => :delete, :confirm => "Do you really want to delete this feed?", :icon => "destroy" %>
   </div>
 <% end -%>
 
-<table id="<%= "feed_#{@feed.id}" %>" class="property_table <%= "inactive" unless @feed.active? %>">
-  <tr>
-    <th>URL</th>
-    <td><%= link_to(@feed.url) %></td>
-  </tr>
-  <tr>
-    <th>Last Retrieved</th>
-    <td class="date"><%= format_date(@feed.updated_on) %></td>
-  </tr>
-  <tr>
-    <th>Number of Feed Items</th>
-    <td class="number"><%= @feed.feed_items.size %></td>
-  </tr>
-  <tr>
-    <th>Active</th>
-    <td><%= active_check_box @feed %></td>
-  </tr>
-  <tr>
-    <th>Created by</th>
-    <td><%= @feed.created_by %></td>
-  </tr>
-</table>
+<%= render :partial => "feed", :locals => { :feed => @feed } %>
 
-<h2>Scheduled Collection Jobs</h2>
-<p>These are collection jobs requested by users. They happen in addition to the regular collection cycle.</p>
-<%= render :partial => 'collection_jobs/collection_jobs', :locals => {:collection_jobs => @feed.collection_jobs } %>
+<% if @feed.collection_jobs.any? -%>
+  <h3>Scheduled Collection Jobs</h3>
+  <p>These are collection jobs requested by users. They happen in addition to the regular collection cycle.</p>
+  <%= render :partial => 'collection_jobs/collection_jobs', :locals => { :collection_jobs => @feed.collection_jobs } %>
+<% end -%>
 
-<h2>Collection Errors</h2>
-<p>These are errors from the automated collection process.</p>
-<%= render :partial => 'collection_errors/collection_errors', :locals => {:collection_errors => @feed.collection_errors} %>
+<% if @feed.collection_errors.any? -%>
+  <h3>Collection Errors</h3>
+  <p>These are errors from the automated collection process.</p>
+  <%= render :partial => 'collection_errors/collection_errors', :locals => { :collection_errors => @feed.collection_errors } %>
+<% end -%>
+
+<% if @feed.spider_results.any? -%>
+  <h3>Spider Results</h3>
+  <%= render :partial => 'spiders/spider_results', :locals => { :collection_errors => @feed.spider_results } %>
+<% end -%>

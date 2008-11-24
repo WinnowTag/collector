@@ -2,44 +2,18 @@
   <link rel="alternate" type="application/atom+xml" title="Collection History Feed" href="/collection_summaries.atom" />
 <% end -%>
 
-<table class="property_table">
-  <tr>
-    <th>Started</th>
-    <td><%= @collection_summary.created_on.to_formatted_s(:long) %></td>
-  </tr>
-  <tr>
-    <th>Completed</th>
-    <td><%= @collection_summary.completed_on.to_formatted_s(:long) if @collection_summary.completed_on %></td>
-  </tr>
-  <tr>
-    <th>Duration</th>
-    <td><%= @collection_summary.duration %></td>
-  </tr>
-  <tr>
-    <th>New Items</th>
-    <td><%= @collection_summary.item_count %></td>
-  </tr>
-  <tr>
-    <th>Jobs Completed</th>
-    <td><%= @collection_summary.completed_jobs.size %></td>
-  </tr>
-  <tr>
-    <th>Jobs Pending</th>
-    <td><%= @collection_summary.pending_jobs.size %></td>
-  </tr>
-</table>
+<%= render :partial => "collection_summary", :locals => { :collection_summary => @collection_summary } %>
 
 <% if @collection_summary.failed? -%>
-  <h2>Fatal Error</h2>
+  <h3>Fatal Error</h3>
   <p>A fatal error of type: "<%=h @collection_summary.fatal_error_type %>" occurred. This caused the collection to abort.</p>
-  <h4>Details</h4>
   <pre><%=h @collection_summary.fatal_error_message %></pre>
 <% end -%>
 
-<% unless @collection_summary.collection_errors.empty? %>
-  <h2>Collection Errors</h2>
+<% if @collection_summary.collection_errors.any? %>
+  <h3>Collection Errors</h3>
   <%= render :partial => 'collection_errors/collection_errors', :locals => { :collection_errors => @collection_summary.collection_errors } %>
 <% end -%>
 
-<h2>Collection Jobs</h2>
+<h3>Collection Jobs</h3>
 <%= render :partial => 'collection_jobs/collection_jobs_with_title', :locals => {:collection_jobs => @collection_summary.collection_jobs } %>
