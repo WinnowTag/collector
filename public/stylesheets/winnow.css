@@ -690,7 +690,15 @@ ul.filter_list li .auto_complete_name {
 
 #header_controls .order label,
 #header_controls .order a {
-  margin: 0.1em 0.5em 0 0;
+  margin-top: 0.1em;
+}
+
+#header_controls .order label {
+  margin-right: 0.5em;
+}
+
+#header_controls .order select {
+  margin-right: 0.25em;
 }
 
 #header_controls .order label,
