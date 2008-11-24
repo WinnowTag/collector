@@ -1,11 +1,11 @@
-<div class="toolbar right">
-  <div class="group">
-    <label>Sort</label>
-
-    <%= rounded_button_function "Items",     "", :icon => "", :id => "order_item_count", :class => "first order" %>
-    <%= rounded_button_function "Errors",    "", :icon => "", :id => "order_errors_count", :class => "order" %>
-    <%= rounded_button_function "Started",   "", :icon => "", :id => "order_created_on", :class => "order" %>
-    <%= rounded_button_function "Completed", "", :icon => "", :id => "order_completed_on", :class => "order" %>
-    <%= rounded_button_function "Duration",  "", :icon => "", :id => "order_duration", :class => "order" %>
-  </div>
+<div class="group order clearfix">
+  <label>Sort By</label>
+  <select id="order">
+    <option value="item_count">Items</option>
+    <option value="error_count">Errors</option>
+    <option value="created_on">Started</option>
+    <option value="completed_on">Completed</option>
+    <option value="duration">Duration</option>
+  </select>
+  <%= link_to_function "<span class='asc'>Ascending</span><span class='desc'>Descending</span>", "", :id => "direction" %>
 </div>

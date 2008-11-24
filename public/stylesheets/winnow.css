@@ -679,6 +679,7 @@ ul.filter_list li .auto_complete_name {
 #header_controls #text_filter_form {
   float: left;
   width: 25%;
+  padding: 0.35em 0;
 }
 
 /*
@@ -738,7 +739,7 @@ ul.filter_list li .auto_complete_name {
 
 .applesearch.non_safari .sbox_l {
   position: absolute;
-  top: 3px;
+  top: 1px;
   left: 0;
   width: 19px;
   height: 19px;
@@ -747,7 +748,7 @@ ul.filter_list li .auto_complete_name {
 
 .applesearch.non_safari .sbox_r {
   position: absolute;
-  top: 3px;
+  top: 1px;
   right: 0;
   width: 19px;
   height: 19px;
@@ -761,8 +762,8 @@ ul.filter_list li .auto_complete_name {
 
 .applesearch.non_safari input {
   position: relative;
-  top: 3px;
-  height: 19px;
+  top: 1px;
+  height: 13px;
   width: 100%;
   padding: 3px 0;
   margin-bottom: 0;
@@ -817,6 +818,50 @@ a.bookmarklet:hover {
 #add_feed fieldset {
   margin-bottom: 0;
   padding-bottom: 0;
+}
+
+.group.order {
+  float: right;
+  margin-left: 1em;
+  padding: 0.35em 0;
+}
+
+.group.order label,
+.group.order a {
+  margin: 0.1em 0.5em 0 0;
+}
+
+.group.order label,
+.group.order select,
+.group.order a {
+  float: left;
+}
+
+#direction {
+  width: 5.5em;
+  padding-left: 16px;
+  background-repeat: no-repeat;
+  background-position: left center;
+}
+
+#direction.asc {
+  background-image: url(../images/bullet_arrow_up.png);  
+}
+
+#direction.desc {
+  background-image: url(../images/bullet_arrow_down.png);
+}
+
+#direction span {
+  display: none;
+}
+
+#direction.asc .asc {
+  display: inline;
+}
+
+#direction.desc .desc {
+  display: inline;
 }
 
 /*

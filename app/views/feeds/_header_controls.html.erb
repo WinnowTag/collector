@@ -2,22 +2,25 @@
   <%= search_field_tag "text_filter", params[:text_filter], :placeholder => "Seach Feeds..." %>
 <% end -%>
 
+<div class="group order clearfix">
+  <label>Sort By</label>
+  <select id="order">
+    <option value="title">Title</option>
+    <option value="active">Active</option>
+    <option value="feed_items_count">Feed Items Count</option>
+    <option value="collection_errors_count">Errors</option>
+    <option value="collection_errors_created_on">Last Error</option>
+    <option value="created_by">Created By</option>
+    <option value="created_on">Created At</option>
+    <option value="updated_on">Last Updated</option>
+  </select>
+  <%= link_to_function "<span class='asc'>Ascending</span><span class='desc'>Descending</span>", "", :id => "direction" %>
+</div>
+
 <div class="toolbar right">
   <div class="group">
     <label>Show</label>
     <%= rounded_button_function "All",        "", :icon => "all",        :id => "mode_all", :class => "first" %>
     <%= rounded_button_function "Duplicates", "", :icon => "duplicates", :id => "mode_duplicates" %>
-  </div>
-
-  <div class="group">
-    <label>Sort</label>
-    <%= rounded_button_function "Title",        "", :icon => "", :id => "order_title", :class => "first order" %>
-    <%= rounded_button_function "Active",       "", :icon => "", :id => "order_active", :class => "order" %>
-    <%= rounded_button_function "Items",        "", :icon => "", :id => "order_feed_items_count", :class => "order" %>
-    <%= rounded_button_function "Errors",       "", :icon => "", :id => "order_collection_errors_count", :class => "order" %>
-    <%= rounded_button_function "Last Error",   "", :icon => "", :id => "order_collection_errors_created_on", :class => "order" %>
-    <%= rounded_button_function "Created By",   "", :icon => "", :id => "order_created_by", :class => "order" %>
-    <%= rounded_button_function "Created At",   "", :icon => "", :id => "order_created_on", :class => "order" %>
-    <%= rounded_button_function "Last Updated", "", :icon => "", :id => "order_updated_on", :class => "order" %>
   </div>
 </div>
