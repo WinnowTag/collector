@@ -456,7 +456,6 @@ body#login .container .form .content #invite_use {
   margin-right: 0.5em;
 }
 
-
 .section .header .actions .add_link {
   border-right: 1px solid #069;
   padding-right: 0.25em;
@@ -813,6 +812,11 @@ a.bookmarklet:hover {
 
 .feed .summary h4 .feed {
   background-image: url(../images/feed.png);
+}
+
+#add_feed fieldset {
+  margin-bottom: 0;
+  padding-bottom: 0;
 }
 
 /*

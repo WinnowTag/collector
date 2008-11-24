@@ -1,6 +1,7 @@
  • Feeds
    • index - remove 2 fields
-   • show - destroy, duplicate(s), feed_items, spider_results (and count, and latest), collection_jobs (and count, and latest), collection_errors
+   • show - destroy, duplicate(s), feed_items (link to winnow), spider_results (and count, and latest), collection_jobs (and count, and latest), collection_errors
+   • split errors out and don't display error fields on normal page?
  • CollectionSummaries
    • index - STYLE, title?, fatal error type and message, jobs, failed, confirm sorting by errors_count works
    • show - CollectionErrors, CollectionJobs

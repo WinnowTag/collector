@@ -17,3 +17,30 @@
 <% content_for :header_controls do -%>
   <%= render :partial => "header_controls" %>
 <% end -%>
+
+<% content_for :footer do -%>
+  <div id="add_feed" style="<%= flash[:error] || params[:feed] ? '' : 'display:none' %>">
+    <fieldset class="full">
+      <legend>Add / Import Feeds</legend>
+
+      <% form_for :feed, :url => import_feeds_path do |f| %>
+        <p>
+          This form allows you to import multiple feeds. 
+          The feeds will not be collected, you can either wait until the nightly collection does it, 
+          or manually collect the feeds from the <%= link_to 'Feeds', feeds_path %> page. 
+          Sorting by time updated is a good way to find feeds that need collecting.
+        </p>
+
+        <%= text_area_tag 'feed[urls]', @urls, :rows => 10, :cols => 70 %>
+        <div>
+          <%= submit_tag "Add Feeds" %> or <%= link_to_function "cancel", "$('add_feed').hide();Content.instance.resize()" %>
+        </div>
+      <% end %>
+    </fieldset>
+  </div>
+
+  <div class="toolbar right">
+    <%= rounded_button_function "Add / Import Feeds", "$('add_feed').toggle();Content.instance.resize()", :icon => "add" %>
+    <%= rounded_button_link "Export Feeds", formatted_feeds_path(:txt), :icon => "export" %>
+  </div>
+<% end -%>

@@ -3,9 +3,6 @@
 <% end -%>
 
 <div class="toolbar right">
-  <%= rounded_button_function "Add / Import Feeds", "$('add_feed').toggle()", :icon => "add" %>
-  <%= rounded_button_link "Export Feeds", formatted_feeds_path(:txt), :icon => "export" %>
-
   <div class="group">
     <label>Show</label>
     <%= rounded_button_function "All",        "", :icon => "all",        :id => "mode_all", :class => "first" %>
@@ -23,34 +20,4 @@
     <%= rounded_button_function "Created At",   "", :icon => "", :id => "order_created_on", :class => "order" %>
     <%= rounded_button_function "Last Updated", "", :icon => "", :id => "order_updated_on", :class => "order" %>
   </div>
-</div>
-
-<div id="add_feed" style="clear:both;<%= flash[:error] || params[:feed] ? '' : 'display:none' %>">
-  <fieldset class="full">
-    <legend>Add / Import Feeds</legend>
-
-    <% form_for :feed, :url => import_feeds_path do |f| %>
-      <p>
-        This form allows you to import multiple feeds. 
-        The feeds will not be collected, you can either wait until the nightly collection does it, 
-        or manually collect the feeds from the <%= link_to 'Feeds', feeds_path %> page. 
-        Sorting by time updated is a good way to find feeds that need collecting.
-      </p>
-      <p>
-        <%= text_area_tag 'feed[urls]', @urls, :rows => 10, :cols => 70 %><br/>
-        <%= submit_tag "Add Feeds" %> or <%= link_to_function "cancel", "$('add_feed').hide()" %>
-      </p>
-    <% end %>
-
-    <!-- <% form_tag import_feeds_path, :method => :post, :multipart => true do -%>
-      <p>
-        You can upload an OPML file containing a list of feeds. 
-        Most feed readers support exporting subscription lists in OPML format so you can easily add your feeds to Winnow.
-      </p>
-      <p>
-        <%= file_field_tag 'opml', :size => 60 %>
-        <%= submit_tag "Upload" %>
-      </p>
-    <% end -%> -->
-  </fieldset>
 </div>
