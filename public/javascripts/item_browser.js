@@ -230,10 +230,18 @@ var ItemBrowser = Class.create({
     this.direction_control.removeClassName("desc");
   
     if(this.filters.order) {
-      this.order_control.down("[value=" + this.filters.order + "]").setAttribute("selected", true);
+      this.order_control.select("option").each(function(option, index) {
+        if(option.value == this.filters.order) {
+          this.order_control.selectedIndex = index;
+        }
+      }.bind(this));
       this.direction_control.addClassName(this.filters.direction);
     } else if(this.defaultOrder()) {
-      this.order_control.down("[value=" + this.defaultOrder() + "]").setAttribute("selected", true);
+      this.order_control.select("option").each(function(option, index) {
+        if(option.value == this.filters.order) {
+          this.order_control.selectedIndex = index;
+        }
+      }.bind(this));
       this.direction_control.addClassName(this.defaultDirection());
     }
   },

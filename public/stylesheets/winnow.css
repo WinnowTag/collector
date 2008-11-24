@@ -837,6 +837,17 @@ body#feed_items .applesearch.non_safari input {
 /*
  * =feeds
  */
+a.bookmarklet {
+  background-color:#EBEBEB;
+  color:#565656;
+  font-weight: bold;
+  padding: 0.5em 1em;
+}
+
+a.bookmarklet:hover {
+  text-decoration: none;
+}
+
 .feed .summary h4 .blank, .feed .summary h4 .home, .feed .summary h4 .feed {
   float: left;
   width: 16px;
@@ -856,7 +867,7 @@ body#feed_items .applesearch.non_safari input {
   background-image: url(../images/feed.png);
 }
 
-#add_feed fieldset {
+#footer #add_feed fieldset {
   margin-bottom: 0;
   padding-bottom: 0;
 }
@@ -2010,4 +2021,20 @@ body#info .messages ul li.sidebar_message .date {
 
 .button .icon.collect {
   background-image: url(../images/collect.png);
+}
+
+.button.order .icon {
+  padding-left: 0;
+}
+
+.button.asc .icon {
+  padding-left: 16px;  
+  background-image: url(../images/bullet_arrow_up.png);  
+  background-position: -3px center;  
+}
+
+.button.desc .icon {
+  padding-left: 16px;  
+  background-image: url(../images/bullet_arrow_down.png);
+  background-position: -3px center;
 }
