@@ -4,7 +4,7 @@
  • CollectionSummaries
    • index - confirm sorting by errors_count works
  • ItemCache  
-   • index - STYLE, edit/destroy, inline new?, FailedOperations
+   • index - inline new/edit
  • Spiders - combine pages
 
  • Remove will_paginate

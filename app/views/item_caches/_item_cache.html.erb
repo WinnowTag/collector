@@ -1,0 +1,14 @@
+<div id="<%= dom_id(item_cache) %>" class="item_cache record clearfix">
+  <div class="summary clearfix">        
+    <div class="info">
+      <div class="count">
+        <p>Errors</p>
+        <strong><%= item_cache.failed_operations.size %></strong>
+      </div>
+    </div>    
+
+    <h4 class="clearfix">
+      <%= link_to item_cache.base_uri, item_cache %> <%= link_to(image_tag("external.gif"), item_cache.base_uri, :target => "_blank") %>
+    </h4>
+  </div>
+</div>

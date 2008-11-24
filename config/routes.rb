@@ -14,9 +14,7 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :feeds, :collection => { :import => :post, :import_opml => :post } do |feeds_map|
     feeds_map.resources :collection_jobs
   end
-  map.resources :item_caches do |item_caches_map|
-    item_caches_map.resources :failed_operations
-  end
+  map.resources :item_caches
   map.service "service", :controller => "service"
   map.resources :spiders, :collection => { :stats => :get, :test => :any }
   map.root :controller => "feeds"

@@ -10,6 +10,7 @@ class ItemCachesController < ApplicationController
 
   def show
     @item_cache = ItemCache.find(params[:id])
+    @failed_operations = @item_cache.failed_operations.paginate(:page => params[:page])
   end
 
   def new
