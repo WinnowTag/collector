@@ -1,11 +1,11 @@
 <div class="order clearfix">
   <label>Sort By</label>
   <select id="order">
+    <option value="created_on">Started At</option>
+    <option value="completed_on">Completed At</option>
+    <option value="duration">Duration</option>
     <option value="item_count">Items</option>
     <option value="error_count">Errors</option>
-    <option value="created_on">Started</option>
-    <option value="completed_on">Completed</option>
-    <option value="duration">Duration</option>
   </select>
   <%= link_to_function "<span class='asc'>Ascending</span><span class='desc'>Descending</span>", "", :id => "direction" %>
 </div>

@@ -1,6 +1,14 @@
-<div id="<%= dom_id(collection_summary) %>" class="collection_summary record clearfix <%#= collection_summary_classes(collection_summary) %>">
+<div id="<%= dom_id(collection_summary) %>" class="collection_summary record clearfix <%= collection_summary.status %>">
   <div class="summary clearfix">        
     <div class="info">
+      <div class="date">
+         <p>Completed At</p> 
+         <strong><%= format_date collection_summary.completed_on %></strong>
+      </div>
+      <div class="duration">
+         <p>Duration</p> 
+         <strong><%= collection_summary.duration %></strong>
+      </div>
       <div class="count">
         <p>Items</p>
         <strong><%= collection_summary.item_count %></strong>
@@ -10,29 +18,17 @@
         <strong><%= collection_summary.collection_errors.count %></strong>
       </div>
       <div class="count">
-        <p>Errors</p>
-        <strong><%= collection_summary.collection_errors.count %></strong>
-      </div>
-      <div class="count">
-        <p>Jobs Completed</p>
+        <p>Completed</p>
         <strong><%= collection_summary.completed_jobs.size %></strong>
       </div>
       <div class="count">
-        <p>Jobs Pending</p>
+        <p>Pending</p>
         <strong><%= collection_summary.pending_jobs.size %></strong>
-      </div>
-      <div class="date">
-         <p>Completed</p> 
-         <strong><%= format_date(collection_summary.completed_on) %></strong>
-      </div>
-      <div class="date">
-         <p>Duration</p> 
-         <strong><%= collection_summary.duration %></strong>
       </div>
     </div>    
 
-    <h4 class="clearfix">
-      <%= link_to "#{format_date(collection_summary.created_on)} - #{format_date(collection_summary.completed_on)}", collection_summary %>
+    <h4>
+      <%= link_to format_date(collection_summary.created_on), collection_summary %>
     </h4>
   </div>
 </div>

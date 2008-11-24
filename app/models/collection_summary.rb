@@ -33,12 +33,27 @@ class CollectionSummary < ActiveRecord::Base
   def duration
     unless completed_on.nil?
       seconds = (completed_on - created_on).to_i
-      "#{seconds / 1.hour} hours, #{(seconds % 1.hour) / 1.minute} minutes"
+      minutes = (seconds % 1.hour) / 1.minute
+      hours = seconds / 1.hour
+      if hours > 0 && minutes > 0
+        "#{hours}:#{'%.2d' % minutes} hours"
+      elsif hours > 0
+        "#{hours} hours"
+      elsif minutes > 0
+        "#{minutes} minutes"
+      end
+      
     end
   end
   
   def failed?
     !self.fatal_error_type.nil?
+  end
+  
+  def status
+    if failed?
+      "failed"
+    end
   end
   
   def increment_item_count(i)

@@ -1375,6 +1375,30 @@ ul.tag_list li.public .name {
   width: 7em;
 }
 
+/* 
+ * =collection_summary
+ */
+.collection_summary.failed .summary {
+  border-color: #E7ACAD;
+  background-color: #F6E0E0;
+}
+
+.collection_summary .summary .info .count {
+  width: 5em;
+}
+
+.collection_summary .summary .info .date {
+  width: 7em;
+}
+
+.collection_summary .summary .info .duration {
+  width: 6em;
+}
+
+body#collection_summaries .collection_summary {
+  margin-bottom: 1.5em;
+}
+
 /*
  * =tag
  */
