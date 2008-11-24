@@ -1,5 +1,4 @@
  • Feeds
-   • index - remove 2 fields
    • show - destroy, duplicate(s), feed_items (link to winnow), spider_results (and count, and latest), collection_jobs (and count, and latest), collection_errors
    • split errors out and don't display error fields on normal page?
  • CollectionSummaries
