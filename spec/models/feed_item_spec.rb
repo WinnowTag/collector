@@ -45,6 +45,7 @@ describe FeedItem do
     assert_equal ft_item.summary, feed_item.atom.content
     assert_equal "apple's growing pains", feed_item.sort_title
     assert_equal ft_item.summary.size, feed_item.content_length
+    feed_item.atom.id.should == "urn:uuid:#{feed_item.uuid}"
     assert feed_item.save
     
     # make sure we can't create another one wtih the same content but a different link

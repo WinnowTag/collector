@@ -10,9 +10,14 @@ class FeedItemAtomDocument < ActiveRecord::Base
   attr_accessor :atom
   
   class << self
-    def build_from_feed_item(feed_item_id, item, options = {}) 
+    def format_iri(uuid)
+      raise ArgumentError, "Got nil uuid" if uuid.nil?
+      "urn:uuid:#{uuid}"
+    end
+    
+    def build_from_feed_item(feed_item, item, options = {}) 
       atom_entry = Atom::Entry.new do |entry|
-        entry.id = "urn:peerworks.org:entry##{feed_item_id}"
+        entry.id = format_iri(feed_item.uuid) 
         entry.title = extract_title(item)
         entry.updated = extract_time(item)
       
@@ -23,16 +28,16 @@ class FeedItemAtomDocument < ActiveRecord::Base
         end
       
         entry.links << Atom::Link.new(:rel => 'self', 
-                                      :href => "#{options[:base]}/feed_items/#{feed_item_id}.atom")
+                                      :href => "#{options[:base]}/feed_items/#{feed_item.id}.atom")
         entry.links << Atom::Link.new(:rel => 'alternate', :href => item.link)
         entry.links << Atom::Link.new(:rel => 'http://peerworks.org/rel/spider', 
-                                      :href => "#{options[:base]}/feed_items/#{feed_item_id}/spider")
+                                      :href => "#{options[:base]}/feed_items/#{feed_item.id}/spider")
         entry.summary = item.summary unless item.summary == item.content
         
         entry.content = get_content(item)      
       end
     
-      new(:atom_document => atom_entry.to_xml, :feed_item_id => feed_item_id, :atom => atom_entry)
+      new(:atom_document => atom_entry.to_xml, :feed_item => feed_item, :atom => atom_entry)
     end
   
     def get_content(item)    

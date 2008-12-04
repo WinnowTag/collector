@@ -8,6 +8,9 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe FeedItemAtomDocument do
   before(:each) do
+    feed_url = File.join(File.expand_path(RAILS_ROOT), 'spec', 'fixtures', 'slashdot.rss')
+    feed = FeedParser.parse(File.open(feed_url))      
+    @item = feed.entries.first
     @feed_item_atom_document = FeedItemAtomDocument.new
   end
 
@@ -16,16 +19,14 @@ describe FeedItemAtomDocument do
   end
   
   describe '.create_from_feed_tools' do
-    before(:each) do
-      feed_url = File.join(File.expand_path(RAILS_ROOT), 'spec', 'fixtures', 'slashdot.rss')
-      feed = FeedParser.parse(File.open(feed_url))      
-      @item = feed.entries.first
-      @doc = FeedItemAtomDocument.build_from_feed_item(1234, @item, :base => 'http://collector.mindloom.org')
-      @entry = Atom::Entry.load_entry(@doc.atom_document)
+    before(:each) do    
+      @feed_item = FeedItem.create_from_feed_item(@item)
+      @doc = @feed_item.feed_item_atom_document
+      @entry = @feed_item.atom
     end
     
     it "should set the feed_item_id" do
-      @doc.feed_item_id.should == 1234
+      @doc.feed_item_id.should == @feed_item.id
     end
     
     it "should return an Atom:Entry" do
@@ -37,7 +38,7 @@ describe FeedItemAtomDocument do
     end
     
     it "should have the id" do
-      @entry.id.should == "urn:peerworks.org:entry#1234"
+      @entry.id.should == "urn:uuid:#{@feed_item.uuid}"
     end
     
     it "should have the updated date" do
@@ -49,7 +50,7 @@ describe FeedItemAtomDocument do
     end
     
     it "should have the content" do
-      @entry.content.should == @item.summary.gsub("\n", ' ')
+      @entry.content.should == @item.summary
     end
     
     it "should have the content type" do
@@ -66,40 +67,43 @@ describe FeedItemAtomDocument do
     
     it "should have the spider link pointing to http://base/feed_items/:id/spider" do
       @entry.links.select {|l| l.rel == 'http://peerworks.org/rel/spider'}.first.href.should == 
-          "http://collector.mindloom.org/feed_items/1234/spider"
+          "http://collector.mindloom.org/feed_items/#{@feed_item.id}/spider"
+    end
+  end
+    
+  describe 'without author' do
+    before(:each) do        
+      @item.stub!(:author).and_return(nil)
+      @feed_item = FeedItem.create_from_feed_item(@item)
+      @doc = @feed_item.feed_item_atom_document
+      @entry = @feed_item.atom
     end
     
-    describe 'without author' do
-      before(:each) do        
-        @item.stub!(:author).and_return(nil)
-        doc = FeedItemAtomDocument.build_from_feed_item("1234", @item, :base => 'http://blah')
-        @entry = Atom::Entry.load_entry(doc.atom_document)
-      end
-      
-      it "should have no authors" do
-        @entry.should have(0).authors
-      end
+    it "should have no authors" do
+      @entry.should have(0).authors
+    end
+  end
+  
+  describe 'create_from_feed_tools with non-utf-8 content' do
+    before(:each) do
+      @item.stub!(:content).and_return([mock('content', :value => "This is not utf-8 because of this character: \225")])
+      @feed_item = FeedItem.create_from_feed_item(@item)
+      @doc = @feed_item.feed_item_atom_document
+      @entry = @feed_item.atom      
     end
   
-    describe 'create_from_feed_tools with non-utf-8 content' do
-      before(:each) do
-        @item.stub!(:content).and_return([mock('content', :value => "This is not utf-8 because of this character: \225")])
-        doc = FeedItemAtomDocument.build_from_feed_item("1234", @item, :base => 'http://blah')
-        @entry = Atom::Entry.load_entry(doc.atom_document)
-      end
-    
-      it "should re-encode the content if it can" do
-        @entry.content.to_s.should == Iconv.iconv('utf-8', 'LATIN1', "This is not utf-8 because of this character: \225").first
-      end
+    it "should re-encode the content if it can" do
+      @entry.content.to_s.should == Iconv.iconv('utf-8', 'LATIN1', "This is not utf-8 because of this character: \225").first
     end
-  
-    describe "create_from_feed_tools with non-printable characters" do
-      it "should remove them" do
-        @item.stub!(:content).and_return([mock('content', :value => "This has a non\004-printable character")])
-        doc = FeedItemAtomDocument.build_from_feed_item("1234", @item, :base => 'http://blah')
-        @entry = Atom::Entry.load_entry(doc.atom_document)
-        @entry.content.should == "This has a non-printable character"
-      end
+  end
+
+  describe "create_from_feed_tools with non-printable characters" do
+    it "should remove them" do
+      @item.stub!(:content).and_return([mock('content', :value => "This has a non\004-printable character")])
+      @feed_item = FeedItem.create_from_feed_item(@item)
+      @doc = @feed_item.feed_item_atom_document
+      @entry = @feed_item.atom
+      @entry.content.should == "This has a non-printable character"
     end
   end
 end

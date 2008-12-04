@@ -48,7 +48,7 @@ class FeedItem < ActiveRecord::Base
 
       unless self.find_by_link_or_uid(entry.link, unique_id)
         new_feed_item = FeedItem.create(:link => entry.link, :unique_id => unique_id)
-        new_feed_item.feed_item_atom_document = FeedItemAtomDocument.build_from_feed_item(new_feed_item.id, entry, :base => FeedItem.base_uri)
+        new_feed_item.feed_item_atom_document = FeedItemAtomDocument.build_from_feed_item(new_feed_item, entry, :base => FeedItem.base_uri)
         new_feed_item.content_length          = new_feed_item.atom.content ? new_feed_item.atom.content.size : 0
         new_feed_item.item_updated            = new_feed_item.atom.updated
         new_feed_item.title                   = new_feed_item.atom.title
@@ -96,7 +96,7 @@ class FeedItem < ActiveRecord::Base
       Atom::Entry.load_entry(atom_doc)
     else
       Atom::Entry.new do |e|
-        e.id = "urn:peerworks.org:entry##{self.id}"
+        e.id = "urn:uuid:#{self.uuid}"
         e.title = self.title
         e.updated = self.item_updated
         e.links << Atom::Link.new(:rel => 'alternate', :href => self.link)
