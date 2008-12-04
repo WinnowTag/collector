@@ -7,7 +7,7 @@
 
 class SetUuidConstraints < ActiveRecord::Migration
   def self.up
-    change_column :feed_items, :uuid, :string, :limit => 36, :null => false
+    change_column :feed_items, :uri, :string, :null => false
   end
 
   def self.down

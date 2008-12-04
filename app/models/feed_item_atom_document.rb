@@ -10,14 +10,9 @@ class FeedItemAtomDocument < ActiveRecord::Base
   attr_accessor :atom
   
   class << self
-    def format_iri(uuid)
-      raise ArgumentError, "Got nil uuid" if uuid.nil?
-      "urn:uuid:#{uuid}"
-    end
-    
     def build_from_feed_item(feed_item, item, feed, options = {}) 
       atom_entry = Atom::Entry.new do |entry|
-        entry.id = format_iri(feed_item.uuid) 
+        entry.id = feed_item.uri
         entry.title = extract_title(item)
         entry.updated = extract_time(item)
       

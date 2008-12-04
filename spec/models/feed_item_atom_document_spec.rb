@@ -40,7 +40,7 @@ describe FeedItemAtomDocument do
     end
     
     it "should have the id" do
-      @entry.id.should == "urn:uuid:#{@feed_item.uuid}"
+      @entry.id.should == @feed_item.uri
     end
     
     it "should have the updated date" do

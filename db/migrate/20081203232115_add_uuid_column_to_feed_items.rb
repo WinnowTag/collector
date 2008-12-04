@@ -6,11 +6,11 @@
 
 class AddUuidColumnToFeedItems < ActiveRecord::Migration
   def self.up
-    add_column :feed_items, :uuid, :string, :limit => 36
-    add_index :feed_items, [:uuid], :unique => true
+    add_column :feed_items, :uri, :string
+    add_index :feed_items, [:uri], :unique => true
   end
 
   def self.down
-    remove_column :feed_items, :uuid
+    remove_column :feed_items, :uri
   end
 end

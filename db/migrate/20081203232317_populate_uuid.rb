@@ -6,7 +6,7 @@
 
 class PopulateUuid < ActiveRecord::Migration
   def self.up
-    execute "update feed_items set uuid = UUID() where uuid is NULL"
+    execute "update feed_items set uri = CONCAT('urn:uuid:', UUID()) where uri is NULL"
   end
 
   def self.down

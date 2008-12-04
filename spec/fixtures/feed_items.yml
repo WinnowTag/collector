@@ -26,7 +26,7 @@ first:
   content_length: 5
   created_on: <%= Time.now.utc.yesterday.yesterday.to_formatted_s(:db)%>
   title: Feed item 1
-  uuid: <%= UUID.timestamp_create.to_s %>
+  uri: <%= "urn:uuid:" + "urn:uuid:" + UUID.timestamp_create.to_s %>
 another:
   id: 2
   feed_id: 1
@@ -36,7 +36,7 @@ another:
   link: http://second
   created_on: <%= Time.now.utc.to_formatted_s(:db)%>
   title: Feed item 2
-  uuid: <%= UUID.timestamp_create.to_s %>
+  uri: <%= "urn:uuid:" + UUID.timestamp_create.to_s %>
 third:
   id: 3
   feed_id: 1
@@ -46,7 +46,7 @@ third:
   link: http://third
   created_on: <%= Time.now.utc.to_formatted_s(:db)%>
   title: Feed item 3
-  uuid: <%= UUID.timestamp_create.to_s %>
+  uri: <%= "urn:uuid:" + UUID.timestamp_create.to_s %>
 forth:
   id: 4
   feed_id: 2
@@ -56,4 +56,4 @@ forth:
   link: http://forth
   created_on: <%= Time.now.utc.tomorrow.to_formatted_s(:db)%>
   title: Feed item 4
-  uuid: <%= UUID.timestamp_create.to_s %>
+  uri: <%= "urn:uuid:" + UUID.timestamp_create.to_s %>

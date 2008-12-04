@@ -25,7 +25,7 @@ describe FeedItem do
     feed = FeedParser.parse(File.open(test_feed))
     ft_item = feed.entries.first
     item = FeedItem.create_from_feed_item(ft_item, Feed.find(1))
-    item.uuid.should_not be_nil
+    item.uri.should match(/urn:uuid:[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/)
   end
         
   it "create_from_feed_item" do
@@ -45,7 +45,7 @@ describe FeedItem do
     assert_equal ft_item.summary, feed_item.atom.content
     assert_equal "apple's growing pains", feed_item.sort_title
     assert_equal ft_item.summary.size, feed_item.content_length
-    feed_item.atom.id.should == "urn:uuid:#{feed_item.uuid}"
+    feed_item.atom.id.should == feed_item.uri
     assert feed_item.save
     
     # make sure we can't create another one wtih the same content but a different link

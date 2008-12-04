@@ -17,10 +17,10 @@
 # See also FeedItemAtomDocument.
 #
 class FeedItem < ActiveRecord::Base
-  attr_readonly(:uuid)
+  attr_readonly(:uri)
   validates_presence_of :link
   validates_uniqueness_of :unique_id, :link
-  before_create :generate_uuid
+  before_create :generate_uri
   
   belongs_to :feed, :counter_cache => true
   belongs_to :collection_job
@@ -97,7 +97,7 @@ class FeedItem < ActiveRecord::Base
       Atom::Entry.load_entry(atom_doc)
     else
       Atom::Entry.new do |e|
-        e.id = "urn:uuid:#{self.uuid}"
+        e.id = self.uri
         e.title = self.title
         e.updated = self.item_updated
         e.links << Atom::Link.new(:rel => 'alternate', :href => self.link)
@@ -106,7 +106,7 @@ class FeedItem < ActiveRecord::Base
   end
   
   private
-  def generate_uuid
-    self.uuid = UUID.timestamp_create.to_s
+  def generate_uri
+    self.uri = "urn:uuid:#{UUID.timestamp_create.to_s}"
   end
 end
