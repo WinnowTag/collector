@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20081009001913) do
+ActiveRecord::Schema.define(:version => 20081203235512) do
 
   create_table "collection_errors", :force => true do |t|
     t.integer  "collection_job_id"
@@ -74,18 +74,20 @@ ActiveRecord::Schema.define(:version => 20081009001913) do
   add_index "feed_item_atom_documents", ["feed_item_id"], :name => "index_feed_item_atom_documents_on_feed_item_id", :unique => true
 
   create_table "feed_items", :force => true do |t|
-    t.integer  "feed_id",           :default => 0
+    t.integer  "feed_id",                         :default => 0
     t.integer  "collection_job_id"
     t.string   "title"
     t.string   "link"
     t.datetime "item_updated"
     t.string   "unique_id"
     t.string   "atom_md5"
-    t.integer  "content_length",    :default => 0
+    t.integer  "content_length",                  :default => 0
     t.datetime "created_on"
     t.string   "sort_title"
+    t.string   "uuid",              :limit => 36,                :null => false
   end
 
+  add_index "feed_items", ["uuid"], :name => "index_feed_items_on_uuid", :unique => true
   add_index "feed_items", ["link"], :name => "index_feed_items_on_link", :unique => true
   add_index "feed_items", ["item_updated"], :name => "index_feed_items_on_time"
   add_index "feed_items", ["feed_id"], :name => "index_feed_items_on_feed_id"
@@ -135,15 +137,6 @@ ActiveRecord::Schema.define(:version => 20081009001913) do
   create_table "schema_info", :id => false, :force => true do |t|
     t.integer "version"
   end
-
-  create_table "sessions", :force => true do |t|
-    t.string   "session_id"
-    t.text     "data"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "sessions", ["session_id"], :name => "session_id_idx"
 
   create_table "spider_results", :force => true do |t|
     t.integer  "feed_item_id"

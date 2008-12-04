@@ -20,6 +20,14 @@ describe FeedItem do
     end
   end
   
+  it "should get a uuid" do
+    test_feed = File.join(File.expand_path(RAILS_ROOT), 'spec', 'fixtures', 'item_with_content_encoded.rss')
+    feed = FeedParser.parse(File.open(test_feed))
+    ft_item = feed.entries.first
+    item = FeedItem.create_from_feed_item(ft_item)
+    item.uuid.should_not be_nil
+  end
+        
   it "create_from_feed_item" do
     test_feed = File.join(File.expand_path(RAILS_ROOT), 'spec', 'fixtures', 'slashdot.rss')
     feed = FeedParser.parse(File.open(test_feed))

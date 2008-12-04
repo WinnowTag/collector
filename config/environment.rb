@@ -34,6 +34,7 @@ Rails::Initializer.run do |config|
   # Must be compiled
   config.gem "mysql"
   config.gem "tzinfo", :version => ">= 0.3.9"
+  config.gem "uuidtools"
 
   # Only load the plugins named here, in the order given. By default, all plugins 
   # in vendor/plugins are loaded in alphabetical order.

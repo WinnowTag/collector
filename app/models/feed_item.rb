@@ -17,8 +17,10 @@
 # See also FeedItemAtomDocument.
 #
 class FeedItem < ActiveRecord::Base
+  attr_readonly(:uuid)
   validates_presence_of :link
   validates_uniqueness_of :unique_id, :link
+  before_create :generate_uuid
   
   belongs_to :feed, :counter_cache => true
   belongs_to :collection_job
@@ -100,5 +102,10 @@ class FeedItem < ActiveRecord::Base
         e.links << Atom::Link.new(:rel => 'alternate', :href => self.link)
       end
     end
+  end
+  
+  private
+  def generate_uuid
+    self.uuid = UUID.timestamp_create.to_s
   end
 end
