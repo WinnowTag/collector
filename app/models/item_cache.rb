@@ -107,14 +107,6 @@ class ItemCache < ActiveRecord::Base
     end
   end
   
-  def self.collector_url
-    if RAILS_ENV == 'production' || RAILS_ENV == 'test'
-      'http://collector.mindloom.org'
-    else
-      'http://localhost:3000'
-    end
-  end
-  
   def hmac_access_id
     HMAC_CREDENTIALS['collector'] ? HMAC_CREDENTIALS['collector'].keys.first : nil
   end

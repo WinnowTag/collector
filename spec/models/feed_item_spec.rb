@@ -6,7 +6,7 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
 describe FeedItem do
-  fixtures :feed_items
+  fixtures :feed_items, :feeds
 
   class MockFeedItem 
     attr_accessor :updated_time, :feed, :feed_data, :author, :author_detail, :title, :link, :content, :id, :summary
@@ -24,7 +24,7 @@ describe FeedItem do
     test_feed = File.join(File.expand_path(RAILS_ROOT), 'spec', 'fixtures', 'item_with_content_encoded.rss')
     feed = FeedParser.parse(File.open(test_feed))
     ft_item = feed.entries.first
-    item = FeedItem.create_from_feed_item(ft_item)
+    item = FeedItem.create_from_feed_item(ft_item, Feed.find(1))
     item.uuid.should_not be_nil
   end
         
@@ -33,7 +33,7 @@ describe FeedItem do
     feed = FeedParser.parse(File.open(test_feed))
     ft_item = feed.items.first
     ft_item.stub!(:time).and_return(Time.now)
-    feed_item = FeedItem.create_from_feed_item(ft_item)
+    feed_item = FeedItem.create_from_feed_item(ft_item, Feed.find(1))
     feed_item.save
 
     assert_equal ft_item.title, feed_item.atom.title
@@ -50,7 +50,7 @@ describe FeedItem do
     
     # make sure we can't create another one wtih the same content but a different link
     ft_item.stub!(:link).and_return('http://somewhereelse.com')
-    dup = FeedItem.create_from_feed_item(ft_item)
+    dup = FeedItem.create_from_feed_item(ft_item, Feed.find(1))
     assert_nil dup
   end
   
@@ -59,7 +59,7 @@ describe FeedItem do
     feed = FeedParser.parse(File.open(test_feed))
     ft_item = feed.items.first
     ft_item.stub!(:time).and_return(Time.now)
-    feed_item = FeedItem.create_from_feed_item(ft_item)
+    feed_item = FeedItem.create_from_feed_item(ft_item, Feed.find(1))
     feed_item.save
     
     feed_item.atom_md5.should == Base64.encode64(Digest::MD5.digest(feed_item.atom_document))
@@ -73,7 +73,7 @@ describe FeedItem do
     ft_feed_item = MockFeedItem.new
     ft_feed_item.feed = feed
     ft_feed_item.updated_time = Time.now.tomorrow.tomorrow
-    feed_item = FeedItem.create_from_feed_item(ft_feed_item)
+    feed_item = FeedItem.create_from_feed_item(ft_feed_item, Feed.find(1))
     
     assert feed_item.item_updated < ft_feed_item.updated_time
   end
@@ -85,7 +85,7 @@ describe FeedItem do
     ft_feed_item = MockFeedItem.new
     ft_feed_item.feed = feed
     ft_feed_item.updated_time = Time.now.tomorrow.tomorrow
-    feed_item = FeedItem.create_from_feed_item(ft_feed_item)
+    feed_item = FeedItem.create_from_feed_item(ft_feed_item, Feed.find(1))
     
     feed_item.item_updated.should == now.getutc
   end
@@ -96,7 +96,7 @@ describe FeedItem do
     ft_feed_item = MockFeedItem.new
     ft_feed_item.feed = feed
     ft_feed_item.updated_time = nil
-    feed_item = FeedItem.create_from_feed_item(ft_feed_item)
+    feed_item = FeedItem.create_from_feed_item(ft_feed_item, Feed.find(1))
     assert_equal feed.updated_time, feed_item.item_updated
   end
     
@@ -104,7 +104,7 @@ describe FeedItem do
     test_feed = File.join(File.expand_path(RAILS_ROOT), 'spec', 'fixtures', 'item_with_content_encoded.rss')
     feed = FeedParser.parse(File.open(test_feed))
     ft_item = feed.entries.first
-    feed_item = FeedItem.create_from_feed_item(ft_item)
+    feed_item = FeedItem.create_from_feed_item(ft_item, Feed.find(1))
     
     assert_equal ft_item.title, feed_item.atom.title
     assert_equal ft_item.summary, feed_item.atom.summary
@@ -123,7 +123,7 @@ describe FeedItem do
     END
     ftitem = MockFeedItem.new
     ftitem.content = [mock('content', :value => content)]
-    item = FeedItem.create_from_feed_item(ftitem)
+    item = FeedItem.create_from_feed_item(ftitem, Feed.find(1))
     assert_equal("AMERICAN POWER.", item.title)
   end
   
@@ -139,7 +139,7 @@ describe FeedItem do
     END
     ftitem = MockFeedItem.new
     ftitem.content = [mock('content', :value => content)]
-    item = FeedItem.create_from_feed_item(ftitem)
+    item = FeedItem.create_from_feed_item(ftitem, Feed.find(1))
     assert_equal("Short Term Death", item.title)
   end
   
@@ -149,14 +149,14 @@ describe FeedItem do
     END
     ftitem = MockFeedItem.new
     ftitem.content = [mock('content', :value => content)]
-    item = FeedItem.create_from_feed_item(ftitem)
+    item = FeedItem.create_from_feed_item(ftitem, Feed.find(1))
     assert_equal(%Q(What Americans Have Sacrificed In Bush's "War On Terror"), item.title)
   end
   
   it "sort_title_generation" do
     mock = MockFeedItem.new
     mock.title = 'THE title Of the FEEDITEM'
-    feed_item = FeedItem.create_from_feed_item(mock)
+    feed_item = FeedItem.create_from_feed_item(mock, Feed.find(1))
     assert_equal 'title of the feeditem', feed_item.sort_title
     assert_equal 'THE title Of the FEEDITEM', feed_item.title
   end
@@ -166,7 +166,7 @@ describe FeedItem do
     feed = FeedParser.parse(File.open(test_feed))
     ft_item = feed.items.first
     ft_item.stub!(:time).and_return(Time.now)
-    feed_item = FeedItem.create_from_feed_item(ft_item)
+    feed_item = FeedItem.create_from_feed_item(ft_item, Feed.find(1))
     assert feed_item.save
     
     new_time = Time.now
@@ -176,7 +176,7 @@ describe FeedItem do
     ft_item.stub!(:title).and_return(new_title)
     ft_item.stub!(:content).and_return(new_content)
     
-    new_item = FeedItem.create_from_feed_item(ft_item)
+    new_item = FeedItem.create_from_feed_item(ft_item, Feed.find(1))
     assert_nil new_item
   end
   

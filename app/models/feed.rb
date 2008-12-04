@@ -11,6 +11,8 @@
 # get a list of feeds with item counts after applying similar
 # filters to those used by FeedItem.find_with_filters.
 class Feed < ActiveRecord::Base
+  cattr_accessor :base_uri
+  @@base_uri = "http://collector.mindloom.org"
   attr_accessor :just_published
   belongs_to :duplicate, :class_name => 'Feed'
   has_many	:feed_items, :dependent => :delete_all

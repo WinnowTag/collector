@@ -7,6 +7,8 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe FeedItemAtomDocument do
+  fixtures :feeds
+  
   before(:each) do
     feed_url = File.join(File.expand_path(RAILS_ROOT), 'spec', 'fixtures', 'slashdot.rss')
     feed = FeedParser.parse(File.open(feed_url))      
@@ -19,8 +21,8 @@ describe FeedItemAtomDocument do
   end
   
   describe '.create_from_feed_tools' do
-    before(:each) do    
-      @feed_item = FeedItem.create_from_feed_item(@item)
+    before(:each) do
+      @feed_item = FeedItem.create_from_feed_item(@item, Feed.find(1))
       @doc = @feed_item.feed_item_atom_document
       @entry = @feed_item.atom
     end
@@ -60,7 +62,17 @@ describe FeedItemAtomDocument do
     it "should have the alternate link pointing to link" do
       @entry.alternate.href.should == @item.link
     end
-
+    
+    it "should have the feed link" do
+      @feed_item.feed.should_not be_nil
+      @entry.links.select {|l| l.rel == 'http://peerworks.org/rel/feed'}.should_not be_empty
+    end
+    
+    it "should have the feed link pointing to the feed" do
+      @entry.links.select {|l| l.rel == 'http://peerworks.org/rel/feed'}.first.href.should ==
+        "http://collector.mindloom.org/feeds/#{@feed_item.feed.id}.atom"
+    end
+    
     it "should have a spider link" do
       @entry.links.select {|l| l.rel == 'http://peerworks.org/rel/spider'}.should_not be_empty
     end
@@ -74,7 +86,7 @@ describe FeedItemAtomDocument do
   describe 'without author' do
     before(:each) do        
       @item.stub!(:author).and_return(nil)
-      @feed_item = FeedItem.create_from_feed_item(@item)
+      @feed_item = FeedItem.create_from_feed_item(@item, Feed.find(1))
       @doc = @feed_item.feed_item_atom_document
       @entry = @feed_item.atom
     end
@@ -87,7 +99,7 @@ describe FeedItemAtomDocument do
   describe 'create_from_feed_tools with non-utf-8 content' do
     before(:each) do
       @item.stub!(:content).and_return([mock('content', :value => "This is not utf-8 because of this character: \225")])
-      @feed_item = FeedItem.create_from_feed_item(@item)
+      @feed_item = FeedItem.create_from_feed_item(@item, Feed.find(1))
       @doc = @feed_item.feed_item_atom_document
       @entry = @feed_item.atom      
     end
@@ -100,7 +112,7 @@ describe FeedItemAtomDocument do
   describe "create_from_feed_tools with non-printable characters" do
     it "should remove them" do
       @item.stub!(:content).and_return([mock('content', :value => "This has a non\004-printable character")])
-      @feed_item = FeedItem.create_from_feed_item(@item)
+      @feed_item = FeedItem.create_from_feed_item(@item, Feed.find(1))
       @doc = @feed_item.feed_item_atom_document
       @entry = @feed_item.atom
       @entry.content.should == "This has a non-printable character"

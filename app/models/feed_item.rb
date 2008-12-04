@@ -42,18 +42,19 @@ class FeedItem < ActiveRecord::Base
 
     # Build a FeedItem from a rFeedParser entry.
     #
-    def create_from_feed_item(entry)
+    def create_from_feed_item(entry, feed)
       new_feed_item = nil
       unique_id = self.make_unique_id(entry)
 
       unless self.find_by_link_or_uid(entry.link, unique_id)
         new_feed_item = FeedItem.create(:link => entry.link, :unique_id => unique_id)
-        new_feed_item.feed_item_atom_document = FeedItemAtomDocument.build_from_feed_item(new_feed_item, entry, :base => FeedItem.base_uri)
+        new_feed_item.feed_item_atom_document = FeedItemAtomDocument.build_from_feed_item(new_feed_item, entry, feed, :base => FeedItem.base_uri)
         new_feed_item.content_length          = new_feed_item.atom.content ? new_feed_item.atom.content.size : 0
         new_feed_item.item_updated            = new_feed_item.atom.updated
         new_feed_item.title                   = new_feed_item.atom.title
         new_feed_item.sort_title              = new_feed_item.title.sub(/^(the|an|a) +/i, '').downcase if new_feed_item.title
         new_feed_item.atom_md5                = Base64.encode64(Digest::MD5.digest(new_feed_item.atom_document))
+        feed.feed_items << new_feed_item
         new_feed_item.save!
       end
 

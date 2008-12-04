@@ -112,14 +112,13 @@ class CollectionJob < ActiveRecord::Base
     end
     
     parsed_feed.entries.each do |entry|
-      if feed_item = FeedItem.create_from_feed_item(entry)
-        self.feed.feed_items << feed_item
+      if feed_item = FeedItem.create_from_feed_item(entry, self.feed)
         self.feed_items << feed_item
       end
     end
     
     self.feed.update_from_feed!(parsed_feed.feed)
-    self.item_count = self.feed_items.size
+    self.item_count = self.feed_items.count
   end
   
   def complete_job

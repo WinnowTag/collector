@@ -15,7 +15,7 @@ class FeedItemAtomDocument < ActiveRecord::Base
       "urn:uuid:#{uuid}"
     end
     
-    def build_from_feed_item(feed_item, item, options = {}) 
+    def build_from_feed_item(feed_item, item, feed, options = {}) 
       atom_entry = Atom::Entry.new do |entry|
         entry.id = format_iri(feed_item.uuid) 
         entry.title = extract_title(item)
@@ -32,8 +32,12 @@ class FeedItemAtomDocument < ActiveRecord::Base
         entry.links << Atom::Link.new(:rel => 'alternate', :href => item.link)
         entry.links << Atom::Link.new(:rel => 'http://peerworks.org/rel/spider', 
                                       :href => "#{options[:base]}/feed_items/#{feed_item.id}/spider")
-        entry.summary = item.summary unless item.summary == item.content
+        if feed
+          entry.links << Atom::Link.new(:rel => 'http://peerworks.org/rel/feed',
+                                        :href => "#{options[:base]}/feeds/#{feed.id}.atom")
+        end
         
+        entry.summary = item.summary unless item.summary == item.content        
         entry.content = get_content(item)      
       end
     
