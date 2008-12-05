@@ -25,7 +25,7 @@ Story: Atom Client Access
     
     Then the feed contains the items
     And  it contains the title
-    And  the id fragment matches the feed id
+    And  the id is a uuid urn
     And  fetching self returns an Atom::Feed
   
   Scenario: Accessing an item for a feed
@@ -38,4 +38,4 @@ Story: Atom Client Access
     And item 1 of the feed
         
     Then  it contains the title        
-    And the id fragment matches the item id
+    And the id is a uuid urn

@@ -26,10 +26,11 @@ steps_for(:atom_service_interation) do
   Given("a base url") do
     @base = 'http://localhost:4000'
   end
-  
+     
   # Whens
   When("I fetch the service document") do
-    @service = Atom::Pub::Service.load_service(URI.parse("#{@base}/service"))
+    @service = Atom::Pub::Service.load_service(URI.parse("#{@base}/service"),
+                                  :hmac_access_id => 'winnow_id', :hmac_secret_key => 'winnow_secret')
   end
   
   When("I fetch the feed for the first collection") do
@@ -68,8 +69,8 @@ steps_for(:atom_service_interation) do
     @atom.should have(@test_object.feed_items.size).entries
   end
   
-  Then("the id fragment matches the $db id") do |db|
-    URI.parse(@atom.id).fragment.to_i.should == @test_object.id
+  Then("the id is a uuid urn") do |db|
+    @atom.id.should match(/urn:uuid:[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/)
   end
   
   Then("fetching self returns an $klass") do |klass|

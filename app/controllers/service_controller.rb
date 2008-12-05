@@ -5,6 +5,7 @@
 # Please visit http://www.peerworks.org/contact for further information.
 class ServiceController < ApplicationController
   skip_before_filter :login_required
+  before_filter :login_required_unless_hmac_authenticated
   
   def index
     @feeds = Feed.find(:all, :conditions => ['duplicate_id is null'])
