@@ -78,12 +78,12 @@ describe FeedsController do
 
     it "create_with_duplicate_url_redirects_to_duplicate" do
       post :create, :feed => {:url => Feed.find(1).url}
-      assert_redirected_to feed_url(Feed.find(1))
+      assert_redirected_to feed_url(:id => Feed.find(1).uri)
     end
   
     it "create_with_duplicate_placeholder_url_redirects_to_duplicate" do
       post :create, :feed => {:url => feeds(:duplicate_feed).url}
-      assert_redirected_to feed_url(feeds(:duplicate_feed).duplicate)
+      assert_redirected_to feed_url(:id => feeds(:duplicate_feed).duplicate.uri)
     end    
   
     it "should fail when created with an invalid url" do
@@ -99,13 +99,13 @@ describe FeedsController do
     it "rest_create_with_duplicate_url_redirects_to_duplicate" do
       accept("application/xml")
       post :create, :feed => {:url => Feed.find(1).url}
-      assert_redirected_to feed_url(Feed.find(1))
+      assert_redirected_to feed_url(:id => Feed.find(1).uri)
     end
   
     it "rest_create_with_duplicate_placeholder_url_redirects_to_duplicate" do
       accept("application/xml")
       post :create, :feed => {:url => feeds(:duplicate_feed).url}
-      assert_redirected_to feed_url(feeds(:duplicate_feed).duplicate)
+      assert_redirected_to feed_url(:id => feeds(:duplicate_feed).duplicate.uri)
     end  
     
     it "create_accepting_xml   " do
@@ -114,7 +114,7 @@ describe FeedsController do
         post :create, :feed => {:url => 'http://test.feed/'}
         assert feed = Feed.find_by_url('http://test.feed/')
         assert_equal("application/xml", @response.content_type)
-        assert_equal(feed_url(feed), @response.headers['Location'])
+        assert_equal(feed_url(:id => feed.uri), @response.headers['Location'])
         assert_response 201
       end
     end
@@ -212,7 +212,23 @@ describe FeedsController do
       get :show, :id => 1
       assert_match(/application\/xml/, @response.content_type)
     end
+    
+    it "should respond to show with uuid" do
+      accept("text/xml")
+      get :show, :id => Feed.find(1).uri
+      response.should be_success
+    end
 
+    it "should assign feed with uuid" do
+      accept("text/xml")
+      get :show, :id => Feed.find(1).uri
+      assigns(:feed).should == Feed.find(1)
+    end
+    
+    it "should return 404 if uuid is missing" do
+      lambda { get(:show, :id => "urn:uuid:blah") }.should raise_error(ActiveRecord::RecordNotFound)
+    end
+    
     it "show_assigns_feed" do
       get :show, :id => 1
       assert_response :success

@@ -59,7 +59,7 @@ class FeedsController < ApplicationController
   def create
     @feed = Feed.find_or_build_by_url(params[:feed][:url])
     unless @feed.new_record?
-      redirect_to feed_url(@feed)
+      redirect_to feed_url(:id => @feed.uri)
     else
       respond_to do |wants|
         @feed.created_by = params[:feed][:created_by]
@@ -67,7 +67,7 @@ class FeedsController < ApplicationController
         if @feed.save
           wants.html { redirect_to feeds_url }
           wants.xml do
-            head :created, :location => feed_url(@feed)
+            head :created, :location => feed_url(:id => @feed.uri)
           end
         else
           flash.now[:error] = @feed.errors.full_messages.join("<br/")
@@ -80,7 +80,7 @@ class FeedsController < ApplicationController
   
   # Shows the details for a single feed.
   def show
-    @feed = Feed.find(params[:id])
+    @feed = Feed.find(params[:id]) rescue Feed.find_by_uri(params[:id])
     if @feed.is_duplicate? and @feed.duplicate
       redirect_to feed_url(@feed.duplicate)
     else
@@ -103,7 +103,7 @@ class FeedsController < ApplicationController
   # It does not allow the URL or any attributes retrieved 
   # from a feed to be changed.
   def update
-    @feed = Feed.find(params[:id])
+    @feed = Feed.find(params[:id]) rescue Feed.find_by_uri(params[:id])
         
     respond_to do |wants|
       if @feed.update_attributes(params[:feed])

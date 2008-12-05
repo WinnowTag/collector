@@ -28,6 +28,12 @@ class Feed < ActiveRecord::Base
   has_one  :last_completed_job, :order => 'completed_at desc', :conditions => "http_response_code = '200'", :class_name => 'CollectionJob'
   
   class << self
+    def find_by_uri(uri)
+      returning(find(:first, :conditions => ['uri = ?', uri])) do |feed|
+        raise ActiveRecord::RecordNotFound, "No feed for #{uri}" if feed.nil?
+      end
+    end
+    
     # Return a list of Feeds that are active.
     def active_feeds
       find(:all, :order => "title ASC",
