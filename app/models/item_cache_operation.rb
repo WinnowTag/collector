@@ -21,4 +21,8 @@ class ItemCacheOperation < ActiveRecord::Base
       self.save
     end
   end
+    
+  def after_initialize
+    self.actionable_uri = self.actionable.uri if self.actionable.respond_to?(:uri)
+  end
 end

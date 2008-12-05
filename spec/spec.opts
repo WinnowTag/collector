@@ -1,3 +1,4 @@
 --color
 --loadby mtime
 --reverse
+--diff

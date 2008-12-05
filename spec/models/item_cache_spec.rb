@@ -182,7 +182,12 @@ describe ItemCache do
         response = mock_response(Net::HTTPCreated, item.atom.to_xml)
     
         http = mock('http')
-        http.should_receive(:request).with(an_instance_of(Net::HTTP::Post), item.atom.to_xml).and_return(response)
+        http.should_receive(:request) do |request, body|
+          request.should be_is_a(Net::HTTP::Post)
+          body.should == item.atom.to_xml
+          request.path.should == "/feeds/#{item.feed.uri}/feed_items"
+          response
+        end
         Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
     
         ItemCache.find(:first).process_operation(op)
@@ -213,7 +218,11 @@ describe ItemCache do
         response = mock_response(Net::HTTPSuccess, nil)
       
         http = mock('http')
-        http.should_receive(:request).with(an_instance_of(Net::HTTP::Put), an_instance_of(String)).and_return(response)
+        http.should_receive(:request)do |request, body|
+          request.should be_is_a(Net::HTTP::Put)
+          request.path.should == "/feeds/#{feed.uri}"
+          response
+        end
         Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
       
         ItemCache.find(:first).process_operation(op)
@@ -226,7 +235,11 @@ describe ItemCache do
         response = mock_response(Net::HTTPSuccess, nil)
       
         http = mock('http')
-        http.should_receive(:request).with(an_instance_of(Net::HTTP::Put), an_instance_of(String)).and_return(response)
+        http.should_receive(:request) do |request, body|
+          request.should be_is_a(Net::HTTP::Put)
+          request.path.should == "/feed_items/#{item.uri}"
+          response
+        end
         Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
       
         ItemCache.find(:first).process_operation(op)
@@ -251,26 +264,34 @@ describe ItemCache do
   
     describe '#delete' do
       it "should send a DELETE request to base_uri/feeds/:feed_id to delete a feed" do
-        feed = mock_model(Feed) # use a mock for deletion since it won't actually exist in the DB
-        op = ItemCacheOperation.create!(:action => 'delete', :actionable_type => Feed.name, :actionable_id => feed.id)
+        feed = mock_model(Feed, :uri => "urn:uuid:blah") # use a mock for deletion since it won't actually exist in the DB
+        op = ItemCacheOperation.create!(:action => 'delete', :actionable => feed)
         
         response = mock_response(Net::HTTPSuccess, nil)
       
         http = mock('http')
-        http.should_receive(:request).with(an_instance_of(Net::HTTP::Delete)).and_return(response)
+        http.should_receive(:request) do |request, body|
+          request.should be_is_a(Net::HTTP::Delete)
+          request.path.should == "/feeds/#{feed.uri}"
+          response
+        end
         Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
       
         ItemCache.find(:first).process_operation(op)
       end
     
       it "should send a DELETE request to base_uri/feed_items/:feed_item_id to delete a feed item" do
-        item = mock_model(FeedItem)
-        op = ItemCacheOperation.create!(:action => 'delete', :actionable_type => FeedItem.name, :actionable_id => item.id)
+        item = mock_model(FeedItem, :uri => 'urn:uuid:blahblah')
+        op = ItemCacheOperation.create!(:action => 'delete', :actionable => item)
         
         response = mock_response(Net::HTTPSuccess, nil)
       
         http = mock('http')
-        http.should_receive(:request).with(an_instance_of(Net::HTTP::Delete)).and_return(response)
+        http.should_receive(:request) do |request, body|
+          request.should be_is_a(Net::HTTP::Delete)
+          request.path.should == "/feed_items/urn:uuid:blahblah"
+          response
+        end
         Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
       
         ItemCache.find(:first).process_operation(op)

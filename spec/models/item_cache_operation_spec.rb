@@ -7,7 +7,8 @@ require File.dirname(__FILE__) + '/../spec_helper'
 
 describe ItemCacheOperation do
   before(:each) do
-    @item_cache_operation = ItemCacheOperation.new(:actionable => mock_model(Feed), :action => 'publish')
+    @feed = Feed.find(1)    
+    @item_cache_operation = ItemCacheOperation.new(:actionable => @feed, :action => 'publish')
   end
   
   describe "action types" do    
@@ -29,6 +30,10 @@ describe ItemCacheOperation do
       @item_cache_operation.action = 'foozly'
       @item_cache_operation.should_not be_valid
     end
+  end
+  
+  it "should set the uri from the actionable" do
+    @item_cache_operation.actionable_uri.should == @feed.uri
   end
   
   describe ".next_job with no jobs" do    

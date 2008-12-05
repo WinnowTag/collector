@@ -51,7 +51,7 @@ class ItemCache < ActiveRecord::Base
       when 'update'
         do_update(op.actionable)
       when 'delete'
-        do_delete(op.actionable_type, op.actionable_id)
+        do_delete(op.actionable_type, op.actionable_uri)
       end
     rescue Atom::Pub::ProtocolError => e
       self.failed_operations.create(:item_cache_operation => op, :response => e.response)
@@ -72,7 +72,7 @@ class ItemCache < ActiveRecord::Base
     when Feed
       feed_collection.publish(feed_or_item.to_atom_entry, hmac_credentials)
     when FeedItem
-      collection = feed_collection(feed_or_item.feed_id)
+      collection = feed_collection(feed_or_item.feed.uri)
       logger.info("publishing item(#{feed_or_item.id}) to #{collection.href}")
       collection.publish(feed_or_item.atom, hmac_credentials)      
     end
@@ -88,7 +88,7 @@ class ItemCache < ActiveRecord::Base
     path = feed_or_item.is_a?(Feed) ? 'feeds' : 'feed_items'
         
     # Create an edit link so the Atom library know where to send the update    
-    atom.links << Atom::Link.new(:rel => 'edit', :href => "#{self.base_uri}/#{path}/#{feed_or_item.id}")
+    atom.links << Atom::Link.new(:rel => 'edit', :href => "#{self.base_uri}/#{path}/#{feed_or_item.uri}")
     atom.save!(hmac_credentials)
   end
   
@@ -102,7 +102,7 @@ class ItemCache < ActiveRecord::Base
   def feed_collection(feed = :all)
     if feed == :all
       Atom::Pub::Collection.new(:href => "#{self.base_uri}/feeds")
-    elsif feed.is_a?(Integer)
+    else
       Atom::Pub::Collection.new(:href => "#{self.base_uri}/feeds/#{feed}/feed_items")
     end
   end
