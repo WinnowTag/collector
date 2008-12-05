@@ -19,6 +19,7 @@ describe Feed do
       assert_equal pf.feed.title, winnow_feed.title
       assert_equal pf.feed.link, winnow_feed.link
       assert_equal pf.feed.title.sub(/^(the|an|a) +/i, '').downcase, winnow_feed.sort_title
+      winnow_feed.uri.should match(/urn:uuid:[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/)
     end
   
     it "collect_all_creates_new_collection_summary" do
@@ -32,14 +33,6 @@ describe Feed do
         Feed.collect_all
       end
     end
-  
-    it "collect_all_logs_fatal_error_in_summary" # do
-     #      stub_collection(ActiveRecord::ActiveRecordError.new("Error message"))
-     #      summary = nil
-     #      assert_nothing_raised(ActiveRecord::ActiveRecordError) { summary = Feed.collect_all }
-     #      assert_equal("ActiveRecord::ActiveRecordError", summary.fatal_error_type)
-     #      assert_equal("Error message", summary.fatal_error_message)
-     #    end
   
     it "max_feed_items_overrides_and_randomizes_feed_items" do
       feed = Feed.find(1)
@@ -230,7 +223,7 @@ describe Feed do
     end
   
     it "should output the id" do
-      @atom.id.should == "urn:peerworks.org:feed##{@feed.id}"
+      @atom.id.should == @feed.uri
     end    
   end
   
@@ -241,7 +234,7 @@ describe Feed do
     end
     
     it "should encode the duplicate as a link" do
-      @atom.links.detect {|l| l.rel == "http://peerworks.org/duplicateOf"}.href.should == "urn:peerworks.org:feed##{@feed.duplicate_id}"
+      @atom.links.detect {|l| l.rel == "http://peerworks.org/duplicateOf"}.href.should == @feed.duplicate.uri
     end
   end 
   
@@ -277,7 +270,7 @@ describe Feed do
       end
     
       it "should output the id" do
-        @atom.id.should == "urn:peerworks.org:feed##{@feed.id}"
+        @atom.id.should == @feed.uri
       end
     end
   
@@ -309,11 +302,15 @@ describe Feed do
       describe "the item" do
         before(:each) do
           @item = FeedItem.find(1)
-          @atom_item = @atom.entries.detect {|e| e.id == "urn:peerworks.org:entry#1"}
+          @atom_item = @atom.entries.detect {|e| e.id == @item.uri }
+        end
+        
+        it "should not be nil" do
+          @atom_item.should_not be_nil
         end
         
         it "should have an id" do
-          @atom_item.id.should == "urn:peerworks.org:entry##{@item.id}"
+          @atom_item.id.should == @item.uri
         end
         
         it "should have a title" do

@@ -69,8 +69,7 @@ describe FeedItemAtomDocument do
     end
     
     it "should have the feed link pointing to the feed" do
-      @entry.links.select {|l| l.rel == 'http://peerworks.org/rel/feed'}.first.href.should ==
-        "http://collector.mindloom.org/feeds/#{@feed_item.feed.id}.atom"
+      @entry.links.select {|l| l.rel == 'http://peerworks.org/rel/feed'}.first.href.should == @feed_item.feed.uri
     end
     
     it "should have a spider link" do

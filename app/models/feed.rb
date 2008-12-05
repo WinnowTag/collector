@@ -10,10 +10,12 @@
 # collect and collect_all methods. It also provides a way to
 # get a list of feeds with item counts after applying similar
 # filters to those used by FeedItem.find_with_filters.
-class Feed < ActiveRecord::Base
+class Feed < ActiveRecord::Base  
   cattr_accessor :base_uri
   @@base_uri = "http://collector.mindloom.org"
   attr_accessor :just_published
+  attr_readonly(:uri)
+  before_create :generate_uri
   belongs_to :duplicate, :class_name => 'Feed'
   has_many	:feed_items, :dependent => :delete_all
   validates_uniqueness_of :url, :message => 'Feed already exists'
@@ -213,7 +215,7 @@ class Feed < ActiveRecord::Base
     Atom::Feed.new do |feed|
       feed.title = self.title
       feed.updated = self.updated_on
-      feed.id = "urn:peerworks.org:feed##{self.id}"
+      feed.id = self.uri
       feed.links << Atom::Link.new(:rel => 'via', :href => self.url)
       feed.links << Atom::Link.new(:rel => 'self', :href => self_link)
       feed.links << Atom::Link.new(:rel => 'alternate', :href => self.link)
@@ -251,12 +253,12 @@ class Feed < ActiveRecord::Base
       entry.title = self.title
       entry.updated = self.updated_on
       entry.published = self.created_on
-      entry.id = "urn:peerworks.org:feed##{self.id}"
+      entry.id = self.uri
       entry.links << Atom::Link.new(:rel => 'via', :href => self.url)
       entry.links << Atom::Link.new(:rel => 'self', :href => "#{options[:base]}/feeds/#{self.id}.atom")
       entry.links << Atom::Link.new(:rel => 'alternate', :href => self.link)
       entry.links << Atom::Link.new(:rel => 'http://peerworks.org/duplicateOf', 
-                                    :href => "urn:peerworks.org:feed##{self.duplicate_id}") if self.duplicate_id      
+                                    :href => self.duplicate.uri) if self.duplicate
     end
   end
   
@@ -282,6 +284,10 @@ class Feed < ActiveRecord::Base
   # updated on is used to indicate when the feed was last collected - so set it to nil on create
   def before_create
     write_attribute('updated_on', nil)
+  end
+  
+  def generate_uri
+    self.uri = "urn:uuid:#{UUID.timestamp_create.to_s}"
   end
   
   def url_is_not_from_winnow

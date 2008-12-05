@@ -28,8 +28,7 @@ class FeedItemAtomDocument < ActiveRecord::Base
         entry.links << Atom::Link.new(:rel => 'http://peerworks.org/rel/spider', 
                                       :href => "#{options[:base]}/feed_items/#{feed_item.id}/spider")
         if feed
-          entry.links << Atom::Link.new(:rel => 'http://peerworks.org/rel/feed',
-                                        :href => "#{options[:base]}/feeds/#{feed.id}.atom")
+          entry.links << Atom::Link.new(:rel => 'http://peerworks.org/rel/feed', :href => feed.uri)
         end
         
         entry.summary = item.summary unless item.summary == item.content        

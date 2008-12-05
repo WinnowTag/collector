@@ -10,7 +10,7 @@ one:
     <author>
       <name>John Smith</name>
     </author>
-    <id>urn:peerworks.org:entry#1</id>
+    <id>urn:uuid:bab5ee58-c265-11dd-ad85-001f5becbb36</id>
     <content type="html">This &lt;em&gt;is&lt;/em&gt; html.</content>
     <updated><%= Time.now.utc.yesterday.yesterday.xmlschema%></updated>
     <summary>Some text.</summary>
