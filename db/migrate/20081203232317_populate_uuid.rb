@@ -6,7 +6,8 @@
 
 class PopulateUuid < ActiveRecord::Migration
   def self.up
-    execute "update feed_items set uri = CONCAT('urn:uuid:', UUID()) where uri is NULL"
+    # tHis keeps the legacy uri's for existing items
+    execute "update feed_items set uri = CONCAT('urn:peerworks.org:entry#', id) where uri is NULL"
   end
 
   def self.down
