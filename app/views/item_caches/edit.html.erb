@@ -3,7 +3,8 @@
 <% form_for(@item_cache) do |f| %>
   <fieldset>
 		<legend>Enter the base URL for an item cache</legend>
-		<p><%= f.label(:base_uri, "Base URI") %><%= f.text_field(:base_uri, :size => 65) %></p>
+		<p><%= f.label(:base_uri, "Base URI") %><%= f.text_field(:base_uri, :size => 65) %></p>		
+		<p><%= f.label(:items_only, "Only publish items")%><%= f.check_box(:items_only) %></p>
 		<p><label>&nbsp;</label>
 			<%= submit_tag "Create" %> 
 			<%= link_to "Cancel", feeds_url %>

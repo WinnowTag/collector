@@ -43,6 +43,8 @@ class ItemCache < ActiveRecord::Base
   end
   
   def process_operation(op)
+    return if self.items_only? && op.actionable.is_a?(Feed)
+    
     logger.info("sending #{op.inspect} to #{base_uri}")
     begin
       case op.action
@@ -84,26 +86,34 @@ class ItemCache < ActiveRecord::Base
     else
       feed_or_item.atom
     end
-    
-    path = feed_or_item.is_a?(Feed) ? 'feeds' : 'feed_items'
-        
+            
     # Create an edit link so the Atom library know where to send the update    
-    atom.links << Atom::Link.new(:rel => 'edit', :href => "#{self.base_uri}/#{path}/#{feed_or_item.uri}")
+    atom.links << Atom::Link.new(:rel => 'edit', :href => edit_url(feed_or_item.class.name, feed_or_item.uri))
     atom.save!(hmac_credentials)
   end
   
   def do_delete(type, id)
     atom = Atom::Entry.new do |atom|
       # Create an edit link so the Atom library knows where send the delete
-      atom.links << Atom::Link.new(:rel => 'edit', :href => "#{self.base_uri}/#{type.underscore.pluralize}/#{id}")      
+      atom.links << Atom::Link.new(:rel => 'edit', :href => edit_url(type, id))      
     end.destroy!(hmac_credentials)
   end
     
   def feed_collection(feed = :all)
     if feed == :all
       Atom::Pub::Collection.new(:href => "#{self.base_uri}/feeds")
+    elsif items_only?
+      Atom::Pub::Collection.new(:href => self.base_uri)
     else
       Atom::Pub::Collection.new(:href => "#{self.base_uri}/feeds/#{feed}/feed_items")
+    end
+  end
+  
+  def edit_url(type, id)
+    if items_only?
+      "#{self.base_uri}/#{id}"
+    else
+      "#{self.base_uri}/#{type.underscore.pluralize}/#{id}"
     end
   end
   

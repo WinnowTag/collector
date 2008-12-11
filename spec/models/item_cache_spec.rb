@@ -161,6 +161,82 @@ describe ItemCache do
   end
 
   describe "process_operation" do
+    describe "to items_only cache" do
+      before(:each) do 
+        @ic = ItemCache.new(:base_uri => "http://example.org/items", :items_only => true)
+      end
+      
+      it "should not send a POST request for a feed" do
+        op = ItemCacheOperation.create!(:action => 'publish', :actionable => Feed.find(1))
+        Net::HTTP.should_not_receive(:start)
+        @ic.process_operation(op)
+      end
+
+      it "should not send a PUT request" do
+        op = ItemCacheOperation.create!(:action => 'update', :actionable => Feed.find(1))
+        Net::HTTP.should_not_receive(:start)
+        @ic.process_operation(op)
+      end
+      
+      it "should not send a DELETE request" do
+        op = ItemCacheOperation.create!(:action => 'delete', :actionable => Feed.find(1))
+        Net::HTTP.should_not_receive(:start)
+        @ic.process_operation(op)
+      end
+      
+      it "should send a POST request to base_uri to add an item" do
+        item = FeedItem.find(1)
+        op = ItemCacheOperation.create!(:action => 'publish', :actionable => item)
+        
+        response = mock_response(Net::HTTPCreated, item.atom.to_xml)
+    
+        http = mock('http')
+        http.should_receive(:request) do |request, body|
+          request.should be_is_a(Net::HTTP::Post)
+          body.should == item.atom.to_xml
+          request.path.should == "/items"
+          response
+        end
+        Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
+    
+        @ic.process_operation(op)
+      end
+      
+      it "should send a PUT request to base_uri/:feed_item_id to update a feed item" do
+        item = FeedItem.find(:first)
+        op = ItemCacheOperation.create!(:action => 'update', :actionable => item)
+        
+        response = mock_response(Net::HTTPSuccess, nil)
+      
+        http = mock('http')
+        http.should_receive(:request) do |request, body|
+          request.should be_is_a(Net::HTTP::Put)
+          request.path.should == "/items/#{item.uri}"
+          response
+        end
+        Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
+      
+        @ic.process_operation(op)
+      end
+      
+      it "should send a DELETE request to base_uri/:feed_item_id to delete a feed item" do
+        item = mock_model(FeedItem, :uri => 'urn:uuid:blahblah')
+        op = ItemCacheOperation.create!(:action => 'delete', :actionable => item)
+        
+        response = mock_response(Net::HTTPSuccess, nil)
+      
+        http = mock('http')
+        http.should_receive(:request) do |request, body|
+          request.should be_is_a(Net::HTTP::Delete)
+          request.path.should == "/items/urn:uuid:blahblah"
+          response
+        end
+        Net::HTTP.should_receive(:start).with('example.org', 80).and_yield(http)
+      
+        @ic.process_operation(op)
+      end
+    end
+    
     describe "#publish" do  
       it "should send a POST request to base_uri/feeds to add a feed" do
         feed = Feed.find(1)
@@ -174,7 +250,7 @@ describe ItemCache do
     
         ItemCache.find(:first).process_operation(op)
       end
-  
+    
       it "should send a POST request to base_uri/feeds/:feed_id/feed_items to add an item to a feed" do
         item = FeedItem.find(1)
         op = ItemCacheOperation.create!(:action => 'publish', :actionable => item)

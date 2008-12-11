@@ -7,7 +7,7 @@ require File.dirname(__FILE__) + '/../../spec_helper'
 
 describe "/item_caches/edit.html.erb" do
   before(:each) do
-    @item_cache = mock_model(ItemCache, :base_uri => 'http://example.com')
+    @item_cache = mock_model(ItemCache, :base_uri => 'http://example.com', :items_only => false)
     assigns[:item_cache] = @item_cache
   end
 
