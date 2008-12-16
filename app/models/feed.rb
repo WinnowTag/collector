@@ -26,7 +26,7 @@ class Feed < ActiveRecord::Base
   has_one  :last_completed_job, :order => 'completed_at desc', :conditions => "http_response_code = '200'", :class_name => 'CollectionJob'
   has_many :collection_errors, :through => :collection_jobs, :source => :collection_errors do
     def latest
-      find(:first, :order => "created_on DESC")
+      find(:first, :order => "collection_errors.created_on DESC")
     end
   end
   
