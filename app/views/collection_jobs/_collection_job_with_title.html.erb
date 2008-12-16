@@ -2,7 +2,7 @@
   <td><%= link_to(collection_job.feed.title, feed_path(collection_job.feed)) %></td>
   <td><%= collection_job.item_count %></td>
   <td><%= collection_job.http_response_code %></td>
-  <td><%= truncate(collection_job.http_etag, 10) %></td>
+  <td><%= truncate(collection_job.http_etag, :length => 10) %></td>
   <td><%= format_date(collection_job.http_last_modified, '') %></td>
   <td><%= '%.2f' % collection_job.utime if collection_job.utime %></td>    
   <td><%= '%.2f' % collection_job.stime if collection_job.stime  %></td>    
