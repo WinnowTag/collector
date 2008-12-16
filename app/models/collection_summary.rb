@@ -5,9 +5,7 @@
 # Please visit http://www.peerworks.org/contact for further information.
 class CollectionSummary < ActiveRecord::Base
   has_many :collection_errors
-  has_many :collection_jobs, :order => "updated_at desc"
-  has_many :completed_jobs, :class_name => 'CollectionJob', :conditions => 'completed_at is not null'
-  has_many :pending_jobs, :class_name => 'CollectionJob', :conditions => 'completed_at is null'
+  has_many :collection_jobs, :order => "updated_at DESC"
 
   def self.search(options = {})
     order = case options[:order]
@@ -61,7 +59,7 @@ class CollectionSummary < ActiveRecord::Base
   end
   
   def job_completed!
-    if pending_jobs.size == 0
+    if collection_jobs.pending.empty?
       self.completed_on = Time.now.getutc
       self.save
     end
