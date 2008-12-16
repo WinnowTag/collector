@@ -29,7 +29,7 @@ When("I fetch the feed for the first collection") do
                                :hmac_access_id => 'winnow_id', :hmac_secret_key => 'winnow_secret')
 end
 
-When("item $i of the feed") do |i|
+When("item $i of the feed document") do |i|
   @atom = @atom.entries[i.to_i - 1]
 end
 
@@ -59,7 +59,7 @@ Then("the feed contains the items") do
   @atom.should have(@test_object.feed_items.size).entries
 end
 
-Then("the id is a uuid urn") do |db|
+Then("the id is a uuid urn") do
   @atom.id.should match(/urn:uuid:[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/)
 end
 
