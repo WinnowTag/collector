@@ -6,7 +6,8 @@
     <p>
       <%= f.label :base_uri, "Base URI" %>
       <%= f.text_field :base_uri, :size => 65 %>
-    </p>
+    </p>		
+		<p><%= f.label(:items_only, "Only publish items")%><%= f.check_box(:items_only) %></p>
     <p>
       <%= submit_tag "Save" %> or <%= link_to "cancel", item_caches_path %>
     </p>
