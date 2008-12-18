@@ -24,7 +24,7 @@ set :use_sudo, false
 
 default_run_options[:pty] = true
 set :repository, "git@github.com:seangeo/collector.git"
-set :branch, "master"
+set :branch, "deploy"
 set :scm, "git"
 set :scm_verbose, true
 set :user, "peerworks"
