@@ -64,7 +64,7 @@ describe Feed do
       dup = Feed.new(:url => 'http://foo')
       dup.title = feed.title
       dup.save!
-      assert_equal([feed, dup], Feed.find_duplicates(:order => 'id asc'))
+      assert_equal([feed, dup], Feed.search(:mode => "duplicates", :order => 'id'))
     end
         
     it "find_suspected_duplicates_gets_feeds_with_same_link" do
@@ -72,7 +72,7 @@ describe Feed do
       dup = Feed.new(:url => 'http://foo')
       dup.link = feed.link
       dup.save!
-      assert_equal([feed, dup], Feed.find_duplicates(:order => 'id asc'))
+      assert_equal([feed, dup], Feed.search(:mode => "duplicates", :order => 'id'))
     end
   
     it "find_suspected_duplicates_returns_one_of_each" do
@@ -83,7 +83,7 @@ describe Feed do
       dup2 = Feed.new(:url => 'http://foo2')
       dup2.title = feed.title
       dup2.save!
-      assert_equal([feed, dup, dup2], Feed.find_duplicates(:order => 'id asc'))
+      assert_equal([feed, dup, dup2], Feed.search(:mode => "duplicates", :order => 'id'))
     end
   end
   

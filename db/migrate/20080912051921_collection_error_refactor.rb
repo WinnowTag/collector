@@ -3,16 +3,6 @@
 # Possession of a copy of this file grants no permission or license
 # to use, modify, or create derivate works.
 # Please visit http://www.peerworks.org/contact for further information.
-
-
-# create_table "collection_errors", :force => true do |t|
-#   t.string   "error_type"
-#   t.text     "error_message"
-#   t.integer  "feed_id",               :limit => 11
-#   t.datetime "created_on"
-#   t.integer  "collection_summary_id", :limit => 11
-# end
-
 class CollectionErrorRefactor < ActiveRecord::Migration
   def self.up
     # reset errors since we are restructring to the point where these can't be used

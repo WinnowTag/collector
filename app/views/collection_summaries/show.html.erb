@@ -1,0 +1,23 @@
+<% content_for :body, "collection_summaries" %>
+
+<% content_for :head do -%>
+  <link rel="alternate" type="application/atom+xml" title="Collection History Feed" href="/collection_summaries.atom" />
+<% end -%>
+
+<%= render :partial => "collection_summary", :locals => { :collection_summary => @collection_summary } %>
+
+<% if @collection_summary.failed? -%>
+  <h3>Fatal Error</h3>
+  <p>A fatal error of type: "<%=h @collection_summary.fatal_error_type %>" occurred. This caused the collection to abort.</p>
+  <pre><%=h @collection_summary.fatal_error_message %></pre>
+<% end -%>
+
+<% if @collection_summary.collection_errors.any? %>
+  <h3>Collection Errors</h3>
+  <%= render :partial => 'collection_errors/collection_errors', :locals => { :collection_errors => @collection_summary.collection_errors } %>
+<% end -%>
+
+<% if @collection_summary.collection_jobs.any? %>
+  <h3>Collection Jobs</h3>
+  <%= render :partial => 'collection_jobs/collection_jobs_with_title', :locals => {:collection_jobs => @collection_summary.collection_jobs } %>
+<% end -%>

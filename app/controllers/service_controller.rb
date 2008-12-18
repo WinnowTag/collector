@@ -8,9 +8,7 @@ class ServiceController < ApplicationController
   before_filter :login_required_unless_hmac_authenticated
   
   def index
-    @feeds = Feed.find(:all, :conditions => ['duplicate_id is null'])
-    respond_to do |wants|
-      wants.atom
-    end
+    @feeds = Feed.find(:all, :conditions => ['duplicate_id IS NULL'])
+    respond_to :atom
   end
 end

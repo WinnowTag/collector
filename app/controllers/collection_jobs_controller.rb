@@ -17,8 +17,7 @@ class CollectionJobsController < ApplicationController
     end
     
     respond_to do |format|
-      format.html # index.rhtml
-      format.xml  { render :xml => @collection_jobs.to_xml }
+      format.xml { render :xml => @collection_jobs.to_xml }
     end
   end
 
@@ -26,13 +25,10 @@ class CollectionJobsController < ApplicationController
     @collection_job = @feed.collection_jobs.find(params[:id])
 
     respond_to do |format|
-      format.html # show.rhtml
-      format.xml  { render :xml => @collection_job.to_xml }
+      format.xml { render :xml => @collection_job.to_xml }
     end
   end
 
-  # POST /collection_jobs
-  # POST /collection_jobs.xml
   def create
     @collection_job = @feed.collection_jobs.build(params[:collection_job])
     @collection_job.created_by ||= current_user.login
@@ -43,17 +39,15 @@ class CollectionJobsController < ApplicationController
         format.html { redirect_to feed_url(@feed) }
         format.xml  { head :created, :location => feed_collection_job_url(@feed, @collection_job) }
       else
-        format.html { 
+        format.html do
           flash[:error] = "Something went wrong creating a collection job"
           redirect_to :back 
-        }
+        end
         format.xml  { render :xml => @collection_job.errors.to_xml, :status => 422 }
       end
     end
   end
 
-  # DELETE /collection_jobs/1
-  # DELETE /collection_jobs/1.xml
   def destroy
     @collection_job = @feed.collection_jobs.find(params[:id])
     @collection_job.destroy
@@ -64,7 +58,7 @@ class CollectionJobsController < ApplicationController
     end
   end
   
-  private
+private
   def find_feed
     @feed = Feed.find(params[:feed_id]) if params[:feed_id]    
   end

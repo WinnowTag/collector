@@ -17,15 +17,22 @@ class Feed < ActiveRecord::Base
   attr_readonly(:uri)
   before_create :generate_uri
   belongs_to :duplicate, :class_name => 'Feed'
-  has_many	:feed_items, :dependent => :delete_all
+  has_many :feed_items, :dependent => :delete_all
   validates_uniqueness_of :url, :message => 'Feed already exists'
   validate :url_is_not_from_winnow
   attr_accessible :url, :active
   has_many :spider_results,    :dependent => :delete_all, :order => 'created_at desc'
   has_many :collection_jobs,   :dependent => :delete_all, :order => 'created_at desc'
-  has_many :collection_errors, :through => :collection_jobs, :source => :collection_errors
-  has_one  :last_error, :order => 'created_on desc'
   has_one  :last_completed_job, :order => 'completed_at desc', :conditions => "http_response_code = '200'", :class_name => 'CollectionJob'
+  has_many :collection_errors, :through => :collection_jobs, :source => :collection_errors do
+    def latest
+      find(:first, :order => "collection_errors.created_on DESC")
+    end
+  end
+  
+  def title_or_url
+    title.blank? ? url : title
+  end
   
   class << self
     def find_by_uri(uri)
@@ -34,7 +41,42 @@ class Feed < ActiveRecord::Base
       end
     end
     
-    # Return a list of Feeds that are active.
+    def search(options = {})
+      joins, conditions, values = [], ['feeds.duplicate_id IS NULL'], []
+    
+      unless options[:text_filter].blank?
+        conditions << '(feeds.title LIKE ? OR feeds.url LIKE ?)'
+        values << "%#{options[:text_filter]}%" << "%#{options[:text_filter]}%"
+      end
+      
+      case options[:mode]
+      when "duplicates"
+        joins << "INNER JOIN feeds AS f2 ON (feeds.title = f2.title OR feeds.link = f2.link) AND feeds.id <> f2.id AND feeds.duplicate_id IS NULL AND f2.duplicate_id IS NULL"
+      end
+  
+      order = case options[:order]
+      when "id", "title", "active", "created_by", "created_on", "updated_on", "feed_items_count", "collection_errors_count"
+        "feeds.#{options[:order]}"
+      when "collection_errors_created_on"
+        joins  << "LEFT JOIN collection_jobs ON feeds.id = collection_jobs.feed_id " 
+        joins  << "LEFT JOIN collection_errors ON collection_jobs.id = collection_errors.collection_job_id"
+        "collection_errors.created_on"
+      else
+        "feeds.title"
+      end
+    
+      case options[:direction]
+      when "asc", "desc"
+        order = "#{order} #{options[:direction].upcase}"
+      end
+    
+      find(:all, 
+        :select => "DISTINCT feeds.*", :joins => joins.join(" "),
+        :conditions => [conditions.join(" AND "), *values], 
+        :order => order, :limit => options[:limit], :offset => options[:offset]
+      )
+    end
+
     def active_feeds
       find(:all, :order => "title ASC",
             :conditions => ['active = ? and duplicate_id is NULL', true])
@@ -59,20 +101,6 @@ class Feed < ActiveRecord::Base
       feed
     end
 
-    def find_duplicates(options = {})
-      options_for_find = {
-        :select => 'DISTINCT feeds.*',
-        :joins => 'INNER JOIN feeds AS f2 on (feeds.title = f2.title OR feeds.link = f2.link) ' <<
-                  'AND feeds.id <> f2.id AND feeds.duplicate_id IS NULL AND f2.duplicate_id IS NULL'
-      }.merge(options)
-
-      if options_for_find[:per_page]
-        paginate(options_for_find.merge(:count => { :select => "DISTINCT feeds.id" }))
-      else
-        find(:all, options_for_find)
-      end
-    end
-
     def find_duplicate(feed)
       duplicate = Feed.find(:first, :conditions => ['(link = ? or url = ?) and id <> ?',
                                         feed.link, feed.url, feed.id])
@@ -89,21 +117,6 @@ class Feed < ActiveRecord::Base
 
     def find_by_url_or_link(url)
       self.find(:first, :conditions => ['url = ? or link = ?', url, url])
-    end
-
-    def find_with_recent_errors(options = {})
-      options_for_find = {
-        :select => 'DISTINCT feeds.*',
-        :joins  => 'INNER JOIN collection_jobs AS cj ON feeds.id = cj.feed_id ' +
-                   'INNER JOIN collection_errors AS ce ON cj.id = ce.collection_job_id',
-        :conditions => ['cj.created_at >= ?', Time.now.ago(2.days).utc]
-      }.merge(options)
-
-      if options_for_find[:per_page]
-        paginate(options_for_find.merge(:count => { :select => "DISTINCT feeds.id" }))
-      else
-        find(:all, options_for_find)
-      end
     end
 
     def update_feed_item_counts

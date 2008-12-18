@@ -5,7 +5,7 @@
 # ENV['RAILS_ENV'] ||= 'production'
 
 # Specifies gem version of Rails to use when vendor/rails is not present
-RAILS_GEM_VERSION = '2.1.1' unless defined? RAILS_GEM_VERSION
+RAILS_GEM_VERSION = '2.2.2' unless defined? RAILS_GEM_VERSION
 
 # Bootstrap the Rails environment, frameworks, and default configuration
 require File.join(File.dirname(__FILE__), 'boot')
@@ -22,16 +22,20 @@ Rails::Initializer.run do |config|
 
   # Specify gems that this application depends on. 
   # They can then be installed with "rake gems:install" on new installations.
+  # You have to specify the :lib option for libraries, where the Gem name (sqlite3-ruby) differs from the file itself (sqlite3)
   # config.gem "bj"
   # config.gem "hpricot", :version => '0.6', :source => "http://code.whytheluckystiff.net"
+  # config.gem "sqlite3-ruby", :lib => "sqlite3"
   # config.gem "aws-s3", :lib => "aws/s3"
-  config.gem "hpricot", :version => "=0.6"
-  # This must go before rfeedparser otherwise we get a screwed up libxml
-  config.gem "ratom", :version => "0.5.1", :lib => "atom/pub"
-  config.gem 'rfeedparser'
-  config.gem "auth-hmac", :version => "1.0.1"
+  config.gem "auth-hmac"
+  config.gem "fiveruns_manage"
+  config.gem "hpricot", :version => "0.6" # need 0.6 for rfeedparser
+  config.gem "ratom", :lib => "atom/pub"
+  config.gem "rfeedparser" # dependencies: addressable character-encodings htmlentities htmltools rchardet
+  config.gem "tzinfo"
 
   # Must be compiled
+  config.gem "libxml-ruby", :version => "0.8.3", :lib => "libxml"
   config.gem "mysql"
   config.gem "tzinfo", :version => ">= 0.3.9"
   config.gem "uuidtools"
@@ -50,8 +54,13 @@ Rails::Initializer.run do |config|
 
   # Make Time.zone default to the specified zone, and make Active Record store time values
   # in the database in UTC, and return them converted to the specified local zone.
-  # Run "rake -D time" for a list of tasks for finding time zone names. Uncomment to use default local time.
+  # Run "rake -D time" for a list of tasks for finding time zone names. Comment line to use default local time.
   config.time_zone = 'UTC'
+
+  # The internationalization framework can be changed to have another default locale (standard is :en) or more load paths.
+  # All files from config/locales/*.rb,yml are added automatically.
+  # config.i18n.load_path << Dir[File.join(RAILS_ROOT, 'my', 'locales', '*.{rb,yml}')]
+  # config.i18n.default_locale = :de
 
   # Your secret key for verifying cookie session data integrity.
   # If you change this key, all old sessions will become invalid!
@@ -73,10 +82,6 @@ Rails::Initializer.run do |config|
   config.active_record.schema_format = :sql
 
   # Activate observers that should always be running
+  # Please note that observers generated using script/generate observer need to have an _observer suffix
   config.active_record.observers = :item_cache_observer
-
-  config.after_initialize do 
-    ActionView::Helpers::AssetTagHelper.register_javascript_expansion :collector => ["slider"]
-    ActionView::Helpers::AssetTagHelper.register_stylesheet_expansion :collector => ["collector", "tables"]
-  end
 end

@@ -1,0 +1,26 @@
+<% form_tag feeds_path, :id => "text_filter_form", :onsubmit => "return false" do -%>
+  <%= search_field_tag "text_filter", params[:text_filter], :placeholder => "Seach Feeds..." %>
+<% end -%>
+
+<div class="order clearfix">
+  <label>Sort By</label>
+  <select id="order">
+    <option value="title">Title</option>
+    <option value="active">Active</option>
+    <option value="feed_items_count">Feed Items Count</option>
+    <option value="collection_errors_count">Errors</option>
+    <option value="collection_errors_created_on">Last Error</option>
+    <option value="created_by">Created By</option>
+    <option value="created_on">Created At</option>
+    <option value="updated_on">Last Updated</option>
+  </select>
+  <%= link_to_function "<span class='asc'>Ascending</span><span class='desc'>Descending</span>", "", :id => "direction" %>
+</div>
+
+<div class="toolbar right">
+  <div class="group">
+    <label>Show</label>
+    <%= rounded_button_function "All",        "", :icon => "all",        :id => "mode_all", :class => "first" %>
+    <%= rounded_button_function "Duplicates", "", :icon => "duplicates", :id => "mode_duplicates" %>
+  </div>
+</div>

@@ -1,20 +1,17 @@
 development:
   adapter: mysql
+  encoding: utf8
   database: collector_development
-  host: localhost
-  username: root
-  password: 
-	  
-test:
-  adapter: mysql
-  database: collector_test
-  host: localhost
+  pool: 5
   username: root
   password:
-
-production:
-  adapter: mysql
-  database: collector_production
   host: localhost
+
+test:
+  adapter: mysql
+  encoding: utf8
+  database: collector_test
+  pool: 5
   username: root
-  password: 
+  password:
+  host: localhost

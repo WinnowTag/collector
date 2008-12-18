@@ -1,3 +1,19 @@
+<% content_for :body, "item_caches" %>
 
-<%= link_to 'Edit', edit_item_cache_path(@item_cache) %> |
-<%= link_to 'Back', item_caches_path %>
+<% content_for :header_controls do -%>
+  <div class="toolbar">
+    <%= rounded_button_link 'Edit', edit_item_cache_path(@item_cache), :icon => "edit" %>
+  </div>
+  <div class="toolbar right">
+    <%= rounded_button_link 'Destroy', @item_cache, :confirm => 'Are you sure?', :method => :delete, :icon => "destroy" %>
+  </div>
+<% end -%>
+
+<%= render :partial => "item_cache", :locals => { :item_cache => @item_cache } %>
+
+<% if @item_cache.failed_operations.any? %>
+  <h3>Failed Operations</h3>
+  <%= render :partial => 'failed_operations/failed_operations', :locals => { :failed_operations => @failed_operations } %>
+  
+  <%= will_paginate @failed_operations %>
+<% end -%>

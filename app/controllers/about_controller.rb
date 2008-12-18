@@ -4,22 +4,17 @@
 # to use, modify, or create derivate works.
 # Please visit http://www.peerworks.org/contact for further information.
 class AboutController < ApplicationController
-
   def index
-    @title = 'About Winnow'
-    @about = `svn info #{__FILE__}`
-    
-    if @about =~ /Revision: ([\d]+)/
-      @revision = $1
-    end
-    
-    if @about =~ /http:\/\/svn.winnow.peerworks.org\/(.+)\/app\/controllers\/about_controller.rb/
-      @repos = $1
+    # Capistrano now stores the revision in RAILS_ROOT/REVISION
+    cap_rev_file = File.join(RAILS_ROOT, 'REVISION')
+
+    if File.exists?(cap_rev_file)
+      @revision = File.read(cap_rev_file)
+    else
+      @revision = `git rev-parse --short HEAD`.chomp
     end
   end
   
   def help
-    @title = "Winnow User Documentation"
-    render :action => 'help', :layout => 'popup'
   end
 end

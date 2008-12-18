@@ -1,35 +1,21 @@
 ActionController::Routing::Routes.draw do |map|
-  map.resources :archival_histories              
-  map.resources :collection_summaries
+  map.with_options :controller => "about" do |about_map|
+    about_map.about "about"
+    about_map.help  "help",  :action => "help"
+  end
+  map.with_options :controller => "account" do |account_map|
+    account_map.login "login", :action => "login"
+    account_map.logout "logout", :action => "logout"
+    account_map.edit_account "account/edit/:id", :action => "edit"
+  end
   map.resources :collection_jobs
-  map.resources :feeds, :collection => {
-                  :import             => :any,
-                  :with_recent_errors => :get,
-                  :duplicates         => :get,
-                  :import_opml        => :post
-                } do |feeds|
-    feeds.resources :collection_jobs
-    feeds.resources :collection_errors
+  map.resources :collection_summaries
+  map.resources :feed_items, :member => { :spider => :get }
+  map.resources :feeds, :collection => { :import => :post, :import_opml => :post } do |feeds_map|
+    feeds_map.resources :collection_jobs
   end
-  map.resources :feed_items, :member => {
-                  :spider => :get
-                }
-  map.resources :item_caches, :singular => 'item_cache' do |c|
-    c.resources :failed_operations
-  end
-  
-  map.resources :protectors do |protectors|
-    protectors.resources :protected_items,
-                :collection => {
-                  :delete_all => :delete
-                }
-  end
-  map.resources :spiders, :collection => {
-                            :test => :any,
-                            :scraper_stats => :any
-                          }
-  
-  map.connect '', :controller => "feeds"
-  
-  map.connect ':controller/:action/:id', :requirements => {:id => /.*/}
+  map.resources :item_caches
+  map.service "service", :controller => "service"
+  map.resources :spiders, :collection => { :stats => :get, :test => :any }
+  map.root :controller => "feeds"
 end

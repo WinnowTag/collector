@@ -6,9 +6,12 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
 describe ServiceController do
+  fixtures :users
+  
   before(:each) do
+    login_as(:admin)
     @feeds = mock('feeds')
-    Feed.stub!(:find).with(:all, :conditions => ['duplicate_id is null']).and_return(@feeds)
+    Feed.stub!(:find).with(:all, :conditions => ['duplicate_id IS NULL']).and_return(@feeds)
   end
   
   it "should assign the feeds to @feeds" do

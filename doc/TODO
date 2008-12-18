@@ -1,0 +1,10 @@
+ • Feeds
+   • show - duplicate?, sort lists?, summary count for lists?
+   • split errors out and don't display error fields on normal page?
+ • CollectionSummaries
+   • index - confirm sorting by errors_count works
+ • ItemCache  
+   • index - inline new/edit
+ • Spiders - combine pages
+
+ • Remove will_paginate

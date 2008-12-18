@@ -29,13 +29,6 @@ describe User do
     end
   end
 
-  it "should_require_password_confirmation" do
-    assert_no_difference User, :count do
-      u = create_user(:password_confirmation => nil)
-      assert u.errors.on(:password_confirmation)
-    end
-  end
-
   it "should_require_email" do
     assert_no_difference User, :count do
       u = create_user(:email => nil)

@@ -1,0 +1,18 @@
+<table class="veerle">
+  <tr>
+    <th>Action</th>
+    <th>Item Type</th>
+    <th>Item Id</th>
+    <th>Error Code</th>
+    <th>Message</th>
+  </tr>
+  <% for failed_operation in failed_operations -%>
+    <tr class="<%= cycle('odd', 'even') %>">
+      <td><%= failed_operation.item_cache_operation.action %></td>
+      <td><%= failed_operation.item_cache_operation.actionable_type %></td>
+      <td><%= failed_operation.item_cache_operation.actionable_id %></td>
+      <td><%= failed_operation.code %></td>
+      <td><%= failed_operation.message %></td>
+    </tr>
+  <% end %>
+</table>

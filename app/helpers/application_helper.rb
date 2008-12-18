@@ -3,49 +3,28 @@
 # Possession of a copy of this file grants no permission or license
 # to use, modify, or create derivate works.
 # Please visit http://www.peerworks.org/contact for further information.
-module ApplicationHelper  
-  def tab_link(name, url)
-    link_to_unless_current(name, url) do |name|
-      content_tag('span', name, :class => 'current')
-    end
+module ApplicationHelper
+  def tab_selected(controller, *actions)
+    "selected" if controller_name == controller and (actions.blank? or actions.include?(action_name))
   end
   
-  def duration(summary)
-    unless summary.completed_on.nil?
-      seconds = (summary.completed_on - summary.created_on).to_i
-      "#{seconds / 1.hour} hours, #{(seconds % 1.hour) / 1.minute} minutes"
-    end
+  def show_flash_messages
+    javascript = [:notice, :warning, :error].map do |name|
+      "Message.add('#{name}', #{flash[name].to_json});" unless flash[name].blank?
+    end.join    
+    javascript_tag(javascript) unless javascript.blank?
   end
   
-  def unescape(value)
-    if value
-      value.gsub(/&lt;/,   "<"). 
-          gsub(/&gt;/,   ">"). 
-          gsub(/&quot;/, '"'). 
-          gsub(/&apos;/, "'"). 
-          gsub(/&amp;/,  "&")
-    end
+  def search_field_tag(name, value = nil, options = {})
+    options[:clear] ||= {}
+    options[:placeholder] ||= "Search..."
+    content_tag :div, 
+      content_tag(:span, nil, :class => "sbox_l") +      
+      tag(:input, :type => "search", :name => name, :id => name, :value =>  value, :results => 5, :placeholder => options[:placeholder], :autosave => name) +
+      content_tag(:span, nil, :class => "sbox_r srch_clear"),
+      :class => "applesearch clearfix"
   end
   
-  def show_flash
-    [:notice, :warning, :message, :error].map do |name|
-      if flash[name]
-        content_tag 'div', 
-            image_tag("#{name}.png", :class => 'flash_icon', :size => '16x16', :alt => '') +
-            flash[name].to_s + 
-            link_to_function(
-                    image_tag('cross.png',
-                              :size => '11x11',
-                              :alt => 'X',
-                              :class => 'flash_icon'), 
-                    "$('#{name}').hide();", 
-                    :id => 'close_flash',
-                    :title => 'Close message') , 
-          :id => name.to_s
-      end
-    end.compact.join
-  end
-
   def format_date(date, when_nil = "Never")
     if date.nil?
       when_nil

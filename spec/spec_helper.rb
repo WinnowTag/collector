@@ -10,6 +10,7 @@ ENV["RAILS_ENV"] = "test"
 require File.expand_path(File.dirname(__FILE__) + "/../config/environment")
 require 'spec'
 require 'spec/rails'
+
 require File.join(File.dirname(__FILE__), 'matchers')
 
 Spec::Runner.configure do |config|
@@ -19,7 +20,7 @@ Spec::Runner.configure do |config|
   config.use_transactional_fixtures = true
   config.use_instantiated_fixtures  = false
   config.fixture_path = RAILS_ROOT + '/spec/fixtures/'
-  
+
   config.include WinnowMatchers, :type => :code
   config.include AuthenticatedTestHelper
 
@@ -66,6 +67,10 @@ Spec::Runner.configure do |config|
     end
   end
   
+  def current_user
+    @controller.send(:current_user)
+  end
+  
   def valid_feed_item_attributes(attributes = {})
     unique_id = rand(10000)
     { :link => "http://#{unique_id}.example.com", 
@@ -81,6 +86,7 @@ Spec::Runner.configure do |config|
       :link => "http://#{unique_id}.example.com",
       :title => "#{unique_id} Example",
       :feed_items_count => 0,
+      :created_on => Time.now,
       :updated_on => Time.now,
       :collection_errors_count => 0
     }.merge(attributes)

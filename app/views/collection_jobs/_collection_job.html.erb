@@ -1,0 +1,16 @@
+<tr class="collection_job <%= cycle("odd", "even") %> <%= "failed" if collection_job.failed? %>">
+  <td><%=h collection_job.created_by %></td>
+  <td><%= collection_job.item_count %></td>
+  <td><%= collection_job.http_response_code %></td>
+  <td><%= truncate(collection_job.http_etag, :length => 10) %></td>
+  <td><%= format_date(collection_job.http_last_modified, '') %></td>
+  <td><%= '%.2f' % collection_job.utime if collection_job.utime %></td>    
+  <td><%= '%.2f' % collection_job.stime if collection_job.stime  %></td>    
+  <td><%= '%.2f' % collection_job.rtime if collection_job.rtime  %></td>    
+  <td><%=format_date collection_job.created_at %></td>
+  <td><%=format_date collection_job.started_at, '-' %></td>
+  <td><%=format_date collection_job.completed_at, '-' %></td>
+  <td>
+    <%= link_to "Destroy", feed_collection_job_path(collection_job.feed, collection_job), :confirm => 'Are you sure?', :method => :delete, :class => "destroy" %>
+  </td>
+</tr>

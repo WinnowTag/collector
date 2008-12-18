@@ -1,0 +1,39 @@
+<h3>Scraper Statistics</h3>
+<p>
+  This table shows how many items have been scraped by each scraper.
+</p>
+<p>
+  The row for "Not Scraped" shows how many items have been spidered without a scraper that knows how to handle the content.
+</p>
+    
+<table class="veerle">
+  <tr>
+    <th>Scraper</th>
+    <th>Items scraped</th>
+  </tr>
+  <% @stats.each do |stat| -%>
+    <tr class="<%= cycle('odd', 'even') %>">
+      <td><%= stat.scraper or 'Not Scraped' %></td>
+      <td><%= stat.count %></td>
+    </tr>
+  <% end -%>    
+</table>
+
+<h3>Failed Spidering Statistics</h3>
+<p>
+  This table shows the feeds with the most number of failed spidering attempts.
+  These feeds are candidates for prompting a new type of scraper.
+</p>
+
+<table class="veerle">
+  <tr>
+    <th>Feed</th>
+    <th>Failed attempts</th>
+  </tr>
+  <% @unscrapable_feeds.each do |feed| -%>
+    <tr class="<%= cycle('odd', 'even') %>">
+      <td><%= link_to feed.feed.title, feed_path(feed.feed) %></td>
+      <td><%= feed.count %></td>
+    </tr>
+  <% end -%>
+</table>

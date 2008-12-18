@@ -73,7 +73,7 @@ module AuthenticatedSystem
       respond_to do |accepts|
         accepts.html do
           store_location
-          redirect_to :controller => '/account', :action => 'login'
+          redirect_to login_path
         end        
         http_basic = Proc.new do
           headers["Status"]           = "Unauthorized"

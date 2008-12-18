@@ -14,6 +14,9 @@ class CollectionJob < ActiveRecord::Base
   has_one :collection_error
   has_many :collection_errors
   has_many :feed_items
+
+  named_scope :completed, :conditions => 'completed_at IS NOT NULL'
+  named_scope :pending, :conditions => 'completed_at IS NULL'
   
   def self.completed_jobs_for_user(login)
     find(:all,

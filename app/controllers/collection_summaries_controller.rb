@@ -4,36 +4,36 @@
 # to use, modify, or create derivate works.
 # Please visit http://www.peerworks.org/contact for further information.
 class CollectionSummariesController < ApplicationController
-  exempt_from_layout :rxml
-  # GET /collection_summaries
-  # GET /collection_summaries.xml
   def index
-    @title = "Collection Summaries"
-    
     conditional_render(CollectionSummary.maximum(:updated_on)) do |since|
-      @collection_summaries = CollectionSummary.find(:all, :order => 'created_on desc', :limit => 40)
+      find_collection_summaries = lambda {
+        CollectionSummary.search(:order => params[:order], :direction => params[:direction], :limit => 40, :offset => params[:offset])
+      }
 
       respond_to do |format|
-        format.html # index.rhtml
-        format.xml  { render :xml => @collection_summaries.to_xml }
-        format.atom { render :action => 'atom'}
+        format.html
+        format.json do
+          @collection_summaries = find_collection_summaries.call
+          @full = @collection_summaries.size < 40
+        end
+        format.xml  { render :xml => find_collection_summaries.call.to_xml }
+        format.atom do
+          @collection_summaries = find_collection_summaries.call
+        end
       end
     end
   end
 
-  # GET /collection_summaries/1
-  # GET /collection_summaries/1.xml
   def show
     @collection_summary = CollectionSummary.find(params[:id])
-    @title = "Collection for #{@collection_summary.created_on.to_formatted_s(:long)}"
 
     respond_to do |format|
-      format.html # show.rhtml
+      format.html
       format.xml  { render :xml => @collection_summary.to_xml }
     end
   end
   
-  private
+private
   def conditional_render(last_modified)   
      since = Time.rfc2822(request.env['HTTP_IF_MODIFIED_SINCE']) rescue nil
 

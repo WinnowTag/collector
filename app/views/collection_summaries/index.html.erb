@@ -1,0 +1,16 @@
+<% content_for :head do -%>
+  <% javascript_tag do -%>
+    var itemBrowser;
+    document.observe('dom:loaded', function() {
+      itemBrowser = new ItemBrowser('collection_summaries', 'content', { orders: {
+        asc:       ["item_count", "errors_count", "duration"], 
+        desc:      ["created_on", "completed_on"],
+        "default": "completed_on"
+      }});
+    });
+  <% end -%>
+<% end -%>
+
+<% content_for :header_controls do -%>
+  <%= render :partial => "header_controls" %>
+<% end -%>

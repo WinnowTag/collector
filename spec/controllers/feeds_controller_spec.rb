@@ -22,7 +22,7 @@ describe FeedsController do
       @request.session[:user] = nil
       assert_difference(Feed, :count) do
         post :create, :feed => {:url => "http://newfeed"}
-        assert_redirected_to feeds_url
+        assert_response 201
         assert Feed.find_by_url("http://newfeed")
       end
     end
@@ -32,41 +32,6 @@ describe FeedsController do
       assert_difference(Feed, :count, 0) do
         assert_requires_login {|c| c.post :create, :feed => {:url => "http://newfeed"} }
       end
-    end
-  
-    it "index_sets_feeds_instance_variable" do
-      get :index
-      assert_equal(Feed.count(:conditions => ['duplicate_id is NULL']), assigns(:feeds).size)
-    end
-  
-    it "with_recent_errors_shows_feeds_with_recent_errors_once" do
-      feed = Feed.find(1)
-      job = feed.collection_jobs.create!
-      job.collection_error = CollectionError.create(:exception => Exception.new('test'))
-      feed.save!
-      get :with_recent_errors
-      assert_template 'index'
-      assert_equal([Feed.find(1)], assigns(:feeds))
-    end
-  
-    it "duplicates_shows_duplicates" do
-      feed = Feed.find(1)
-      dup = Feed.new(:url => 'http://foo')
-      dup.link = feed.link
-      dup.save!
-      get :duplicates
-      assert_template 'index'
-      assert_equal([feed, dup].sort_by{|a| a.id}, assigns(:feeds).sort_by{|a| a.id})
-    end
-    
-    it "duplicates_doesnt_show_duplicate_tombstones" do
-      feed = Feed.find(1)
-      dup = Feed.new(:url => 'http://foo')
-      dup.link = feed.link
-      dup.duplicate = feed
-      dup.save!
-      get :duplicates
-      assert_equal([], assigns[:feeds])
     end
   
     it "list_provides_text_format" do
@@ -88,7 +53,7 @@ describe FeedsController do
   
     it "should fail when created with an invalid url" do
       post :create, :feed => {:url => '####'}
-      response.should render_template('feeds/new')
+      assert_response 422
     end
     
     it "should set created_by on the feed if it is provided" do
@@ -127,11 +92,6 @@ describe FeedsController do
       end
     end
         
-    it "destroy_fails_with_get" do
-      get :destroy
-      assert_response 400
-    end
-  
     it "destroy_works_with_post" do
       referer('/feeds')
       feed = Feed.create(:url => 'http://rss.slashdot.org/Slashdot/slashdot')
@@ -144,15 +104,9 @@ describe FeedsController do
       end
     end
   
-    it "should render the import form in response to GET /import" do
-      get :import
-      response.should be_success
-      response.should render_template('feeds/import')
-    end
-  
     it "should fail when importing without a feed[urls]" do
       post :import
-      response.should render_template('feeds/import')
+      response.should redirect_to(feeds_path)
     end
   
     it "post_import_with_single_url" do
@@ -175,17 +129,15 @@ describe FeedsController do
     it "should fail when importing a duplicate" do
       Feed.create!(:url => 'http://rss.slashdot.org/Slashdot/slashdot')
       post :import, :feed => {:urls => 'http://rss.slashdot.org/Slashdot/slashdot'}
-      response.should render_template('feeds/import')
-      # TODO get this working
-      #flash.now[:error].should == '1 Feed already exists'
+      response.should render_template('feeds/index')
+      flash[:error].should == '1 Feed already exists'
     end
   
     it "importing_duplicate_multiple_feeds_fails" do
       Feed.create(:url => 'http://rss.slashdot.org/Slashdot/slashdot')
       post :import, :feed => {:urls => "http://rss.slashdot.org/Slashdot/slashdot\nhttp://rss.slashdot.org/Slashdot/slashdotDevelopers"}
-      response.should render_template('feeds/import')
-      # TODO fix expections for flash.now[:error]
-      # flash[:error].should == '1 Feed already exists'
+      response.should render_template('feeds/index')
+      flash[:error].should == '1 Feed already exists'
       flash[:notice].should == '1 new feed added'
     end
 
@@ -200,11 +152,6 @@ describe FeedsController do
       
         assert_not_equal([], assigns(:feeds).map(&:title).compact)
       end
-    end
-  
-    it "show_without_id_redirects_to_index" do
-      get :show
-      assert_redirected_to feeds_url
     end
   
     it "show_returns_xml" do
@@ -243,19 +190,9 @@ describe FeedsController do
       assert_redirected_to feed_url(feed.duplicate)    
     end
   
-    it "update_with_get_redirects_to_index" do
-      get :update, :id => 1
-      assert_response 400
-    end
-  
-    it "update_without_id_redirects_to_index" do
-      post :update
-      assert_redirected_to feeds_url
-    end
-  
     it "update_with_protected_attributes_fails" do
-      post :update, :id => 1, :feed => {:title => 'Title', :url => 'http://test', :active => true}
-      assert_redirected_to feeds_url
+      put :update, :id => 1, :feed => {:title => 'Title', :url => 'http://test', :active => true}
+      response.should be_success
       assert_not_equal("http://test", Feed.find(1).url)
     end
   
