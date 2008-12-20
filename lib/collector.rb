@@ -57,6 +57,7 @@ loop do
     elsif collection_job = CollectionJob.next_job(OPTIONS)
       children << collection_job.execute(:spawn => true)
     else
+      GC.start
       sleep(5)
     end
   
