@@ -4,7 +4,6 @@
 # to use, modify, or create derivate works.
 # Please visit http://www.peerworks.org/contact for further information.
 class CollectionJob < ActiveRecord::Base
-  attr_accessor :retries
   NOT_MODIFIED = '304'  
   MOVED_PERMANENTLY = '301'
   USER_AGENT = 'Peerworks Feed Collector/1.0.0 +http://peerworks.org'
@@ -40,7 +39,7 @@ class CollectionJob < ActiveRecord::Base
     raise SchedulingException, "Job already started"  unless self.started_at.nil?
     method = options[:spawn] ? :thread : :yield
     start_job 
-    retries = 1
+    @retries = 1
         
     spawn(:method => method) do
       begin
@@ -92,7 +91,7 @@ class CollectionJob < ActiveRecord::Base
   
   private
   def retries_left?
-    (retries -= 1) >= 0
+    (@retries -= 1) >= 0
   end
   
   def start_job
