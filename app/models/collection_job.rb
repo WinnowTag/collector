@@ -39,10 +39,11 @@ class CollectionJob < ActiveRecord::Base
     raise SchedulingException, "Job already started"  unless self.started_at.nil?
     method = options[:spawn] ? :thread : :yield
     start_job 
+    retries = 1
         
     spawn(:method => method) do
       begin
-        logger.info("[#{Process.pid}] Collecting: (job.id:#{id}) #{feed.url}")
+        logger.info("[#{pid}] Collecting: (job.id:#{id}) #{feed.url}")
 
         self.bm = Benchmark.measure do
           parsed_feed = fetch_feed
@@ -53,7 +54,14 @@ class CollectionJob < ActiveRecord::Base
         self.save!
         self
       rescue ActiveRecord::StaleObjectError => e
-        logger.info("[#{Process.pid}] Job processing clash for #{feed.url}")
+        logger.info("[#{pid}] Job processing clash for #{feed.url}")
+      rescue ActiveRecord::ConnectionTimeoutError => e
+        if (retries -= 1) > 0
+          logger.warn("[#{pid}] Could not get a connection: #{e}, retrying once")
+          retry
+        else
+          logger.warn("[#{pid}] Could not get a connection: #{e}, giving up")
+        end
       rescue Exception => detail
         self.feed.increment_error_count
         self.collection_error = CollectionError.create(:error_type => detail.class.name, 
@@ -61,9 +69,13 @@ class CollectionJob < ActiveRecord::Base
                                                        :collection_summary => self.collection_summary)
         complete_job
       ensure
-        logger.info("[#{Process.pid}] Completed collecting #{feed.url}")
+        logger.info("[#{pid}] Completed collecting #{feed.url}")
       end
     end
+  end
+  
+  def pid
+    Thread.current.object_id
   end
   
   def failed?
