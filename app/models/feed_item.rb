@@ -107,6 +107,6 @@ class FeedItem < ActiveRecord::Base
   
   private
   def generate_uri
-    self.uri = "urn:uuid:#{UUID.timestamp_create.to_s}"
+    self.uri = "urn:uuid:#{UUID.random_create.to_s}"
   end
 end
