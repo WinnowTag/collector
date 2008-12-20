@@ -94,7 +94,8 @@ module Spawn
         # disconnect from the listening socket, et al
         Spawn.close_resources
         # get a new connection so the parent can keep the original one
-        ActiveRecord::Base.spawn_reconnect
+        # Not needed in Rails 2.2 due to connection pooling support
+        # ActiveRecord::Base.spawn_reconnect
 
         # run the block of code that takes so long
         yield
