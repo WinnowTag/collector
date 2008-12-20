@@ -306,7 +306,7 @@ class Feed < ActiveRecord::Base
   end
   
   def generate_uri
-    self.uri = "urn:uuid:#{UUID.timestamp_create.to_s}"
+    self.uri = "urn:uuid:#{UUID.random_create.to_s}"
   end
   
   def url_is_not_from_winnow
