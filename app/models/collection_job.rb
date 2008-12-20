@@ -98,7 +98,7 @@ class CollectionJob < ActiveRecord::Base
   
   private
   def retries_left?
-    (retries -= 1) > 0
+    (retries -= 1) >= 0
   end
   
   def start_job
