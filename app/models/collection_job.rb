@@ -69,6 +69,7 @@ class CollectionJob < ActiveRecord::Base
                                                        :collection_summary => self.collection_summary)
         complete_job
       ensure
+        self.class.clear_active_connections!
         logger.info("[#{pid}] Completed collecting #{feed.url}")
       end
     end
