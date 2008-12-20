@@ -63,11 +63,16 @@ class CollectionJob < ActiveRecord::Base
           logger.warn("[#{pid}] Could not get a connection: #{e}, giving up")
         end
       rescue Exception => detail
-        self.feed.increment_error_count
-        self.collection_error = CollectionError.create(:error_type => detail.class.name, 
+        logger.warn("Error: #{detail}")
+        begin
+          self.feed.increment_error_count
+          self.collection_error = CollectionError.create(:error_type => detail.class.name, 
                                                        :error_message => detail.message,
                                                        :collection_summary => self.collection_summary)
-        complete_job
+          complete_job
+        rescue => detail2
+          logger.warn("Error saving exception details: #{detail2}")
+        end
       ensure
         self.class.clear_active_connections!
         logger.info("[#{pid}] Completed collecting #{feed.url}")
