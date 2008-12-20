@@ -60,6 +60,6 @@ class CollectionJobsController < ApplicationController
   
 private
   def find_feed
-    @feed = Feed.find(params[:feed_id]) if params[:feed_id]    
+    @feed = Feed.find(params[:feed_id]) rescue Feed.find_by_uri(params[:feed_id]) if params[:feed_id]    
   end
 end
