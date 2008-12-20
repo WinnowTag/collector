@@ -58,21 +58,15 @@ class CollectionJob < ActiveRecord::Base
         self
       rescue ActiveRecord::StaleObjectError => e
         logger.info("[#{pid}] Job processing clash for #{feed.url}\n#{e.backtrace.join("\n")}")
+        self.reload
         retry if retries_left?
+        save_error(e)
       rescue ActiveRecord::ConnectionTimeoutError => e
         logger.warn("[#{pid}] Could not get a connection: #{e}")
         retry if retries_left?
       rescue Exception => detail
         logger.warn("Error: #{detail}")
-        begin
-          self.feed.increment_error_count
-          self.collection_error = CollectionError.create(:error_type => detail.class.name, 
-                                                       :error_message => detail.message,
-                                                       :collection_summary => self.collection_summary)
-          complete_job
-        rescue => detail2
-          logger.warn("Error saving exception details: #{detail2}")
-        end
+        save_error(detail)
       ensure
         self.class.clear_active_connections!
         logger.info("[#{pid}] Completed collecting #{feed.url}")
@@ -152,6 +146,18 @@ class CollectionJob < ActiveRecord::Base
         
     update_summary
     post_to_callback
+  end
+  
+  def save_error(detail)
+    begin
+      self.feed.increment_error_count
+      self.collection_error = CollectionError.create(:error_type => detail.class.name, 
+                                                   :error_message => detail.message,
+                                                   :collection_summary => self.collection_summary)
+      complete_job
+    rescue => detail2
+      logger.warn("Error saving exception details: #{detail2}")
+    end
   end
 
   def update_summary
