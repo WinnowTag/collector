@@ -52,7 +52,7 @@ loop do
     if children.size >= OPTIONS[:max_jobs]
       sleep(0.1) # Give jobs a chance to complete
       children = children.delete_if do |child|
-        !Process.wait(child.handle, Process::WNOHANG).nil? rescue true
+        !child.handle.alive?
       end
     elsif collection_job = CollectionJob.next_job(OPTIONS)
       children << collection_job.execute(:spawn => true)
@@ -62,5 +62,6 @@ loop do
   
   rescue StandardError => e
     ActiveRecord::Base.logger.warn("[#{Process.pid}] #{e}")
+    raise e
   end
 end

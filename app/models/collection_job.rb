@@ -37,7 +37,7 @@ class CollectionJob < ActiveRecord::Base
   def execute(options = {})
     raise SchedulingException, "Job already finished" unless self.completed_at.nil?
     raise SchedulingException, "Job already started"  unless self.started_at.nil?
-    method = options[:spawn] ? :spawn : :yield
+    method = options[:spawn] ? :thread : :yield
     start_job 
         
     spawn(:method => method) do
