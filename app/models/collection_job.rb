@@ -4,6 +4,7 @@
 # to use, modify, or create derivate works.
 # Please visit http://www.peerworks.org/contact for further information.
 class CollectionJob < ActiveRecord::Base
+  attr_accessor :retries
   NOT_MODIFIED = '304'  
   MOVED_PERMANENTLY = '301'
   USER_AGENT = 'Peerworks Feed Collector/1.0.0 +http://peerworks.org'
@@ -43,25 +44,24 @@ class CollectionJob < ActiveRecord::Base
         
     spawn(:method => method) do
       begin
+        # Make sure we have the latest copy if we are in a thread 
+        # in order to avoid false positive StaleObject errors
+        self.reload if method == :thread 
         logger.info("[#{pid}] Collecting: (job.id:#{id}) #{feed.url}")
 
         self.bm = Benchmark.measure do
           parsed_feed = fetch_feed
-          process_feed(parsed_feed) unless parsed_feed.status == NOT_MODIFIED
-          complete_job
+          process_feed(parsed_feed) unless parsed_feed.status == NOT_MODIFIED          
         end
 
-        self.save!
+        complete_job
         self
       rescue ActiveRecord::StaleObjectError => e
-        logger.info("[#{pid}] Job processing clash for #{feed.url}")
+        logger.info("[#{pid}] Job processing clash for #{feed.url}\n#{e.backtrace.join("\n")}")
+        retry if retries_left?
       rescue ActiveRecord::ConnectionTimeoutError => e
-        if (retries -= 1) > 0
-          logger.warn("[#{pid}] Could not get a connection: #{e}, retrying once")
-          retry
-        else
-          logger.warn("[#{pid}] Could not get a connection: #{e}, giving up")
-        end
+        logger.warn("[#{pid}] Could not get a connection: #{e}")
+        retry if retries_left?
       rescue Exception => detail
         logger.warn("Error: #{detail}")
         begin
@@ -97,6 +97,10 @@ class CollectionJob < ActiveRecord::Base
   end
   
   private
+  def retries_left?
+    (retries -= 1) > 0
+  end
+  
   def start_job
     begin
       self.update_attribute(:started_at, Time.now.utc)
@@ -144,7 +148,7 @@ class CollectionJob < ActiveRecord::Base
   
   def complete_job
     self.completed_at = Time.now.utc
-    self.save
+    self.save!
         
     update_summary
     post_to_callback
