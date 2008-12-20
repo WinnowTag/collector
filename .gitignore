@@ -5,3 +5,7 @@
 /db/development_structure.sql
 /log
 /tmp
+vendor/gems/character-encodings-0.4.1/ext/encoding/character/utf-8/*.o
+vendor/gems/hpricot-0.6/ext/hpricot_scan/*.o
+vendor/gems/character-encodings-0.4.1/ext/encoding/character/utf-8/Makefile
+Makefile
