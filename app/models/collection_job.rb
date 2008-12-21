@@ -46,7 +46,7 @@ class CollectionJob < ActiveRecord::Base
         # Make sure we have the latest copy if we are in a thread 
         # in order to avoid false positive StaleObject errors
         self.reload if method == :thread 
-        logger.info("[#{pid}] Collecting: (job.id:#{id}) #{feed.url}")
+        logger.info("[#{ts}] Collecting: (job.id:#{id}) #{feed.url}")
 
         self.bm = Benchmark.measure do
           parsed_feed = fetch_feed
@@ -56,25 +56,25 @@ class CollectionJob < ActiveRecord::Base
         complete_job
         self
       rescue ActiveRecord::StaleObjectError => e
-        logger.info("[#{pid}] Job processing clash for #{feed.url}\n#{e.backtrace.join("\n")}")
+        logger.info("[#{ts}] Job processing clash for #{feed.url}\n#{e.backtrace.join("\n")}")
         self.reload
         retry if retries_left?
         save_error(e)
       rescue ActiveRecord::ConnectionTimeoutError => e
-        logger.warn("[#{pid}] Could not get a connection: #{e}")
+        logger.warn("[#{ts}] Could not get a connection: #{e}")
         retry if retries_left?
       rescue Exception => detail
         logger.warn("Error: #{detail}")
         save_error(detail)
       ensure
         self.class.clear_active_connections!
-        logger.info("[#{pid}] Completed collecting #{feed.url}")
+        logger.info("[#{ts}] Completed collecting #{feed.url}")
       end
     end
   end
   
-  def pid
-    Thread.current.object_id
+  def ts
+    Time.now.utc
   end
   
   def failed?

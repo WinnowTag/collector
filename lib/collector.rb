@@ -69,9 +69,13 @@ def run_job
       GC.start
       sleep(5)
     end
-  rescue StandardError => e
-    ActiveRecord::Base.logger.warn("[#{Process.pid}] #{e.backtrace.join("\n")}")
+  rescue => e
+    ActiveRecord::Base.logger.warn("[#{Time.now.utc}] #{e.backtrace.join("\n")}")
   end
+end
+
+at_exit do
+  ActiveRecord::Base.logger.warn("[#{Time.now.utc]} Exiting collector")
 end
 
 100.times do
