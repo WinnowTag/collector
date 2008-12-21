@@ -59,7 +59,7 @@ class CollectionSummary < ActiveRecord::Base
   end
   
   def job_completed!
-    if collection_jobs.pending.empty?
+    if collection_jobs.pending.count == 0
       self.completed_on = Time.now.getutc
       self.save
     end
