@@ -12,7 +12,8 @@ OPTIONS = {
   :max_jobs => 10,
   :log_to_stdout => false,
   :scheduler_index => 1,
-  :number_of_schedulers => 1
+  :number_of_schedulers => 1,
+  :memory_profile => false
 }
 
 OptionParser.new do |opts|
@@ -23,6 +24,7 @@ OptionParser.new do |opts|
   opts.on("-n", :REQUIRED, "Number of collector processes scheduling jobs. Default 1") {|n| OPTIONS[:number_of_schedulers] = n.to_i}
   opts.on("-i", :REQUIRED, "Index of this job scheduler. Default 1. Must be between 1 and -n") {|i| OPTIONS[:scheduler_index] = i.to_i}
   opts.on("-e", :REQUIRED, "Rails environment") {|ENV['RAILS_ENV']|}
+  opts.on("--mem-profile", "Profle memory usage") {OPTIONS[:memory_profile] = true}
   opts.on("-h", "Print this message") do |v|
     puts opts
     exit(0)
@@ -43,26 +45,35 @@ else
   ActiveRecord::Base.logger = Logger.new(File.join(RAILS_ROOT, 'log', 'collection.log'))
 end
 ActiveRecord::Base.logger.level = Logger::INFO
-children = []
+$children = []
+$mem_profile = MemProfile.new
 
-loop do
-  begin
+def profile_memory
+  return unless OPTIONS[:memory_profile]
+  $mem_profile.profile(STDOUT)
+end
+
+def run_job
+  begin    
+    profile_memory
     ActiveRecord::Base.connection.verify!(60)
-    
-    if children.size >= OPTIONS[:max_jobs]
+
+    if $children.size >= OPTIONS[:max_jobs]
       sleep(0.1) # Give jobs a chance to complete
-      children = children.delete_if do |child|
+      $children = $children.delete_if do |child|
         !child.handle.alive?
       end
     elsif collection_job = CollectionJob.next_job(OPTIONS)
-      children << collection_job.execute(:spawn => true)
+      $children << collection_job.execute(:spawn => true)
     else
       GC.start
       sleep(5)
     end
-  
   rescue StandardError => e
-    ActiveRecord::Base.logger.warn("[#{Process.pid}] #{e}")
-    raise e
+    ActiveRecord::Base.logger.warn("[#{Process.pid}] #{e.backtrace.join("\n")}")
   end
+end
+
+100.times do
+  run_job
 end
