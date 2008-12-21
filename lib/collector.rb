@@ -75,7 +75,7 @@ def run_job
 end
 
 at_exit do
-  ActiveRecord::Base.logger.warn("[#{Time.now.utc]} Exiting collector")
+  ActiveRecord::Base.logger.warn("[#{Time.now.utc} Exiting collector")
 end
 
 100.times do
