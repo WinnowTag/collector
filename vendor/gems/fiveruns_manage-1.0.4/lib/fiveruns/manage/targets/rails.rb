@@ -15,7 +15,7 @@ module Fiveruns::Manage::Targets
         Fiveruns::Manage.log :error, "Rails version (#{version}) is not supported (>= #{SUPPORT[:min]}); aborting"
         false
       elsif version >= SUPPORT[:obsolete] && version < SUPPORT[:min]
-        Fiveruns::Manage.log :warn, "Rails version (#{version}) is not supported (>= #{SUPPORT[:min]}); instrumentation may not function correctly"
+        #Fiveruns::Manage.log :warn, "Rails version (#{version}) is not supported (>= #{SUPPORT[:min]}); instrumentation may not function correctly"
         true
       elsif version >= SUPPORT[:min] && version <= SUPPORT[:max]
         Fiveruns::Manage.log :debug, "Rails version (#{version}) is supported"          
