@@ -21,7 +21,7 @@ module Fiveruns::Manage::Targets
         Fiveruns::Manage.log :debug, "Rails version (#{version}) is supported"          
         true
       else
-        Fiveruns::Manage.log :warn, "Rails version (#{version}) is not currently supported (<= #{SUPPORT[:max]}); instrumentation may not function correctly"
+        #Fiveruns::Manage.log :warn, "Rails version (#{version}) is not currently supported (<= #{SUPPORT[:max]}); instrumentation may not function correctly"
         true
       end
     rescue
