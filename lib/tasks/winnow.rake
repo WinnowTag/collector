@@ -18,13 +18,3 @@ namespace :test do
     sh "cd vendor/bayes && rake"
   end 
 end
-
-
-desc "Task for CruiseControl.rb"
-task :cruise do
-  ENV['RAILS_ENV'] = RAILS_ENV = 'test'
-
-  Rake::Task['db:migrate'].invoke
-  Rake::Task['db:test:prepare'].invoke
-  Rake::Task['rcov_for_cc'].invoke
-end

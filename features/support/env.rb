@@ -2,13 +2,18 @@
 ENV["RAILS_ENV"] = "test"
 require File.expand_path(File.dirname(__FILE__) + '/../../config/environment')
 require 'cucumber/rails/world'
+require 'cucumber/formatters/unicode' # Comment out this line if you don't want Cucumber Unicode support
 Cucumber::Rails.use_transactional_fixtures
 
-# Comment out the next line if you're not using RSpec's matchers (should / should_not) in your steps.
+require 'webrat/rails'
+
+# Comment out the next two lines if you're not using RSpec's matchers (should / should_not) in your steps.
 require 'cucumber/rails/rspec'
+# require 'webrat/rspec-rails'
 
 fork do
   [STDOUT,STDERR].each {|f| f.reopen '/dev/null', 'w' }
   exec('mongrel_rails start -e test -p 4000')
   sleep(5)
 end
+
