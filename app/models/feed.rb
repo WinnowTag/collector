@@ -13,14 +13,12 @@
 class Feed < ActiveRecord::Base  
   cattr_accessor :base_uri
   @@base_uri = "http://collector.mindloom.org"
+
   attr_accessor :just_published
-  attr_readonly(:uri)
-  before_create :generate_uri
+  attr_readonly :uri
+
   belongs_to :duplicate, :class_name => 'Feed'
   has_many :feed_items, :dependent => :delete_all
-  validates_uniqueness_of :url, :message => 'Feed already exists'
-  validate :url_is_not_from_winnow
-  attr_accessible :url, :active
   has_many :spider_results,    :dependent => :delete_all, :order => 'created_at desc'
   has_many :collection_jobs,   :dependent => :delete_all, :order => 'created_at desc'
   has_one  :last_completed_job, :order => 'completed_at desc', :conditions => "http_response_code = '200'", :class_name => 'CollectionJob'
@@ -29,6 +27,11 @@ class Feed < ActiveRecord::Base
       find(:first, :order => "collection_errors.created_on DESC")
     end
   end
+
+  validates_uniqueness_of :url, :message => 'Feed already exists'
+  validate :url_is_not_from_winnow
+
+  before_create :generate_uri
   
   def title_or_url
     title.blank? ? url : title
