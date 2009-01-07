@@ -13,3 +13,5 @@ Makefile
 *.o
 *.so
 *.bundle
+
+vendor/gems/nokogiri-1.1.0/ext/nokogiri/conftest.dSYM
