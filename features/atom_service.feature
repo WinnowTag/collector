@@ -1,5 +1,4 @@
 Story: Atom Client Access
-
   As another system
   I want to be able to access feeds and items using atom
   So that I can cache feeds and items in my own format

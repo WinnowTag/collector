@@ -4,10 +4,12 @@
 # to use, modify, or create derivate works.
 # Please visit http://www.peerworks.org/contact for further information.
 Given("existing feeds in the system") do 
+  Feed.delete_all
   @feeds = [Feed.create!(valid_feed_attributes), Feed.create!(valid_feed_attributes)]
 end
 
 Given("a feed in the system") do
+  Feed.delete_all
   @test_object = Feed.create!(valid_feed_attributes)
 end
 
