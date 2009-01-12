@@ -294,12 +294,12 @@ class Feed < ActiveRecord::Base
   def validate_on_create
     begin
       url = URI.parse(self.url)
-      # if we are not in test mode make sure it is a valid http url
-      if RAILS_ENV != 'test' and 'http' != url.scheme
-        self.errors.add(:url, 'must be a HTTP url')
+      # TODO: Allow other schemes (eg: safari makes feed://)
+      if 'http' != url.scheme
+        self.errors.add(:url, 'is not http')
       end
-    rescue
-      self.errors.add(:url, 'is not a valid URL')
+    rescue URI::Error
+      self.errors.add(:url, 'is invalid')
     end
   end
   
@@ -315,9 +315,9 @@ class Feed < ActiveRecord::Base
   def url_is_not_from_winnow
     begin
       if URI.parse(url).host =~ /(winnow|trunk).mindloom.org/
-        errors.add(:base, "Winnow generated feeds cannot be added to Winnow.")
+        errors.add(:base, "Winnow generated feeds cannot be added to Winnow")
       end
-    rescue
+    rescue URI::Error
     end
   end
 end
