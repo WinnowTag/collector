@@ -10,31 +10,30 @@ class FeedItemAtomDocument < ActiveRecord::Base
   attr_accessor :atom
   
   class << self
-    def build_from_feed_item(feed_item, item, feed, options = {}) 
-      atom_entry = Atom::Entry.new do |entry|
-        entry.id = feed_item.uri
-        entry.title = extract_title(item)
-        entry.updated = extract_time(item)
-      
-        if item.author_detail
-          entry.authors << Atom::Person.new(:name => item.author_detail.name, :email => item.author_detail.email)
-        elsif item.author
-          entry.authors << Atom::Person.new(:name => item.author)
-        end
-      
-        entry.links << Atom::Link.new(:rel => 'self', 
-                                      :href => "#{options[:base]}/feed_items/#{feed_item.id}.atom")
-        entry.links << Atom::Link.new(:rel => 'alternate', :href => item.link)
-        entry.links << Atom::Link.new(:rel => 'http://peerworks.org/rel/spider', 
-                                      :href => "#{options[:base]}/feed_items/#{feed_item.id}/spider")
-        if feed
-          entry.links << Atom::Link.new(:rel => 'http://peerworks.org/rel/feed', :href => feed.uri)
-        end
-        
-        entry.summary = item.summary unless item.summary == item.content        
-        entry.content = get_content(item)      
+    def build_from_feed_item(feed_item, item, feed, options = {})
+      # Normally I would have done this in a block initializer, but for some reason
+      # this is causing a memory leak with long running processes like the collector,
+      # so instead just create it and set the options.
+      #
+      atom_entry = Atom::Entry.new  
+      atom_entry.id = feed_item.uri
+      atom_entry.title = extract_title(item)
+      atom_entry.updated = extract_time(item)
+    
+      if item.author_detail
+        atom_entry.authors << Atom::Person.new(:name => item.author_detail.name, :email => item.author_detail.email)
+      elsif item.author
+        atom_entry.authors << Atom::Person.new(:name => item.author)
       end
     
+      atom_entry.links << Atom::Link.new(:rel => 'self', :href => "#{options[:base]}/feed_items/#{feed_item.id}.atom")
+      atom_entry.links << Atom::Link.new(:rel => 'alternate', :href => item.link.to_s)
+      atom_entry.links << Atom::Link.new(:rel => 'http://peerworks.org/rel/spider', :href => "#{options[:base]}/feed_items/#{feed_item.id}/spider")
+      atom_entry.links << Atom::Link.new(:rel => 'http://peerworks.org/rel/feed', :href => feed.uri) if feed
+      
+      atom_entry.summary = item.summary unless item.summary == item.content        
+      atom_entry.content = get_content(item)      
+          
       new(:atom_document => atom_entry.to_xml, :feed_item => feed_item, :atom => atom_entry)
     end
   

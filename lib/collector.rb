@@ -25,6 +25,7 @@ OptionParser.new do |opts|
   opts.on("-i", :REQUIRED, "Index of this job scheduler. Default 1. Must be between 1 and -n") {|i| OPTIONS[:scheduler_index] = i.to_i}
   opts.on("-e", :REQUIRED, "Rails environment") {|ENV['RAILS_ENV']|}
   opts.on("--mem-profile", "Profle memory usage") {OPTIONS[:memory_profile] = true}
+  opts.on("--dike", "Find leaks using dike") {OPTIONS[:dike] = true}
   opts.on("-h", "Print this message") do |v|
     puts opts
     exit(0)
@@ -34,6 +35,7 @@ end.parse!
 unless (1..OPTIONS[:number_of_schedulers]).include?(OPTIONS[:scheduler_index])
   raise ArgumentError, "-i must be between 1 and #{OPTIONS[:number_of_schedulers]}"
 end
+
 
 require File.join(File.dirname(__FILE__), '/../config/environment.rb')
 include Spawn
@@ -45,32 +47,47 @@ else
   ActiveRecord::Base.logger = Logger.new(File.join(RAILS_ROOT, 'log', 'collection.log'))
 end
 ActiveRecord::Base.logger.level = Logger::INFO
-$children = []
 $mem_profile = MemProfile.new
 
-def profile_memory
-  return unless OPTIONS[:memory_profile]
-  $mem_profile.profile(STDOUT)
+if OPTIONS[:dike]
+  require 'dike'
+  Dike.logfactory './log/dike'
 end
 
-def run_job
-  begin    
-    profile_memory
-    ActiveRecord::Base.connection.verify!(60)
+class Runner
+  def initialize
+    @children = []
+  end
+  
+  def profile_memory  
+    $mem_profile.profile(STDOUT) if OPTIONS[:memory_profile]
+    Dike.finger if OPTIONS[:dike]
+  end
 
-    if $children.size >= OPTIONS[:max_jobs]
-      sleep(0.1) # Give jobs a chance to complete
-      $children = $children.delete_if do |child|
-        !child.handle.alive?
+  def run_job
+    begin
+      ActiveRecord::Base.connection.verify!(60)
+
+      if @children.size >= OPTIONS[:max_jobs]
+        sleep(0.1) # Give jobs a chance to complete
+        @children = @children.delete_if do |child|
+          !child.handle.alive?
+        end
+      elsif collection_job = CollectionJob.next_job(OPTIONS)
+        @children << collection_job.execute(:spawn => true)
+        profile_memory
+      else      
+        sleep(5)
       end
-    elsif collection_job = CollectionJob.next_job(OPTIONS)
-      $children << collection_job.execute(:spawn => true)
-    else
-      GC.start
-      sleep(5)
+    rescue => e
+      ActiveRecord::Base.logger.warn("[#{Time.now.utc}] #{e.backtrace.join("\n")}")
     end
-  rescue => e
-    ActiveRecord::Base.logger.warn("[#{Time.now.utc}] #{e.backtrace.join("\n")}")
+  end
+  
+  def run
+    loop do
+      run_job
+    end    
   end
 end
 
@@ -78,6 +95,4 @@ at_exit do
   ActiveRecord::Base.logger.warn("[#{Time.now.utc} Exiting collector with exception: #{$!}")
 end
 
-loop do
-  run_job
-end
+Runner.new.run
