@@ -21,9 +21,13 @@ config.action_controller.allow_forgery_protection    = false
 # ActionMailer::Base.deliveries array.
 config.action_mailer.delivery_method = :test
 
-config.gem "nokogiri"
-config.gem "webrat"
-config.gem "diff-lcs", :lib => "diff/lcs"
-config.gem "rspec", :lib => false
-config.gem "rspec-rails", :lib => false
-config.gem "cucumber", :lib => false
+# Commented out until we can deploy without test dependencies
+#
+# See http://rails.lighthouseapp.com/projects/8994-ruby-on-rails/tickets/1793-make-rake-gemsbuild-respect-railsenv
+#
+# config.gem "nokogiri"
+# config.gem "webrat"
+# config.gem "diff-lcs", :lib => "diff/lcs"
+# config.gem "rspec", :lib => false
+# config.gem "rspec-rails", :lib => false
+# config.gem "cucumber", :lib => false
