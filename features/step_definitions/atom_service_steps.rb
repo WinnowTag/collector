@@ -4,33 +4,32 @@
 # to use, modify, or create derivate works.
 # Please visit http://www.peerworks.org/contact for further information.
 Given("existing feeds in the system") do 
-  @feeds = Feed.find(:all, :conditions => 'duplicate_id is null')
+  Feed.delete_all
+  @feeds = [Feed.create!(valid_feed_attributes), Feed.create!(valid_feed_attributes)]
 end
 
-Given("feed $id in the system") do |id|
-  @test_object = Feed.find(id)
+Given("a feed in the system") do
+  Feed.delete_all
+  @test_object = Feed.create!(valid_feed_attributes)
 end
 
-Given("item $i of the feed") do |i|
-  @test_object = @test_object.feed_items.find(:all, :order => 'item_updated desc')[i.to_i - 1]
+Given("an item in the feed") do
+  @test_object = @test_object.feed_items.create!(valid_feed_item_attributes)
 end
 
-Given("a base url") do
-  @base = 'http://localhost:4000'
-end
-   
 When("I fetch the service document") do
-  @service = Atom::Pub::Service.load_service(URI.parse("#{@base}/service"),
-                                :hmac_access_id => 'winnow_id', :hmac_secret_key => 'winnow_secret')
+  get "/service", {}, hmac_headers("winnow_id", "winnow_secret", :method => "GET", :path => "/service", "DATE" => "Wed, 07 Jan 2009 17:30:35 GMT")
+  @service = Atom::Pub::Service.load_service(response.body)
 end
 
 When("I fetch the feed for the first collection") do
-  @atom = Atom::Feed.load_feed(URI.parse(@service.workspaces.first.collections.first.href),
-                               :hmac_access_id => 'winnow_id', :hmac_secret_key => 'winnow_secret')
+  path = URI.parse(@service.workspaces.first.collections.first.href).path
+  get path, {}, hmac_headers("winnow_id", "winnow_secret", :method => "GET", :path => path, "DATE" => "Wed, 07 Jan 2009 17:30:35 GMT")
+  @atom = Atom::Feed.load_feed(response.body)
 end
 
-When("item $i of the feed document") do |i|
-  @atom = @atom.entries[i.to_i - 1]
+When("I get the first feed item entry") do
+  @atom = @atom.entries.first
 end
 
 Then("the document should have a workspace") do
@@ -51,18 +50,14 @@ Then("the collections should have titles for each of the feeds") do
   end
 end
 
-Then("it contains the title") do
-  @atom.title.should == @test_object.title
-end
-
 Then("the feed contains the items") do
   @atom.should have(@test_object.feed_items.size).entries
 end
 
-Then("the id is a uuid urn") do
-  @atom.id.should match(/urn:uuid:[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/)
+Then("it contains the title") do
+  @atom.title.should == @test_object.title
 end
 
-Then("fetching self returns an $klass") do |klass|
-  @atom.reload!(:hmac_access_id => 'winnow_id', :hmac_secret_key => 'winnow_secret').should be_an_instance_of(klass.constantize)
+Then("the id is a uuid urn") do
+  @atom.id.should match(/urn:uuid:[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/)
 end
