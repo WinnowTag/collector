@@ -25,6 +25,27 @@ class ArchiveTables < ActiveRecord::Migration
     add_index :feed_items, :content_length
     add_index :feed_items, :sort_title
 
+    create_table :feeds do |t|
+      t.string :url
+      t.string :title
+      t.string :sort_title
+      t.string :link
+      t.boolean :active, :default => true
+      t.integer :duplicate_id
+      t.integer :feed_items_count, :default => 0
+      t.integer :collection_errors_count, :default => 0
+      t.integer :collections_count, :default => 0
+      t.datetime :updated_on
+      t.datetime :created_on
+      t.string :created_by
+      t.integer :lock_version, :default => 0
+      t.string :uri
+    end
+    add_index :feeds, :uri, :unqiue => true
+    add_index :feeds, :sort_title
+    add_index :feeds, :title
+    add_index :feeds, :link
+
     create_table "feed_item_xml_data" do |t|
       t.text     "xml_data",   :limit => 2147483647
       t.datetime "created_on"
@@ -42,7 +63,6 @@ class ArchiveTables < ActiveRecord::Migration
     execute "ALTER TABLE feed_item_contents ENGINE=MYISAM;"
     add_index :feed_item_contents, :feed_item_id, :name => "feed_item_contents_feed_item_id_index"
     execute "ALTER TABLE feed_item_contents ADD FULLTEXT fti_feed_item_contents(title, author, description);"
-    
     
     execute "create table feed_items_archives like feed_items;"
     execute "create table feed_item_xml_data_archives like feed_item_xml_data;"
