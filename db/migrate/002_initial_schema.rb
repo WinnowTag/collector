@@ -28,7 +28,6 @@ class InitialSchema < ActiveRecord::Migration
       t.string :link
       t.datetime :time
       t.string :unique_id
-      t.string :atom_md5
       t.integer :content_length, :default => 0
       t.datetime :created_on
       t.string :sort_title
