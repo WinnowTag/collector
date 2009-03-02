@@ -40,7 +40,7 @@ class ArchiveTables < ActiveRecord::Migration
       t.text     "encoded_content"
     end
     execute "ALTER TABLE feed_item_contents ENGINE=MYISAM;"
-    add_index :feed_item_contents, :feed_item_id
+    add_index :feed_item_contents, :feed_item_id, :name => "feed_item_contents_feed_item_id_index"
     execute "ALTER TABLE feed_item_contents ADD FULLTEXT fti_feed_item_contents(title, author, description);"
     
     
