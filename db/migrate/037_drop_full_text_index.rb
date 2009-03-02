@@ -5,7 +5,7 @@
 # Please visit http://www.peerworks.org/contact for further information.
 class DropFullTextIndex < ActiveRecord::Migration
   def self.up
-    drop_table(:feed_item_contents_full_text)
+    # drop_table(:feed_item_contents_full_text)
   end
 
   def self.down
