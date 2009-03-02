@@ -33,12 +33,11 @@ Rails::Initializer.run do |config|
   config.gem "ratom", :lib => "atom/pub"
   config.gem "rfeedparser" # dependencies: addressable character-encodings htmlentities htmltools rchardet
   config.gem "tzinfo"
+  config.gem "uuidtools"
 
   # Must be compiled
   config.gem "libxml-ruby", :version => "0.8.3", :lib => "libxml"
-  config.gem "mysql"
-  config.gem "tzinfo", :version => ">= 0.3.9"
-  config.gem "uuidtools"
+  config.gem "mysql",       :version => "2.7"
 
   # Only load the plugins named here, in the order given. By default, all plugins 
   # in vendor/plugins are loaded in alphabetical order.
