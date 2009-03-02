@@ -63,7 +63,7 @@ class ArchiveTables < ActiveRecord::Migration
     execute "ALTER TABLE feed_item_contents ADD FULLTEXT fti_feed_item_contents(title, author, description);"
     
     execute "create table feed_items_archives like feed_items;"
-    add_column :feed_item_archives, :position, :integer
+    add_column :feed_items_archives, :position, :integer
     execute "create table feed_item_xml_data_archives like feed_item_xml_data;"
     # execute "create table feed_item_tokens_containers_archives like feed_item_tokens_containers;"
     execute "create table feed_item_contents_archives like feed_item_contents;"
