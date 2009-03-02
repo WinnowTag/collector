@@ -5,7 +5,7 @@
 # Please visit http://www.peerworks.org/contact for further information.
 class RemoveOldTokenArchive < ActiveRecord::Migration
   def self.up
-    drop_table :feed_item_tokens_containers_archives
+    # drop_table :feed_item_tokens_containers_archives
   end
 
   def self.down
