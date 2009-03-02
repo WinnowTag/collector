@@ -39,6 +39,9 @@ class ArchiveTables < ActiveRecord::Migration
       t.datetime "created_on"
       t.text     "encoded_content"
     end
+    add_index :feed_item_contents, :feed_item_id
+    execute "ALTER TABLE feed_item_contents ADD FULLTEXT fti_feed_item_contents(title, author, description);"
+    
     
     execute "create table feed_items_archives like feed_items;"
     execute "create table feed_item_xml_data_archives like feed_item_xml_data;"
