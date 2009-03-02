@@ -31,6 +31,8 @@ class InitialSchema < ActiveRecord::Migration
       t.integer :content_length, :default => 0
       t.datetime :created_on
       t.string :sort_title
+      t.integer :xml_data_size
+      t.string :time_source
     end
     add_index :feed_items, :feed_id
     add_index :feed_items, :collection_job_id
