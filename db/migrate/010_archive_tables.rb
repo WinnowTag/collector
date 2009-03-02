@@ -43,8 +43,6 @@ class ArchiveTables < ActiveRecord::Migration
     end
     add_index :feeds, :uri, :unqiue => true
     add_index :feeds, :sort_title
-    add_index :feeds, :title
-    add_index :feeds, :link
 
     create_table "feed_item_xml_data" do |t|
       t.text     "xml_data",   :limit => 2147483647
