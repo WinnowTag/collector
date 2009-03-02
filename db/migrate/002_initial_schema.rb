@@ -23,7 +23,6 @@ class InitialSchema < ActiveRecord::Migration
     # Creating these tables so migration run from start to finish.
     create_table :feed_items do |t|
       t.integer :feed_id, :default => 0
-      t.integer :collection_id
       t.string :title
       t.string :link
       t.datetime :time
@@ -35,7 +34,6 @@ class InitialSchema < ActiveRecord::Migration
       t.string :time_source
     end
     add_index :feed_items, :feed_id
-    add_index :feed_items, :collection_id
     add_index :feed_items, :time
     add_index :feed_items, :unique_id
     add_index :feed_items, :content_length
