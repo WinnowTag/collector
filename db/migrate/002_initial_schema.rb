@@ -52,12 +52,9 @@ class InitialSchema < ActiveRecord::Migration
       t.integer :collection_errors_count, :default => 0
       t.datetime :updated_on
       t.datetime :created_on
-      t.integer :lock_version, :default => 0
-      t.string :uri
       t.text :last_http_headers
       t.boolean :is_duplicate
     end
-    add_index :feeds, :uri, :unqiue => true
     add_index :feeds, :sort_title
 
     create_table "feed_item_xml_data" do |t|
