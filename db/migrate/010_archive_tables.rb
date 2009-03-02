@@ -37,7 +37,6 @@ class ArchiveTables < ActiveRecord::Migration
       t.integer :collections_count, :default => 0
       t.datetime :updated_on
       t.datetime :created_on
-      t.string :created_by
       t.integer :lock_version, :default => 0
       t.string :uri
     end
