@@ -34,11 +34,12 @@ class ArchiveTables < ActiveRecord::Migration
       t.integer :duplicate_id
       t.integer :feed_items_count, :default => 0
       t.integer :collection_errors_count, :default => 0
-      t.integer :collections_count, :default => 0
       t.datetime :updated_on
       t.datetime :created_on
       t.integer :lock_version, :default => 0
       t.string :uri
+      t.text :last_http_headers
+      t.boolean :is_duplicate
     end
     add_index :feeds, :uri, :unqiue => true
     add_index :feeds, :sort_title
