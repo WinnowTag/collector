@@ -62,6 +62,11 @@ class ArchiveTables < ActiveRecord::Migration
     add_index :feed_item_contents, :feed_item_id, :name => "feed_item_contents_feed_item_id_index"
     execute "ALTER TABLE feed_item_contents ADD FULLTEXT fti_feed_item_contents(title, author, description);"
     
+    create_table "schema_info", :id => false do |t|
+      t.integer "version"
+    end
+    execute "alter table schema_info ENGINE=MYISAM;"
+    
     execute "create table feed_items_archives like feed_items;"
     add_column :feed_items_archives, :position, :integer
     remove_column :feed_items_archives, :title
