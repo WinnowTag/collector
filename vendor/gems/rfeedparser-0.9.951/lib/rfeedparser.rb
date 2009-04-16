@@ -68,7 +68,7 @@ rescue LoadError, NameError
   #STDERR.puts "Could not load expat; trying libxml."
   
   begin
-    require 'rfeedparser/libxml_parser'
+    #require 'rfeedparser/libxml_parser'
     StrictFeedParser = FeedParser::LibXML::StrictFeedParser
 
   rescue LoadError, NameError
