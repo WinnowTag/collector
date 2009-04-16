@@ -36,7 +36,7 @@ Rails::Initializer.run do |config|
   config.gem "uuidtools"
 
   # Must be compiled
-  config.gem "libxml-ruby", :version => "0.8.3", :lib => "libxml"
+  config.gem "libxml-ruby", :version => "1.1.3", :lib => "libxml"
   config.gem "mysql",       :version => "2.7"
 
   # Only load the plugins named here, in the order given. By default, all plugins 
