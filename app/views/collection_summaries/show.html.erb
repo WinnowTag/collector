@@ -12,12 +12,14 @@
   <pre><%=h @collection_summary.fatal_error_message %></pre>
 <% end -%>
 
-<% if @collection_summary.collection_errors.any? %>
+<% if @collection_errors.any? %>
   <h3>Collection Errors</h3>
-  <%= render :partial => 'collection_errors/collection_errors', :locals => { :collection_errors => @collection_summary.collection_errors } %>
+  <%= render :partial => 'collection_errors/collection_errors', :locals => { :collection_errors => @collection_errors } %>
+  <%= will_paginate @collection_errors, :update => "collection_errors", :params => { :action => "collection_errors" } %>
 <% end -%>
 
-<% if @collection_summary.collection_jobs.any? %>
+<% if @collection_jobs.any? %>
   <h3>Collection Jobs</h3>
-  <%= render :partial => 'collection_jobs/collection_jobs_with_title', :locals => {:collection_jobs => @collection_summary.collection_jobs } %>
+  <%= render :partial => 'collection_jobs/collection_jobs_with_title', :locals => {:collection_jobs => @collection_jobs } %>
+  <%= will_paginate @collection_jobs, :update => "collection_jobs", :params => { :action => "collection_jobs" } %>
 <% end -%>

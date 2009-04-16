@@ -1,0 +1,4 @@
+<%= {
+  :records => render(:partial => 'collection_jobs/collection_job_with_title.html.erb', :collection => @collection_jobs, :as => :collection_job),
+  :pagination => will_paginate(@collection_jobs, :update => "collection_jobs")
+}.to_json %>
