@@ -14,4 +14,5 @@ Makefile
 *.so
 *.bundle
 
-vendor/gems/nokogiri-1.1.0/ext/nokogiri/conftest.dSYM
+vendor/gems/nokogiri-1.1.0/ext/nokogiri/conftest.dSYMvendor/gems/nokogiri-1.2.3/ext/nokogiri/conftest.dSYM
+vendor/gems/nokogiri-1.2.3/ext/nokogiri/conftest.dSYM/Contents
