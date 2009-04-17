@@ -6,17 +6,13 @@
 require 'xml/libxml'
 
 class Opml
-  def self.parse(io)
-    parser = XML::Parser.new
-    
+  def self.parse(io)    
     case io
-    when IO     then parser.io = io
-    when String then parser.string = io
+    when IO     then new (XML::Parser.io(io).parse)
+    when String then new (XML::Parser.string(io).parse)
     else
       raise ArgumentError, "Dont know how to parse a #{io.class.name}"
     end
-    
-    new(parser.parse)
   end
   
   def initialize(document)
