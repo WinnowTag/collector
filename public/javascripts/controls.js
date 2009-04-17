@@ -554,8 +554,6 @@ Ajax.InPlaceEditor = Class.create({
     this._controls.editor = fld;
     if (this.options.loadTextURL)
       this.loadExternalText();
-    // NOTE: peerworks change
-    fld.observe("keydown", this.checkForEscapeOrReturn.bind(this));
     this._form.appendChild(this._controls.editor);
   },
   createForm: function() {
@@ -916,9 +914,7 @@ Object.extend(Ajax.InPlaceEditor, {
         ipe._effect.cancel();
     },
     onFailure: function(transport, ipe) {
-      // NOTE: peerworks change
-      // alert('Error communication with the server: ' + transport.responseText.stripTags());
-      Message.add('error', 'Error communication with the server: ' + transport.responseText.stripTags());
+      alert('Error communication with the server: ' + transport.responseText.stripTags());
     },
     onFormCustomization: null, // Takes the IPE and its generated form, after editor, before controls.
     onLeaveEditMode: null,

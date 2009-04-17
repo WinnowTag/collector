@@ -29,5 +29,5 @@ config.action_mailer.delivery_method = :test
 # config.gem "webrat"
 # config.gem "diff-lcs", :lib => "diff/lcs"
 # config.gem "rspec", :lib => false
-# config.gem "rspec-rails", :lib => false
+#config.gem "rspec-rails", :lib => false, :version => '1.1.11'
 # config.gem "cucumber", :lib => false

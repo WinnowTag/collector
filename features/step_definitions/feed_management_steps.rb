@@ -18,6 +18,7 @@ Given(/(no|\d+) item caches?/) do |n|
 end
 
 Given('I am a logged in user') do
+  User.create(:login => 'admin', :password => 'test', :lastname => 'admin', :firstname => 'admin', :email => 'admin@here.com')
   post login_path, :login => 'admin', :password => 'test'
 end
     

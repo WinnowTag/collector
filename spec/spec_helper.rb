@@ -24,6 +24,10 @@ Spec::Runner.configure do |config|
   config.include WinnowMatchers, :type => :code
   config.include AuthenticatedTestHelper
 
+  config.before(:each, :behaviour_type => :controller) do
+    @controller.instance_eval { flash.stub!(:sweep) }
+  end
+
   # == Fixtures
   #
   # You can declare fixtures for each example_group like this:

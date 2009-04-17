@@ -107,7 +107,7 @@ class Feed < ActiveRecord::Base
     def find_duplicate(feed)
       duplicate = Feed.find(:first, :conditions => ['(link = ? or url = ?) and id <> ?',
                                         feed.link, feed.url, feed.id])
-
+                                  
       if duplicate
         # Find the root duplicate
         until duplicate.duplicate.nil?
@@ -158,7 +158,7 @@ class Feed < ActiveRecord::Base
   end
   
   def first_collection?
-    self.updated_on.nil?
+    self.collection_jobs.empty? || self.collection_jobs.size == 1
   end
   
   def update_url!(new_url)
