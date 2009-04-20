@@ -172,7 +172,7 @@ module Rails
         puts cmd
         puts %x(#{cmd})
       end
-      dependencies.each { |dep| dep.install } if options[:recursive]
+      dependencies.each { |dep| dep.install(options) } if options[:recursive]
     end
 
     def load
@@ -224,7 +224,7 @@ module Rails
         real_spec = Gem::Specification.load(specification.loaded_from)
         write_specification(real_spec)
       end
-      dependencies.each { |dep| dep.unpack } if options[:recursive]
+      dependencies.each { |dep| dep.unpack(options) } if options[:recursive]
     end
 
     def write_specification(spec)

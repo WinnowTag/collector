@@ -1,0 +1,71 @@
+--- !ruby/object:Gem::Specification 
+name: fastthread
+version: !ruby/object:Gem::Version 
+  version: 1.0.7
+platform: ruby
+authors: 
+- MenTaLguY <mental@rydia.net>
+autorequire: 
+bindir: bin
+cert_chain: []
+
+date: 2009-04-08 00:00:00 -04:00
+default_executable: 
+dependencies: []
+
+description: Optimized replacement for thread.rb primitives
+email: mental@rydia.net
+executables: []
+
+extensions: 
+- ext/fastthread/extconf.rb
+extra_rdoc_files: 
+- ext/fastthread/fastthread.c
+- ext/fastthread/extconf.rb
+- CHANGELOG
+files: 
+- test/test_queue.rb
+- test/test_mutex.rb
+- test/test_condvar.rb
+- test/test_all.rb
+- setup.rb
+- Manifest
+- ext/fastthread/fastthread.c
+- ext/fastthread/extconf.rb
+- CHANGELOG
+- fastthread.gemspec
+- Rakefile
+has_rdoc: true
+homepage: ""
+licenses: []
+
+post_install_message: 
+rdoc_options: 
+- --line-numbers
+- --inline-source
+- --title
+- Fastthread
+require_paths: 
+- lib
+- ext
+required_ruby_version: !ruby/object:Gem::Requirement 
+  requirements: 
+  - - ">="
+    - !ruby/object:Gem::Version 
+      version: "0"
+  version: 
+required_rubygems_version: !ruby/object:Gem::Requirement 
+  requirements: 
+  - - ">="
+    - !ruby/object:Gem::Version 
+      version: "1.2"
+  version: 
+requirements: []
+
+rubyforge_project: mongrel
+rubygems_version: 1.3.2
+signing_key: 
+specification_version: 2
+summary: Optimized replacement for thread.rb primitives
+test_files: 
+- test/test_all.rb
