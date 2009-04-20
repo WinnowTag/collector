@@ -27,18 +27,14 @@ Rails::Initializer.run do |config|
   # config.gem "hpricot", :version => '0.6', :source => "http://code.whytheluckystiff.net"
   # config.gem "sqlite3-ruby", :lib => "sqlite3"
   # config.gem "aws-s3", :lib => "aws/s3"
-  config.gem "auth-hmac", :version => "1.1.0"
+  config.gem "auth-hmac"
   config.gem "fiveruns_manage"
-  config.gem "hpricot", :version => "0.6" # need 0.6 for rfeedparser
   config.gem "ratom", :lib => "atom/pub"
-  config.gem "rfeedparser" # dependencies: addressable character-encodings htmlentities htmltools rchardet
-  config.gem "nokogiri"
-  config.gem "tzinfo"
+  config.gem "rfeedparser"
   config.gem "uuidtools"
 
-  # Must be compiled
-  config.gem "libxml-ruby", :version => "1.1.3", :lib => "libxml"
-  config.gem "mysql",       :version => "2.7"
+  # Must be compiled/installed on the target system
+  config.gem "mysql", :version => "2.7"
 
   # Only load the plugins named here, in the order given. By default, all plugins 
   # in vendor/plugins are loaded in alphabetical order.
