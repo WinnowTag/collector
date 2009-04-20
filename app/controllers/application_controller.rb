@@ -4,17 +4,11 @@
 # to use, modify, or create derivate works.
 # Please visit http://www.peerworks.org/contact for further information.
 class ApplicationController < ActionController::Base
-  helper :all # include all helpers, all the time
+  helper :all
+  # protect_from_forgery
 
-  # See ActionController::RequestForgeryProtection for details
-  # Uncomment the :secret if you're not using the cookie session store
-  # protect_from_forgery # :secret => '080aa774f53be2c661d1f81457c4ee46'
-  
-  # See ActionController::Base for details 
-  # Uncomment this to filter the contents of submitted sensitive data parameters
-  # from your application log (in this case, all fields with names like "password"). 
   filter_parameter_logging :password
-  
+
   include ExceptionNotifiable
   include AuthenticatedSystem
   helper_method :controller_name, :action_name

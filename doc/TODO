@@ -1,3 +1,5 @@
+* upgrade hpricot - doesnt work with 0.8.1
+
  • Feeds
    • show - duplicate?, sort lists?, summary count for lists?
    • split errors out and don't display error fields on normal page?
