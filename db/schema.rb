@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20081203235512) do
+ActiveRecord::Schema.define(:version => 20081216155301) do
 
   create_table "collection_errors", :force => true do |t|
     t.integer  "collection_job_id"
@@ -20,6 +20,7 @@ ActiveRecord::Schema.define(:version => 20081203235512) do
   end
 
   add_index "collection_errors", ["collection_job_id"], :name => "index_collection_errors_on_collection_job_id", :unique => true
+  add_index "collection_errors", ["collection_summary_id"], :name => "index_collection_errors_on_collection_summary_id"
 
   create_table "collection_jobs", :force => true do |t|
     t.integer  "feed_id"
@@ -42,6 +43,9 @@ ActiveRecord::Schema.define(:version => 20081203235512) do
     t.float    "rtime"
     t.float    "ttime"
   end
+
+  add_index "collection_jobs", ["feed_id"], :name => "index_collection_jobs_on_feed_id"
+  add_index "collection_jobs", ["collection_summary_id"], :name => "index_collection_jobs_on_collection_summary_id"
 
   create_table "collection_summaries", :force => true do |t|
     t.string   "fatal_error_type"
@@ -74,20 +78,20 @@ ActiveRecord::Schema.define(:version => 20081203235512) do
   add_index "feed_item_atom_documents", ["feed_item_id"], :name => "index_feed_item_atom_documents_on_feed_item_id", :unique => true
 
   create_table "feed_items", :force => true do |t|
-    t.integer  "feed_id",                         :default => 0
+    t.integer  "feed_id",           :default => 0
     t.integer  "collection_job_id"
     t.string   "title"
     t.string   "link"
     t.datetime "item_updated"
     t.string   "unique_id"
     t.string   "atom_md5"
-    t.integer  "content_length",                  :default => 0
+    t.integer  "content_length",    :default => 0
     t.datetime "created_on"
     t.string   "sort_title"
-    t.string   "uuid",              :limit => 36,                :null => false
+    t.string   "uri",                              :null => false
   end
 
-  add_index "feed_items", ["uuid"], :name => "index_feed_items_on_uuid", :unique => true
+  add_index "feed_items", ["uri"], :name => "index_feed_items_on_uri", :unique => true
   add_index "feed_items", ["link"], :name => "index_feed_items_on_link", :unique => true
   add_index "feed_items", ["item_updated"], :name => "index_feed_items_on_time"
   add_index "feed_items", ["feed_id"], :name => "index_feed_items_on_feed_id"
@@ -110,8 +114,10 @@ ActiveRecord::Schema.define(:version => 20081203235512) do
     t.datetime "created_on"
     t.string   "created_by"
     t.integer  "lock_version",            :default => 0
+    t.string   "uri",                                       :null => false
   end
 
+  add_index "feeds", ["uri"], :name => "index_feeds_on_uri", :unique => true
   add_index "feeds", ["sort_title"], :name => "index_feeds_on_sort_title"
   add_index "feeds", ["title"], :name => "index_feeds_on_title"
   add_index "feeds", ["link"], :name => "index_feeds_on_link"
@@ -123,6 +129,7 @@ ActiveRecord::Schema.define(:version => 20081203235512) do
     t.boolean  "done",            :default => false, :null => false
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "actionable_uri"
   end
 
   add_index "item_cache_operations", ["created_at"], :name => "index_item_cache_operations_on_created_at"
@@ -132,6 +139,7 @@ ActiveRecord::Schema.define(:version => 20081203235512) do
     t.boolean  "last_message_failed"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.boolean  "items_only",          :default => false
   end
 
   create_table "schema_info", :id => false, :force => true do |t|
@@ -172,5 +180,7 @@ ActiveRecord::Schema.define(:version => 20081203235512) do
     t.datetime "last_accessed_at"
     t.string   "time_zone",                               :default => "UTC"
   end
+
+  add_foreign_key "feed_item_atom_documents", ["feed_item_id"], "feed_items", ["id"], :on_delete => :cascade, :name => "feed_item_atom_documents_ibfk_1"
 
 end

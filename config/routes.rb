@@ -9,7 +9,7 @@ ActionController::Routing::Routes.draw do |map|
     account_map.edit_account "account/edit/:id", :action => "edit"
   end
   map.resources :collection_jobs
-  map.resources :collection_summaries
+  map.resources :collection_summaries, :member => { :collection_errors => :get, :collection_jobs => :get }
   map.resources :feed_items, :member => { :spider => :get }
   map.resources :feeds, :collection => { :import => :post, :import_opml => :post } do |feeds_map|
     feeds_map.resources :collection_jobs

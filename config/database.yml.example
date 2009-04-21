@@ -1,6 +1,7 @@
 development:
   adapter: mysql
   encoding: utf8
+  reconnect: false
   database: collector_development
   pool: 5
   username: root
@@ -10,6 +11,7 @@ development:
 test:
   adapter: mysql
   encoding: utf8
+  reconnect: false
   database: collector_test
   pool: 5
   username: root

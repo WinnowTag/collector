@@ -530,9 +530,8 @@ var Draggable = Class.create({
     Draggables.notify('onDrag', this);
     if (this._isScrollChild) {
       Draggables._lastScrollPointer = Draggables._lastScrollPointer || $A(Draggables._lastPointer);
-      // NOTE: Peerworks change
-      // Draggables._lastScrollPointer[0] += this.scrollSpeed[0] * delta / 1000;
-      // Draggables._lastScrollPointer[1] += this.scrollSpeed[1] * delta / 1000;
+      Draggables._lastScrollPointer[0] += this.scrollSpeed[0] * delta / 1000;
+      Draggables._lastScrollPointer[1] += this.scrollSpeed[1] * delta / 1000;
       if (Draggables._lastScrollPointer[0] < 0)
         Draggables._lastScrollPointer[0] = 0;
       if (Draggables._lastScrollPointer[1] < 0)

@@ -5,7 +5,7 @@
 # Please visit http://www.peerworks.org/contact for further information.
 class RemoveRandomBackground < ActiveRecord::Migration
   def self.up
-    drop_table :random_backgrounds    
+    # drop_table :random_backgrounds    
   end
 
   def self.down

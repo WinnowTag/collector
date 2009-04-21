@@ -26,22 +26,36 @@ class CollectionSummariesController < ApplicationController
 
   def show
     @collection_summary = CollectionSummary.find(params[:id])
+    @collection_errors = @collection_summary.collection_errors.paginate(:per_page => 10, :page => 1)
+    @collection_jobs = @collection_summary.collection_jobs.paginate(:per_page => 10, :page => 1)
 
     respond_to do |format|
       format.html
       format.xml  { render :xml => @collection_summary.to_xml }
     end
   end
-  
-private
-  def conditional_render(last_modified)   
-     since = Time.rfc2822(request.env['HTTP_IF_MODIFIED_SINCE']) rescue nil
 
-     if since && last_modified && since >= last_modified
-       head :not_modified
-     else
-       response.headers['Last-Modified'] = last_modified.httpdate if last_modified
-       yield(since)
-     end
-   end
+  def collection_errors
+    @collection_summary = CollectionSummary.find(params[:id])
+    @collection_errors = @collection_summary.collection_errors.paginate(:per_page => 10, :page => params[:page])
+    respond_to :json
+  end
+
+  def collection_jobs
+    @collection_summary = CollectionSummary.find(params[:id])
+    @collection_jobs = @collection_summary.collection_jobs.paginate(:per_page => 10, :page => params[:page])
+    respond_to :json
+  end
+
+private
+  def conditional_render(last_modified)
+    since = Time.rfc2822(request.env['HTTP_IF_MODIFIED_SINCE']) rescue nil
+
+    if since && last_modified && since >= last_modified
+      head :not_modified
+    else
+      response.headers['Last-Modified'] = last_modified.httpdate if last_modified
+      yield(since)
+    end
+  end
 end

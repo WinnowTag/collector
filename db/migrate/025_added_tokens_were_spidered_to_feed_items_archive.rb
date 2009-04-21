@@ -6,9 +6,11 @@
 class AddedTokensWereSpideredToFeedItemsArchive < ActiveRecord::Migration
   def self.up
     add_column :feed_items_archives, :tokens_were_spidered, :boolean
+    add_column :feed_items, :tokens_were_spidered, :boolean
   end
 
   def self.down
     remove_column :feed_items_archives, :tokens_were_spidered
+    remove_column :feed_items, :tokens_were_spidered
   end
 end

@@ -3733,12 +3733,9 @@ Form.Observer = Class.create(Abstract.TimedObserver, {
 /*--------------------------------------------------------------------------*/
 
 Abstract.EventObserver = Class.create({
-  // NOTE: peerworks change
-  initialize: function(element, callback, event) {
+  initialize: function(element, callback) {
     this.element  = $(element);
     this.callback = callback;
-    // NOTE: peerworks change
-    this.event    = event;
 
     this.lastValue = this.getValue();
     if (this.element.tagName.toLowerCase() == 'form')
@@ -3747,12 +3744,10 @@ Abstract.EventObserver = Class.create({
       this.registerCallback(this.element);
   },
 
-  // NOTE: peerworks change
-  onElementEvent: function(event) {
+  onElementEvent: function() {
     var value = this.getValue();
     if (this.lastValue != value) {
-      // NOTE: peerworks change
-      this.callback(this.element, value, event);
+      this.callback(this.element, value);
       this.lastValue = value;
     }
   },
@@ -3762,10 +3757,7 @@ Abstract.EventObserver = Class.create({
   },
 
   registerCallback: function(element) {
-    // NOTE: peerworks change
-    if(this.event) {
-      Event.observe(element, this.event, this.onElementEvent.bind(this));
-    } else if (element.type) {
+    if (element.type) {
       switch (element.type.toLowerCase()) {
         case 'checkbox':
         case 'radio':

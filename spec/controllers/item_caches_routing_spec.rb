@@ -16,19 +16,19 @@ describe ItemCachesController do
     end
   
     it "should map { :controller => 'item_caches', :action => 'show', :id => 1 } to /item_caches/1" do
-      route_for(:controller => "item_caches", :action => "show", :id => 1).should == "/item_caches/1"
+      route_for(:controller => "item_caches", :action => "show", :id => "1").should == "/item_caches/1"
     end
   
     it "should map { :controller => 'item_caches', :action => 'edit', :id => 1 } to /item_caches/1/edit" do
-      route_for(:controller => "item_caches", :action => "edit", :id => 1).should == "/item_caches/1/edit"
+      route_for(:controller => "item_caches", :action => "edit", :id => "1").should == "/item_caches/1/edit"
     end
   
     it "should map { :controller => 'item_caches', :action => 'update', :id => 1} to /item_caches/1" do
-      route_for(:controller => "item_caches", :action => "update", :id => 1).should == "/item_caches/1"
+      route_for(:controller => "item_caches", :action => "update", :id => "1").should == {:path => "/item_caches/1", :method => :put }
     end
   
     it "should map { :controller => 'item_caches', :action => 'destroy', :id => 1} to /item_caches/1" do
-      route_for(:controller => "item_caches", :action => "destroy", :id => 1).should == "/item_caches/1"
+      route_for(:controller => "item_caches", :action => "destroy", :id => "1").should == {:path => "/item_caches/1", :method => :delete }
     end
   end
 

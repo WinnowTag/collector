@@ -13,5 +13,5 @@ Makefile
 *.o
 *.so
 *.bundle
-
-vendor/gems/nokogiri-1.1.0/ext/nokogiri/conftest.dSYM
+vendor/gems/libxml-ruby-*/ext/libxml/extconf.h
+vendor/gems/nokogiri-*/ext/nokogiri/conftest.dSYM

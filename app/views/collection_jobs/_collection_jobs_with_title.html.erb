@@ -1,17 +1,21 @@
 <table class="veerle">
-  <tr>
-    <th>Feed</th>
-    <th>Items</th>
-    <th>Response Code</th>
-    <th>Etag</th>
-    <th>Last Modified</th>
-    <th>User</th>
-    <th>System</th>
-    <th>Real</th>
-    <th>Started</th>
-    <th>Completed</th>
-  </tr>
-  <%- collection_jobs.each do |collection_job| -%>
-    <%= render :partial => 'collection_jobs/collection_job_with_title', :locals => { :collection_job => collection_job } %>
-  <%- end -%>
+  <thead>
+    <tr>
+      <th>Feed</th>
+      <th>Items</th>
+      <th>Response Code</th>
+      <th>Etag</th>
+      <th>Last Modified</th>
+      <th>User</th>
+      <th>System</th>
+      <th>Real</th>
+      <th>Started</th>
+      <th>Completed</th>
+    </tr>
+  </thead>
+  <tbody id="collection_jobs">
+    <%- collection_jobs.each do |collection_job| -%>
+      <%= render :partial => 'collection_jobs/collection_job_with_title', :locals => { :collection_job => collection_job } %>
+    <%- end -%>
+  </tbody>
 </table>

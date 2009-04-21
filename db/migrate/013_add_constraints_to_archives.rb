@@ -11,8 +11,8 @@ class AddConstraintsToArchives < ActiveRecord::Migration
     execute "alter table feed_item_contents_archives add " + 
               " foreign key FI_CONTENT_ARCHIVES (feed_item_id) references feed_items_archives(id) on delete cascade;"
               
-    execute "alter table feed_item_tokens_containers_archives add " + 
-              " foreign key FTC_ARCHIVES (feed_item_id) references feed_items_archives(id) on delete cascade;"
+    # execute "alter table feed_item_tokens_containers_archives add " + 
+    #           " foreign key FTC_ARCHIVES (feed_item_id) references feed_items_archives(id) on delete cascade;"
               
     execute "ALTER TABLE feed_item_xml_data_archives MODIFY COLUMN id INTEGER NOT NULL;"
     execute "alter table feed_item_xml_data_archives add " + 
