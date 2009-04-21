@@ -17,9 +17,6 @@ var Pagination = Class.create({
             pagination.replace(new_pagination);
             new Pagination(new_pagination);
             
-            console.log(data.records);
-            console.log(pagination.getAttribute("update"));
-            console.log($(pagination.getAttribute("update")));
             $(pagination.getAttribute("update")).update(data.records);
           }
         });
