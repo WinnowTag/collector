@@ -40,7 +40,7 @@ class FeedsController < ApplicationController
         
         if @feed.save
           wants.xml do
-            head :created, :location => feed_url(:id => @feed.uri)
+            render :xml => @feed, :status => :created, :location => feed_url(:id => @feed.uri)
           end
         else
           wants.xml  { render :xml => @feed.errors.to_xml, :status => 422 }
