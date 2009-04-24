@@ -81,6 +81,7 @@ describe FeedsController do
         assert_equal("application/xml", @response.content_type)
         assert_equal(feed_url(:id => feed.uri), @response.headers['Location'])
         assert_response 201
+        assert_select("feed uri")
       end
     end
   
