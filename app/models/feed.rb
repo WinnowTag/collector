@@ -294,8 +294,14 @@ class Feed < ActiveRecord::Base
   def validate_on_create
     begin
       url = URI.parse(self.url)
-      # TODO: Allow other schemes (eg: safari makes feed://)
-      if 'http' != url.scheme
+
+      # TODO: Safari and Opera turn feed urls into feed://. Convert those back to http://.
+      if url.scheme == "feed"
+        url.scheme = "http"
+        self.url = url.to_s
+      end
+
+      if url.scheme != "http"
         self.errors.add(:url, 'is not http')
       end
     rescue URI::Error
