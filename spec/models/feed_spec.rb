@@ -8,6 +8,26 @@ require 'atom'
 
 describe Feed do
   fixtures :feeds, :feed_items, :collection_errors, :feed_item_atom_documents
+
+  describe "validations" do
+    it "validates the url is valid" do
+      feed = Feed.create(:url => "some non url thing")
+      feed.should have(1).error
+      feed.errors_on(:url).should == ["is invalid"]
+    end
+    
+    it "validates the url is http" do
+      feed = Feed.create(:url => "ftp://google.com/feed")
+      feed.should have(1).error
+      feed.errors_on(:url).should == ["is not http"]
+    end
+    
+    it "converts feed:// to http://" do
+      feed = Feed.create(:url => "feed://google.com/feed")
+      feed.should have(0).errors
+      feed.url.should == "http://google.com/feed"
+    end
+  end
   
   describe 'collection' do  
     it "updating from feed" do
