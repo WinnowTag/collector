@@ -26,7 +26,7 @@ Rails::Initializer.run do |config|
   config.gem "uuidtools"
 
   # Must be compiled/installed on the target system
-  config.gem "mysql", :version => "2.7"
+  config.gem "mysql", :version => "2.8.1"
 
   # Only load the plugins named here, in the order given (default is alphabetical).
   # :all can be used as a placeholder for all plugins not explicitly named
