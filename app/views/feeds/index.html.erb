@@ -20,31 +20,28 @@
 
 <% content_for :footer do -%>
   <span class="total">
-    <label><%= t(:total_feeds) %></label> <%= Feed.count %>
+    <label><%= t("collector.feeds.footer.total_feeds") %></label> <%= Feed.count %>
   </span>
 
   <div id="add_feed" style="<%= flash[:error] || params[:feed] ? '' : 'display:none' %>">
     <fieldset class="full">
-      <legend>Add / Import Feeds</legend>
+      <legend><%= t("collector.feeds.footer.add_import") %></legend>
 
       <% form_for :feed, :url => import_feeds_path do |f| %>
         <p>
-          This form allows you to import multiple feeds. 
-          The feeds will not be collected, you can either wait until the nightly collection does it, 
-          or manually collect the feeds from the <%= link_to 'Feeds', feeds_path %> page. 
-          Sorting by time updated is a good way to find feeds that need collecting.
+          <%= t("collector.feeds.footer.add_import_explanation", :url => link_to(t("collector.navigation.feeds"), feeds_path)) %>
         </p>
 
         <%= text_area_tag 'feed[urls]', @urls, :rows => 10, :cols => 70 %>
         <div>
-          <%= submit_tag "Add Feeds" %> or <%= link_to_function "cancel", "$('add_feed').hide();Content.instance.resize()" %>
+          <%= submit_tag t("collector.feeds.footer.add") %> or <%= link_to_function t("collector.general.cancel"), "$('add_feed').hide();Content.instance.resize()" %>
         </div>
       <% end %>
     </fieldset>
   </div>
 
   <div class="toolbar right">
-    <%= rounded_button_function "Add / Import Feeds", "$('add_feed').toggle();Content.instance.resize()", :icon => "add" %>
-    <%= rounded_button_link "Export Feeds", formatted_feeds_path(:txt), :icon => "export" %>
+    <%= rounded_button_function t("collector.feeds.footer.add_import"), "$('add_feed').toggle();Content.instance.resize()", :icon => "add" %>
+    <%= rounded_button_link t("collector.feeds.footer.export"), formatted_feeds_path(:txt), :icon => "export" %>
   </div>
 <% end -%>

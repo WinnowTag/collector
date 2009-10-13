@@ -2,28 +2,28 @@
 
 <% content_for :header_controls do -%>
   <div class="toolbar">
-    <%= rounded_button_link 'Collect', feed_collection_jobs_path(@feed), :method => :post, :icon => "collect" %>
+    <%= rounded_button_link t("collector.feeds.collect"), feed_collection_jobs_path(@feed), :method => :post, :icon => "collect" %>
   </div>
   <div class="toolbar right">
-    <%= rounded_button_link 'Destroy', feed_path(@feed), :method => :delete, :confirm => "Do you really want to delete this feed?", :icon => "destroy" %>
+    <%= rounded_button_link t("collector.general.destroy"), feed_path(@feed), :method => :delete, :confirm => "Do you really want to delete this feed?", :icon => "destroy" %>
   </div>
 <% end -%>
 
 <%= render :partial => "feed", :locals => { :feed => @feed } %>
 
 <% if @feed.collection_jobs.any? -%>
-  <h3>Scheduled Collection Jobs</h3>
-  <p>These are collection jobs requested by users. They happen in addition to the regular collection cycle.</p>
+  <h3><%= t("collector.feeds.scheduled_collection_jobs") %></h3>
+  <p><%= t("collector.feeds.scheduled_collection_jobs_explanation") %></p>
   <%= render :partial => 'collection_jobs/collection_jobs', :locals => { :collection_jobs => @feed.collection_jobs } %>
 <% end -%>
 
 <% if @feed.collection_errors.any? -%>
-  <h3>Collection Errors</h3>
-  <p>These are errors from the automated collection process.</p>
+  <h3><%= t("collector.feeds.collection_errors") %></h3>
+  <p><%= t("collector.feeds.collection_errors_explanation") %></p>
   <%= render :partial => 'collection_errors/collection_errors', :locals => { :collection_errors => @feed.collection_errors } %>
 <% end -%>
 
 <% if @feed.spider_results.any? -%>
-  <h3>Spider Results</h3>
+  <h3><%= t("collector.navigation.spider_results") %></h3>
   <%= render :partial => 'spiders/spider_results', :locals => { :collection_errors => @feed.spider_results } %>
 <% end -%>

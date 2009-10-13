@@ -2,5 +2,76 @@
 # See http://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
 
 en:
-  # app/views/feeds/index.html.erb
-  total_feeds: "Total Feeds:"
+  collector:
+    general:
+      show_label: "Show"
+      sort_label: "Sort By"
+      cancel: "cancel"
+      destroy: "Destroy"
+    sort_direction:
+      ascending: "Ascending"
+      ascending_tooltip: ""
+      descending: "Descending"
+      descending_tooltip: ""
+    navigation:
+      about: "About"
+      about_tooltip: ""
+      profile: "Profile"
+      profile_tooltip: ""
+      logged_in_as: "Logged in as"
+      logout: "Logout"
+      logout_tooltip: ""
+      login: "Login"
+      login_tooltip: ""
+      feeds: "Feeds"
+      feeds_tooltip: ""
+      collection_history: "Collection History"
+      collection_history_tooltip: ""
+      item_cache: "Item Cache"
+      item_cache_tooltip: ""
+      spider_results: "Spider Results"
+      spider_results_tooltip: ""
+      scraper_statistics: "Scraper Statistics"
+      scraper_statistics_tooltip: ""
+      spider_testing_tool: "Spider Testing Tool"
+      spider_testing_tool_tooltip: ""
+      help: "Help"
+      help_tooltip: ""
+    feeds:
+      header:
+        search_placeholder: "Search Feeds..."
+        show_all: "All"
+        show_duplicates: "Duplicates"
+        sort:
+          title: "Title"
+          active: "Active"
+          feed_items_count: "Feed Items Count"
+          collection_errors_count: "Errors"
+          collection_errors_created_on: "Last Error"
+          created_by: "Created By"
+          created_on: "Created At"
+          updated_on: "Last Updated"
+      footer:
+        total_feeds: "Total Feeds:"
+        add_import: "Add / Import Feeds"
+        add_import_explanation: |-
+          This form allows you to import multiple feeds. 
+          The feeds will not be collected, you can either wait until the nightly collection does it, 
+          or manually collect the feeds from the {{url}} page. 
+          Sorting by time updated is a good way to find feeds that need collecting.
+        export: "Export Feeds"
+        add: "Add Feeds"
+      active: "Active"
+      item_count: "Items"
+      item_count_tooltip: "View Items in Winnow"
+      error_count: "Errors"
+      last_error: "Last Error"
+      created_by: "Created By"
+      created_at: "Created At"
+      last_updated: "Last Updated"
+      collect: "Collect"
+      scheduled_collection_jobs: "Scheduled Collection Jobs"
+      scheduled_collection_jobs_explanation: "These are collection jobs requested by users. They happen in addition to the regular collection cycle."
+      collection_errors: "Collection Errors"
+      collection_errors_explanation: "These are errors from the automated collection process."
+
