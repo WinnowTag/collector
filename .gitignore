@@ -1,4 +1,5 @@
 .DS_Store
+.idea
 /.ruby_inline
 /config/database.yml
 /config/hmac_credentials.yml
