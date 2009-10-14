@@ -1,10 +1,10 @@
 <table class="veerle">
   <tr>
-    <th>Action</th>
-    <th>Item Type</th>
-    <th>Item Id</th>
-    <th>Error Code</th>
-    <th>Message</th>
+    <th><%= t("collector.failed_operation.action") %></th>
+    <th><%= t("collector.failed_operation.item_type") %></th>
+    <th><%= t("collector.failed_operation.item_id") %></th>
+    <th><%= t("collector.failed_operation.error_code") %></th>
+    <th><%= t("collector.failed_operation.message") %></th>
   </tr>
   <% for failed_operation in failed_operations -%>
     <tr class="<%= cycle('odd', 'even') %>">

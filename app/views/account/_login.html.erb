@@ -1,28 +1,28 @@
 <div id="login_form" class="form clearfix">
   <% form_tag login_path do -%> 
     <div class="title">
-      <span class="login">Login</span>
+      <span class="login"><%= t("collector.login.form_title") %></span>
     </div>
     
     <div class="content">
       <div class="clearfix">
         <div class="login">
-          <label for="login">Login</label>
+          <label for="login"><%= t("collector.login.login_label") %></label>
           <%= text_field_tag :login %>
         </div>
 
         <div class="password">
-          <label for="password">Password</label>
+          <label for="password"><%= t("collector.login.password_label") %></label>
           <%= password_field_tag :password %>
         </div>
       </div>
   
       <div class="remember">
-        <%= check_box_tag :remember_me %> <label for="remember_me" class="inline">Remember Me</label>
+        <%= check_box_tag :remember_me %> <label for="remember_me" class="inline"><%= t("collector.login.remember_label") %></label>
       </div>
 
       <div class="submit">
-        <%= submit_tag "Login" %>
+        <%= submit_tag t("collector.login.submit") %>
       </div>
     </div>
   <% end -%>

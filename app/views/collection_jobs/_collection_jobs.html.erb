@@ -1,16 +1,16 @@
 <table class="veerle">
   <tr>
-    <th>Created by</th>
-    <th>Items</th>
-    <th>Response Code</th>
-    <th>Etag</th>
-    <th>Last Modified</th>
-    <th>User</th>
-    <th>System</th>
-    <th>Real</th>
-    <th>Created</th>
-    <th>Started</th>
-    <th>Completed</th>
+    <th><%= t("collector.collection_job.created_by") %></th>
+    <th><%= t("collector.collection_job.items") %></th>
+    <th><%= t("collector.collection_job.response_code") %></th>
+    <th><%= t("collector.collection_job.etag") %></th>
+    <th><%= t("collector.collection_job.last_modified") %></th>
+    <th><%= t("collector.collection_job.user") %></th>
+    <th><%= t("collector.collection_job.system") %></th>
+    <th><%= t("collector.collection_job.real") %></th>
+    <th><%= t("collector.collection_job.created") %></th>
+    <th><%= t("collector.collection_job.started") %></th>
+    <th><%= t("collector.collection_job.completed") %></th>
     <th></th>
   </tr>
   <%= render :partial => 'collection_jobs/collection_job', :collection => collection_jobs %>

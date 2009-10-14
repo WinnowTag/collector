@@ -8,11 +8,42 @@ en:
       sort_label: "Sort By"
       cancel: "cancel"
       destroy: "Destroy"
+    about:
+      revision: "This is build {{revision}} of Winnow."
+      help:
+        item1: "Open an item, you can create, add and remove tags."
+        item2: "If you've already created a tag, you can add and remove it from an item by clicking it in the panel at the top of the open item."
+        item3: "At any time, you can invoke the autotagger by pushing the \"classify\" button on the left.  Items will incrementally appear in the list as they are processed."
+        item4: "Select a tag in the top pulldown on the left, you will see items with that tag, and classify only by that tag."
+        item5: "Tags added by the classifier show up in italics.  \"Marginal\" tags are orange."
+        item6: "If you want marginal items to have that tag, you probably need to tell the classifier by tagging them manually, or they may disappear later."
+        item7: "To train, tag one or a few examples, classify by that tag, and then \"correct\" the classifier (by adding and removing tags) and reclassify until you're happy or bored."
+        item8: "New items that get collected from feeds will get classified with your tags, and you'll see them marked as new when you check back."
     sort_direction:
       ascending: "Ascending"
       ascending_tooltip: ""
       descending: "Descending"
       descending_tooltip: ""
+    login:
+      welcome_header: "Welcome to Winnow Collector"
+      welcome_text: |-
+        This version of Winnow Collector is only tested in the <a href="http://www.getfirefox.com" target="_blank">Firefox</a> Web Browser,
+        as such things may not work correctly in other browsers.
+      form_title: "Login"
+      login_label: "Login"
+      password_label: "Password"
+      remember_label: "Remember Me"
+      submit: "Login"
+    profile:
+      title: "Account Details"
+      login_label: "Login"
+      password_label: "Password"
+      password_confirmation_label: "Password Confirmation"
+      email_label: "Email"
+      firstname_label: "First Name"
+      lastname_label: "Last Name"
+      time_zone_label: "Time Zone"
+      submit: "Save"
     navigation:
       about: "About"
       about_tooltip: ""
@@ -74,4 +105,26 @@ en:
       scheduled_collection_jobs_explanation: "These are collection jobs requested by users. They happen in addition to the regular collection cycle."
       collection_errors: "Collection Errors"
       collection_errors_explanation: "These are errors from the automated collection process."
-
+    collection_error:
+      error_type: "Error type"
+      message: "Message"
+      created_on: "Created on"
+    collection_job:
+      feed: "Feed"
+      items: "Items"
+      response_code: "Response Code"
+      etag: "Etag"
+      last_modified: "Last Modified"
+      user: "User"
+      system: "System"
+      real: "Real"
+      started: "Started"
+      completed: "Completed"
+      created_by: "Created by"
+      created: "Created"
+    failed_operation:
+      action: "Action"
+      item_type: "Item Type"
+      item_id: "Item Id"
+      error_code: "Error Code"
+      message: "Message"

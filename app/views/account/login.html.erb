@@ -10,12 +10,9 @@
 
 <div class="container">
   <div class="welcome">
-    <h2>Welcome to Winnow Collector</h2>
+    <h2><%= t("collector.login.welcome_header") %></h2>
 
-    <p>
-      This version of Winnow Collector is only tested in the  <a href="http://www.getfirefox.com" target="_blank">Firefox</a> Web Browser, 
-      as such things may not work correctly in other browsers.
-    </p>
+    <p><%= t("collector.login.welcome_text") %></p>
   </div>
   
   <%= render :partial => "login" %>
