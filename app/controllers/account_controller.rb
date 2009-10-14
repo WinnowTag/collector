@@ -10,7 +10,7 @@ class AccountController < ApplicationController
     if request.post?
       params[:current_user].delete(:login)
       if current_user.update_attributes(params[:current_user])
-        flash[:notice] = "Information updated"
+        flash[:notice] = t('collector.profile.notice.updated')
         redirect_to :back
       end
     end
@@ -28,10 +28,10 @@ class AccountController < ApplicationController
         cookies[:auth_token] = { :value => self.current_user.remember_token , :expires => self.current_user.remember_token_expires_at }
       end
       redirect_back_or_default('')
-      flash[:notice] = "Logged in successfully"
+      flash[:notice] = t('collector.profile.notice.good_login')
     else
       if user = User.find_by_login(params[:login])
-        flash[:notice] = "Invalid credentials. Please try again."
+        flash[:notice] = t('collector.profile.notice.bad_login')
       end
     end
   end
@@ -40,7 +40,7 @@ class AccountController < ApplicationController
     self.current_user.forget_me if logged_in?
     cookies.delete :auth_token
     reset_session
-    flash[:notice] = "You have been logged out."
+    flash[:notice] = t('collector.profile.notice.logout')
     redirect_to login_path
   end
 end

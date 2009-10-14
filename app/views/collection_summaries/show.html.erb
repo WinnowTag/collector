@@ -1,25 +1,25 @@
 <% content_for :body, "collection_summaries" %>
 
 <% content_for :head do -%>
-  <link rel="alternate" type="application/atom+xml" title="Collection History Feed" href="/collection_summaries.atom" />
+  <link rel="alternate" type="application/atom+xml" title="<%= t('collector.collection_summary.collection_history_feed') %>" href="/collection_summaries.atom" />
 <% end -%>
 
 <%= render :partial => "collection_summary", :locals => { :collection_summary => @collection_summary } %>
 
 <% if @collection_summary.failed? -%>
-  <h3>Fatal Error</h3>
-  <p>A fatal error of type: "<%=h @collection_summary.fatal_error_type %>" occurred. This caused the collection to abort.</p>
+  <h3><%= t("collector.collection_summary.fatal_error") %></h3>
+  <p><%= t("collector.collection_summary.fatal_error_explanation", :error_type => h(@collection_summary.fatal_error_type)) %></p>
   <pre><%=h @collection_summary.fatal_error_message %></pre>
 <% end -%>
 
 <% if @collection_errors.any? %>
-  <h3>Collection Errors</h3>
+  <h3><%= t("collector.collection_summary.collection_errors") %></h3>
   <%= render :partial => 'collection_errors/collection_errors', :locals => { :collection_errors => @collection_errors } %>
   <%= will_paginate @collection_errors, :update => "collection_errors", :params => { :action => "collection_errors" } %>
 <% end -%>
 
 <% if @collection_jobs.any? %>
-  <h3>Collection Jobs</h3>
+  <h3><%= t("collector.collection_summary.collection_jobs") %></h3>
   <%= render :partial => 'collection_jobs/collection_jobs_with_title', :locals => {:collection_jobs => @collection_jobs } %>
   <%= will_paginate @collection_jobs, :update => "collection_jobs", :params => { :action => "collection_jobs" } %>
 <% end -%>

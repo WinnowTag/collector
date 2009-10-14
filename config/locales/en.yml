@@ -4,10 +4,19 @@
 en:
   collector:
     general:
+      title: "Winnow Collector"
       show_label: "Show"
       sort_label: "Sort By"
       cancel: "cancel"
       destroy: "Destroy"
+      edit: "Edit"
+      are_you_sure: "Are you sure?"
+      save: "Save"
+      yes: "Yes"
+      no: "No"
+      none: "None"
+      default_search_placeholder: "Search..."
+      never: "Never"
     about:
       revision: "This is build {{revision}} of Winnow."
       help:
@@ -19,6 +28,17 @@ en:
         item6: "If you want marginal items to have that tag, you probably need to tell the classifier by tagging them manually, or they may disappear later."
         item7: "To train, tag one or a few examples, classify by that tag, and then \"correct\" the classifier (by adding and removing tags) and reclassify until you're happy or bored."
         item8: "New items that get collected from feeds will get classified with your tags, and you'll see them marked as new when you check back."
+    notification:
+      deployed: |-
+        Hello Peerworks folk,
+
+        Revision {{revision}} of "{{repository}}" has just be deployed to {{host}} by {{deployer}}.
+
+        Comment: {{comment}}
+
+        Regards,
+
+        Collector Deployment Notifier
     sort_direction:
       ascending: "Ascending"
       ascending_tooltip: ""
@@ -44,6 +64,11 @@ en:
       lastname_label: "Last Name"
       time_zone_label: "Time Zone"
       submit: "Save"
+      notice:
+        updated: "Information updated"
+        good_login: "Logged in successfully"
+        bad_login: "Invalid credentials. Please try again."
+        logout: "You have been logged out."
     navigation:
       about: "About"
       about_tooltip: ""
@@ -105,6 +130,14 @@ en:
       scheduled_collection_jobs_explanation: "These are collection jobs requested by users. They happen in addition to the regular collection cycle."
       collection_errors: "Collection Errors"
       collection_errors_explanation: "These are errors from the automated collection process."
+      notice:
+        feed_url_required: "You must enter at least one feed url"
+        new_feed_added:
+          one: "1 new feed added"
+          other: "{{count}} new feeds added"
+        removed: "{{feed_url}} has been removed"
+      link_name: "Feed"
+      home_link_name: "Feed Home"
     collection_error:
       error_type: "Error type"
       message: "Message"
@@ -122,9 +155,96 @@ en:
       completed: "Completed"
       created_by: "Created by"
       created: "Created"
+      started_collection: "Started collection for '{{feed_url}}', we'll let you know when it's done."
+      collection_failed: "Something went wrong creating a collection job"
     failed_operation:
       action: "Action"
       item_type: "Item Type"
       item_id: "Item Id"
       error_code: "Error Code"
       message: "Message"
+    collection_summary:
+      header:
+        started_at: "Started At"
+        completed_at: "Completed At"
+        duration: "Duration"
+        items: "Items"
+        errors: "Errors"
+        completed: "Completed"
+        pending: "Pending"
+      collection_history_feed: "Collection History Feed"
+      fatal_error: "Fatal Error"
+      fatal_error_explanation: "A fatal error of type: \"{{error_type}}\" occurred. This caused the collection to abort."
+      collection_errors: "Collection Errors"
+      collection_jobs: "Collection Jobs"
+      atom:
+        feed_title: "Winnow Collection History"
+        entry_title: "Collection for {{when}}"
+        failed: "{{image}} Collection aborted at {{when}} due to {{error_type}}."
+        completed: "{{image}} Collection completed at {{when}}."
+        started: "{{image}} Collection started at {{when}}."
+        items:
+          one: "{{image}} 1 new item"
+          other: "{{image}} {{count}} new items"
+        collected: " collected in {{duration}} with "
+        errors:
+          one: "1 collection error."
+          other: "{{count}} collection errors."
+    item_cache:
+      failed_operations: "Failed Operations"
+      new: "New Item Cache"
+      errors: "Errors"
+      form_explanation: "Enter the base URL for an item cache"
+      base_uri: "Base URI"
+      only_publish: "Only publish items"
+      notice:
+        created: "ItemCache was successfully created."
+        updated: "ItemCache was successfully updated."
+    service:
+      atom:
+        title: "Peerworks Collector"
+    spider:
+      header:
+        feed: "Feed"
+        url: "URL"
+        successful: "Successful?"
+        collected: "Collected?"
+        scraper_used: "Scraper Used"
+        fetched_at: "Fetched At"
+        spidered_at: "Spidered at"
+        scraper: "Scraper"
+        scraper_statistics: "Scraper Statistics"
+        scraper_statistics_explanation: |-
+          <p>
+            This table shows how many items have been scraped by each scraper.
+          </p>
+          <p>
+            The row for "Not Scraped" shows how many items have been spidered without a scraper that knows how to handle the content.
+          </p>
+        scraper: "Scraper"
+        items_scraped: "Items scraped"
+        failed_spidering_statistics: "Failed Spidering Statistics"
+        failed_spidering_statistics_explanation: |-
+          This table shows the feeds with the most number of failed spidering attempts.
+          These feeds are candidates for prompting a new type of scraper.
+        failed_attempts: "Failed attempts"
+        testing: "Spider Testing"
+        testing_explanation: |-
+          <p>This tool lets you enter a URL to see how the spider will handle it.</p>
+          <p>
+            The Spider currently supports these site formats: {{formats}}
+          </p>
+      not_scraped: "Not Scraped"
+      test_submit: "Spider It!"
+      results_explanation: |-
+        <p>
+          This table shows the spidering attempts performed by the collector.
+          Spidering is triggered when there are less than 60 tokens in a collected item.
+        </p>
+        <p>
+          Each entry shows the feed the item was from and the URL that was spidered.
+          It also shows if the spidering was successful and if the item was collected as a result of the spidering.
+          You can click on the magnifying glass to see the actual results of the spidering.
+        </p>
+      result_positive: "Site was spidered using the \"{{scraper}}\" scraper."
+      result_negative: "Could not spider content. Probably don't have a scraper for that site type."

@@ -1,11 +1,11 @@
 <table class="veerle">
   <tr>
-    <th>Feed</th>
-    <th>URL</th>
-    <th>Successful?</th>
-    <th>Collected?</th>
-    <th>Scraper Used</th>
-    <th>Fetched At</th>
+    <th><%= t("collector.spider.header.feed") %></th>
+    <th><%= t("collector.spider.header.url") %></th>
+    <th><%= t("collector.spider.header.successful") %></th>
+    <th><%= t("collector.spider.header.collected") %></th>
+    <th><%= t("collector.spider.header.scraper_used") %></th>
+    <th><%= t("collector.spider.header.fetched_at") %></th>
     <th></th>
   </tr>
   <%= render :partial => 'spiders/spider_result', :collection => spider_results %>

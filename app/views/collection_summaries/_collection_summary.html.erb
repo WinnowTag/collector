@@ -2,27 +2,27 @@
   <div class="summary clearfix">        
     <div class="info">
       <div class="date">
-         <p>Completed At</p> 
+         <p><%= t("collector.collection_summary.header.completed_at") %></p>
          <strong><%= format_date collection_summary.completed_on %></strong>
       </div>
       <div class="duration">
-         <p>Duration</p> 
+         <p><%= t("collector.collection_summary.header.duration") %></p>
          <strong><%= collection_summary.duration %></strong>
       </div>
       <div class="count">
-        <p>Items</p>
+        <p><%= t("collector.collection_summary.header.items") %></p>
         <strong><%= collection_summary.item_count %></strong>
       </div>
       <div class="count">
-        <p>Errors</p>
+        <p><%= t("collector.collection_summary.header.errors") %></p>
         <strong><%= collection_summary.collection_errors.count %></strong>
       </div>
       <div class="count">
-        <p>Completed</p>
+        <p><%= t("collector.collection_summary.header.completed") %></p>
         <strong><%= collection_summary.collection_jobs.completed.count %></strong>
       </div>
       <div class="count">
-        <p>Pending</p>
+        <p><%= t("collector.collection_summary.header.pending") %></p>
         <strong><%= collection_summary.collection_jobs.pending.count %></strong>
       </div>
     </div>    

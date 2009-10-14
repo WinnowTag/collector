@@ -1,9 +1,1 @@
-Hello Peerworks folk,
-
-Revision <%= @revision %> of "<%= @repository %>" has just be deployed to <%= @host %> by <%= @deployer %>.
-
-Comment: <%= @comment %>
-
-Regards,
-
-Collector Deployment Notifier
+<%= t("collector.notification.deployed", :revision => @revision, :repository => @repository, :host => @host, :deployer => @deployer, :comment => @comment) %>

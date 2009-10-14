@@ -35,12 +35,12 @@ class CollectionJobsController < ApplicationController
     
     respond_to do |format|
       if @collection_job.save
-        flash[:notice] = "Started collection for '#{@feed.url}', we'll let you know when it's done."
+        flash[:notice] = I18n.t("collector.collection_job.started_collection", :feed_url => @feed.url)
         format.html { redirect_to feed_url(@feed) }
         format.xml  { head :created, :location => feed_collection_job_url(@feed, @collection_job) }
       else
         format.html do
-          flash[:error] = "Something went wrong creating a collection job"
+          flash[:error] = I18n.t('collector.collection_job.collection_failed')
           redirect_to :back 
         end
         format.xml  { render :xml => @collection_job.errors.to_xml, :status => 422 }
