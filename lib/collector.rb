@@ -81,6 +81,8 @@ class Runner
       end
     rescue => e
       ActiveRecord::Base.logger.warn("[#{Time.now.utc}] #{e.backtrace.join("\n")}")
+    ensure
+      ActiveRecord::Base.clear_active_connections!
     end
   end
   
