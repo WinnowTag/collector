@@ -3,6 +3,13 @@
 // Possession of a copy of this file grants no permission or license
 // to use, modify, or create derivate works.
 // Please visit http://www.peerworks.org/contact for further information.
+
+// Manages the list of feed items shown on the Items page. Provides:
+//   * toggling for switching among summary and detail view of each item
+//   * marking items read/unread
+//   * navigation using keyboard shortcuts
+//   * filtering by tag or feed
+
 var FeedItemsItemBrowser = Class.create(ItemBrowser, {
   initialize: function($super, name, container, options) {
     $super(name, container, options);
@@ -391,7 +398,7 @@ var FeedItemsItemBrowser = Class.create(ItemBrowser, {
     $("text_filter_form").observe("submit", function() {
       var value = $F('text_filter');
       if(value.length < 4) {
-        Message.add('error', "Search requires a word with at least 4 characters");
+        Message.add('error', I18n.t("winnow.notifications.feed_items_search_too_short"));
       } else {
         this.addFilters({text_filter: value});
       }

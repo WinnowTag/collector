@@ -2,6 +2,38 @@
 # See http://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
 
 en:
+  winnow:
+    general:
+      loading: "Loading Items..."
+      empty: "No items matched your search criteria."
+    notifications:
+      feed_items_search_too_short: "Search requires a word with at least 4 characters"
+      server_slow_responding: "The server is taking a while to repond. We'll keep trying but you can {{cancel_link_start}}cancel{{cancel_link_end}} if you like."
+    items:
+      main:
+        mark_unread: "Click to mark as unread"
+        mark_read:   "Click to mark as read"
+    javascript:
+      general:
+        and: "and"
+      errors:
+        classifier:
+          timeout: "Timed out trying to start the classifier. Perhaps the server or network are down. You can try again if you like."
+      classifier:
+        confirm_few_positives:
+          one: |-
+            You are about to classify {{tag_names}} which has less than 6 positive examples. This might not work as well as you would expect.
+            Do you want to proceed anyway?
+          other: |-
+            You are about to classify {{tag_names}} which have less than 6 positive examples. This might not work as well as you would expect.
+            Do you want to proceed anyway?
+        progress_bar:
+          start:   "Starting Classifier"
+          cancel:  "Classify changed tags"
+          finish:  "Classification Complete"
+          reload:  "Classification has completed. Do you want to reload the items?"
+          # NOTE: This is never displayed to the user, it is only user as a check against a json response. Do not change this.
+          running: "The classifier is already running."
   collector:
     general:
       title: "Winnow Collector"

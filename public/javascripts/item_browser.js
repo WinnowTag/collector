@@ -3,6 +3,10 @@
 // Possession of a copy of this file grants no permission or license
 // to use, modify, or create derivate works.
 // Please visit http://www.peerworks.org/contact for further information.
+
+// Base class for managing a list of items. More items are added to the list
+// as the user scrolls down, eliminating the need for explicit paging. Sorting
+// and filtering are also handled here.
 var ItemBrowser = Class.create({
   initialize: function(name, container, options) {
     this.options = {
@@ -74,7 +78,7 @@ var ItemBrowser = Class.create({
  
   updateEmptyMessage: function() {
     if(this.full && this.numberOfItems().size() == 0) {
-      this.container.insert('<div class="empty" style="display:none">No items matched your search criteria.</div>');
+      this.container.insert('<div class="empty" style="display:none">' + I18n.t("winnow.general.empty") + '</div>');
       var message = $$("#" + this.container.getAttribute("id") + " > .empty").first();
   
       var message_padding = parseInt(message.getStyle("padding-top")) + parseInt(message.getStyle("padding-bottom"));
@@ -95,7 +99,7 @@ var ItemBrowser = Class.create({
   },
   
   showLoadingIndicator: function() {
-    this.container.insert('<div class="indicator" style="display:none">Loading Items...</div>');
+    this.container.insert('<div class="indicator" style="display:none">' + I18n.t("winnow.general.loading") + '</div>');
     var indicator = $$("#" + this.container.getAttribute("id") + " > .indicator").first();
   
     if(this.numberOfItems().size() == 0) {
@@ -116,6 +120,7 @@ var ItemBrowser = Class.create({
     indicator.remove();
   },
 
+  // Called at the end of a request to process more items in the update queue, if any.
   updateFromQueue: function() {
     if (this.update_queue.any()) {
       var next_action = this.update_queue.shift();
@@ -123,6 +128,9 @@ var ItemBrowser = Class.create({
     }
   },
   
+  // Clear the list of items and load it. Called when changing sort order or
+  // adding/removing filters. Queues request if it's already in the act of
+  // loading; otherwise it executes request immediately.
   reload: function() {
     var clearAndUpdate = function() {
       this.loading = true;
@@ -138,6 +146,7 @@ var ItemBrowser = Class.create({
   },
 
   clear: function() {
+    this.full = false;
     this.container.update('');
   },
   
@@ -200,9 +209,15 @@ var ItemBrowser = Class.create({
     this.filters = filters_hash.toQueryString().toQueryParams();
     
     location.hash = "#" + $H(this.filters).toQueryString();
-    Cookie.set(this.name + "_filters", $H(this.filters).toQueryString(), 365);
+
+    // Do not persist the text_filter
+    var filters_to_save = $H(this.filters);
+    filters_to_save.unset("text_filter");
+    
+    Cookie.set(this.name + "_filters", filters_to_save.toQueryString(), 365);
   },
   
+  // Marks the appropriate mode filter (all, unread, trained) for items as selected.
   styleModes: function() {
     if(this.filters.mode) {
       this.modes().without(this.filters.mode).each(function(mode) {
@@ -225,6 +240,8 @@ var ItemBrowser = Class.create({
     }
   },
   
+  // Selects the appropriate option from the list of possible sort orders and
+  // sets the appropriate class on the Ascending/Descending toggle.
   styleOrders: function() {
     this.direction_control.removeClassName("asc");
     this.direction_control.removeClassName("desc");
