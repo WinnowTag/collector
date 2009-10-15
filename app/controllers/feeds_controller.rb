@@ -155,7 +155,7 @@ class FeedsController < ApplicationController
   # Removes a feed and redirects back to list
   def destroy
     @feed = Feed.destroy(params[:id])
-    flash[:notice] = t("collector.feeds.notice.removed")
+    flash[:notice] = t("collector.feeds.notice.removed", :feed_url => @feed.url)
     
     respond_to do |wants| 
       wants.html { redirect_to feeds_path }
