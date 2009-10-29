@@ -1,7 +1,7 @@
 # Copyright (c) 2008 The Kaphan Foundation
 #
 # Possession of a copy of this file grants no permission or license
-# to use, modify, or create derivate works.
+# to use, modify, or create derivative works.
 # Please visit http://www.peerworks.org/contact for further information.
 class FeedsController < ApplicationController
   include ActionView::Helpers::TextHelper  
@@ -120,7 +120,7 @@ class FeedsController < ApplicationController
   # Might need to consder how to report which actual feeds fail for what reasons.
   def import
     if params[:feed].blank? or params[:feed][:urls].blank?
-      flash[:error] = 'You must enter at least one feed url'
+      flash[:error] = t('collector.feeds.notice.feed_url_required')
       redirect_to feeds_path
     else
       failed_urls = []
@@ -142,11 +142,11 @@ class FeedsController < ApplicationController
         flash.now[:error] = failure_messages.map do |failure_message|
           pluralize(failure_message[1], failure_message[0])
         end.join("<br/>")
-        flash.now[:notice] = "#{pluralize(created_feeds.size, 'new feed')} added" if created_feeds.size > 0
+        flash.now[:notice] = t("collector.feeds.notice.new_feed_added", :count => created_feeds.size) if created_feeds.size > 0
         @urls = failed_urls.join("\n")
         render :action => 'index'
       else
-        flash[:notice] = "#{pluralize(created_feeds.size, 'new feed')} added"
+        flash[:notice] = t("collector.feeds.notice.new_feed_added", :count => created_feeds.size)
         redirect_to feeds_path
       end
     end
@@ -155,7 +155,7 @@ class FeedsController < ApplicationController
   # Removes a feed and redirects back to list
   def destroy
     @feed = Feed.destroy(params[:id])
-    flash[:notice] = "#{@feed.url} has been removed"
+    flash[:notice] = t("collector.feeds.notice.removed", :feed_url => @feed.url)
     
     respond_to do |wants| 
       wants.html { redirect_to feeds_path }

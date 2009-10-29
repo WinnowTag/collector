@@ -1,7 +1,7 @@
 # Copyright (c) 2008 The Kaphan Foundation
 #
 # Possession of a copy of this file grants no permission or license
-# to use, modify, or create derivate works.
+# to use, modify, or create derivative works.
 # Please visit http://www.peerworks.org/contact for further information.
 ENV['RAILS_ENV'] ||= 'production'
 require 'optparse'
@@ -81,6 +81,8 @@ class Runner
       end
     rescue => e
       ActiveRecord::Base.logger.warn("[#{Time.now.utc}] #{e.backtrace.join("\n")}")
+    ensure
+      ActiveRecord::Base.clear_active_connections!
     end
   end
   

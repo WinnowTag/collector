@@ -1,8 +1,12 @@
 // Copyright (c) 2008 The Kaphan Foundation
 //
 // Possession of a copy of this file grants no permission or license
-// to use, modify, or create derivate works.
+// to use, modify, or create derivative works.
 // Please visit http://www.peerworks.org/contact for further information.
+
+// Manages showing/hiding messages. Uses a queue to show messages in order.
+// Will hide messages automatically after a timeout, unlesss autohide is
+// explicitly disabled for a message.
 var Message = {
   queue: [],
   running: false,
@@ -70,13 +74,17 @@ var ConfirmationMessage = Class.create({
   }
 });
 
+// A TimeoutMessage is displayed when the server is slow to respond to the user's request.
 var TimeoutMessage = Class.create({
   initialize: function(ajax) {
     this.timeout_id = TimeoutMessage.identifier++;
     this.ajax = ajax;
 
-    Message.add("warning", "The server is taking a while to repond. We'll keep trying but you can " +
-                           '<a href="#" id="timeout_' + this.timeout_id + '">cancel</a> if you like.', false, function() {
+    var message = I18n.t("winnow.notifications.server_slow_responding", {
+      cancel_link_start: '<a href="#" id="timeout_' + this.timeout_id + '">',
+      cancel_link_end: '</a>'
+    });
+    Message.add("warning", message, false, function() {
       $("timeout_" + this.timeout_id).observe('click', this.cancel.bind(this));
     }.bind(this));
   },
@@ -86,6 +94,8 @@ var TimeoutMessage = Class.create({
   },
   
   cancel: function() {
+    this.clear();
+
     if (this.ajax) {      
 			// disable the standard Prototype state change handle to avoid
 			// confusion between timeouts and exceptions
@@ -96,8 +106,6 @@ var TimeoutMessage = Class.create({
 				this.ajax.options.onComplete(this.ajax.transport, this.ajax.json);
 			}
     }
-    
-    this.clear();
   }
 });
 TimeoutMessage.identifier = 1;

@@ -1,7 +1,7 @@
 # Copyright (c) 2008 The Kaphan Foundation
 #
 # Possession of a copy of this file grants no permission or license
-# to use, modify, or create derivate works.
+# to use, modify, or create derivative works.
 # Please visit http://www.peerworks.org/contact for further information.
 class ItemCachesController < ApplicationController
   def index
@@ -25,7 +25,7 @@ class ItemCachesController < ApplicationController
     @item_cache = ItemCache.new(params[:item_cache])
 
     if @item_cache.save
-      flash[:notice] = 'ItemCache was successfully created.'
+      flash[:notice] = t('collector.item_cache.notice.created')
       redirect_to(@item_cache)
     else
       flash[:error] = @item_cache.errors.full_messages.join(".<br/>")
@@ -37,7 +37,7 @@ class ItemCachesController < ApplicationController
     @item_cache = ItemCache.find(params[:id])
 
     if @item_cache.update_attributes(params[:item_cache])
-      flash[:notice] = 'ItemCache was successfully updated.'
+      flash[:notice] = t('collector.item_cache.notice.updated')
       redirect_to(@item_cache)
     else
       render :action => "edit"

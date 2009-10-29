@@ -2,38 +2,38 @@
 
 <% form_for :current_user do |f| %>
   <fieldset class="profile">
-    <legend>Account Details</legend>
+    <legend><%= t("collector.profile.title") %></legend>
     
     <p>
-      <%= f.label :login, "Login" %>
+      <%= f.label :login, t("collector.profile.login_label") %>
       <%= f.text_field :login, :disabled => true %>
     </p>
     <p>
-      <%= f.label :password, "Password" %>
+      <%= f.label :password, t("collector.profile.password_label") %>
       <%= f.password_field :password %>
     </p>
     <p>
-      <%= f.label :password_confirmation, "Password Confirmation" %>
+      <%= f.label :password_confirmation, t("collector.profile.password_confirmation_label") %>
       <%= f.password_field :password_confirmation %>
     </p>
     <p>
-      <%= f.label :email, "Email" %>
+      <%= f.label :email, t("collector.profile.email_label") %>
       <%= f.text_field :email %>
     </p>
     <p>
-      <%= f.label :firstname, "First Name" %>
+      <%= f.label :firstname, t("collector.profile.firstname_label") %>
       <%= f.text_field :firstname %>
     </p>
     <p>
-      <%= f.label :lastname, "Last Name" %>
+      <%= f.label :lastname, t("collector.profile.lastname_label") %>
       <%= f.text_field :lastname %>
     </p>
     <p>
-      <%= f.label :time_zone, "Time Zone" %>
+      <%= f.label :time_zone, t("collector.profile.time_zone_label") %>
       <%= f.time_zone_select :time_zone, ActiveSupport::TimeZone.us_zones, :model => ActiveSupport::TimeZone, :include_blank => true %>
     </p>
     <p>
-      <%= submit_tag "Save" %>
+      <%= submit_tag t("collector.profile.submit") %>
     </p>
   </fieldset>
 <% end %>

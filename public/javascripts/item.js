@@ -1,8 +1,13 @@
 // Copyright (c) 2008 The Kaphan Foundation
 //
 // Possession of a copy of this file grants no permission or license
-// to use, modify, or create derivate works.
+// to use, modify, or create derivative works.
 // Please visit http://www.peerworks.org/contact for further information.
+
+// Represents a feed item shown on the items page. Provides:
+//   * toggling for hiding/showing the moderation panel used to train tags
+//   * training tags on the feed item
+//   * marking items read/unread
 var Item = Class.create({
   initialize: function(element) {
     this.element           = $(element);
@@ -32,8 +37,11 @@ var Item = Class.create({
     this.status.observe("click", this.toggleReadUnread.bind(this));
 
     this.status.observe("mouseover", function() {
-      // # TODO: localization
-      this.status.title = 'Click to mark as ' + (this.element.match(".read") ? 'unread' : 'read');
+      if(this.element.match(".read")) {
+        this.status.title = I18n.t("winnow.items.main.mark_unread");
+      } else {
+        this.status.title = I18n.t("winnow.items.main.mark_read");
+      }
     }.bind(this));
 
     this.feed_title.observe("click", this.toggleFeedInformation.bind(this));
@@ -188,10 +196,11 @@ var Item = Class.create({
 
     this.add_tag_form.observe("submit", function() {
       this.addTagging(this.add_tag_selected || this.add_tag_field.value, "positive");
-      this.add_tag_field.value = "";
+      this.add_tag_field.clear();
       this.addTagFieldChanged(this.add_tag_field, "");
     }.bind(this));
     
+    // hide the moderation panel if the user presses the ESC key
     this.add_tag_field.observe("keydown", function(event) {
       if(event.keyCode == Event.KEY_ESC) { this.hideTrainingControls(); }
     }.bind(this));
@@ -203,6 +212,8 @@ var Item = Class.create({
     }).bind(this).delay(0.3);
   },
   
+  // Called when the user changes the contents of the text field for adding
+  // a new tag. This text field is shown in the moderation panel.
   addTagFieldChanged: function(field, value, event) {
     this.add_tag_selected = null;
     this.training_controls.select(".tag").each(function(tag) {
@@ -320,6 +331,7 @@ var Item = Class.create({
   removeTagging: function(tag_name) {
     if(tag_name.match(/^\s*$/)) { return; }
 
+    // Remove the small tags that are visible when an item is collapsed.
     var tag_control = this.findTagElement(this.tag_list, ".tag_control", tag_name);
     if (tag_control) {
       tag_control.removeClassName('positive');
@@ -329,6 +341,7 @@ var Item = Class.create({
       }
     }
 
+    // Change the tags shown in the moderation panel.
     var training_control = this.findTagElement(this.training_controls, ".tag", tag_name);
     if(training_control) {
       training_control.removeClassName('positive');

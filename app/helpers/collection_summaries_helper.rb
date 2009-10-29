@@ -1,32 +1,26 @@
 # Copyright (c) 2008 The Kaphan Foundation
 #
 # Possession of a copy of this file grants no permission or license
-# to use, modify, or create derivate works.
+# to use, modify, or create derivative works.
 # Please visit http://www.peerworks.org/contact for further information.
 module CollectionSummariesHelper
   include FeedsHelper
   
   def atom_summary(cs)
-    summary = ""
-    
     if cs.failed?
-      summary += image_tag('error.png') + 
-              " Collection aborted at #{format_date(cs.completed_on)} " +
-              "due to #{cs.fatal_error_type}<br/><br/>"
+      t('collector.collection_summary.atom.failed', :image => image_tag('error.png'), :when => format_date(cs.completed_on), :error_type => cs.fatal_error_type) + details(cs)
     elsif cs.completed_on
-      summary = image_tag('notice.png') + 
-              " Collection completed at #{format_date(cs.completed_on)}. <br/><br/>"
+      t('collector.collection_summary.atom.completed', :image => image_tag('notice.png'), :when => format_date(cs.completed_on)) + details(cs)
     else
-      summary = image_tag('hourglass.png') + " Collection started at #{format_date(cs.created_on)}"
+      t('collector.collection_summary.atom.started', :image => image_tag('hourglass.png'), :when => format_date(cs.created_on))
     end
+  end
 
-    if cs.failed? or cs.completed_on
-      summary += image_tag('notice.png') + ' ' +
-               pluralize(cs.item_count, "new item") +
-               " collected in #{cs.duration} with " +
-               pluralize(cs.collection_errors.size, "collection error") + ".<br/><br/>\n"
-    end
-              
-    summary
+  def details(cs)
+    "<br/><br/>" +
+    t('collector.collection_summary.atom.items', :image => image_tag('notice.png'), :count => cs.item_count) +
+    t('collector.collection_summary.atom.collected', :duration => cs.duration) +
+    t('collector.collection_summary.atom.errors', :count => cs.collection_errors.size) +
+    "<br/><br/>\n"
   end
 end

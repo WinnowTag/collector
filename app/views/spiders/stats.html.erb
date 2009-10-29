@@ -1,34 +1,26 @@
-<h3>Scraper Statistics</h3>
-<p>
-  This table shows how many items have been scraped by each scraper.
-</p>
-<p>
-  The row for "Not Scraped" shows how many items have been spidered without a scraper that knows how to handle the content.
-</p>
+<h3><%= t("collector.spider.header.scraper_statistics") %></h3>
+<%= t("collector.spider.header.scraper_statistics_explanation") %>
     
 <table class="veerle">
   <tr>
-    <th>Scraper</th>
-    <th>Items scraped</th>
+    <th><%= t("collector.spider.header.scraper") %></th>
+    <th><%= t("collector.spider.header.items_scraped") %></th>
   </tr>
   <% @stats.each do |stat| -%>
     <tr class="<%= cycle('odd', 'even') %>">
-      <td><%= stat.scraper or 'Not Scraped' %></td>
+      <td><%= stat.scraper or t("collector.spider.not_scraped") %></td>
       <td><%= stat.count %></td>
     </tr>
   <% end -%>    
 </table>
 
-<h3>Failed Spidering Statistics</h3>
-<p>
-  This table shows the feeds with the most number of failed spidering attempts.
-  These feeds are candidates for prompting a new type of scraper.
-</p>
+<h3><%= t("collector.spider.header.failed_spidering_statistics") %></h3>
+<p><%= t("collector.spider.header.failed_spidering_statistics_explanation") %></p>
 
 <table class="veerle">
   <tr>
-    <th>Feed</th>
-    <th>Failed attempts</th>
+    <th><%= t("collector.spider.header.feed") %></th>
+    <th><%= t("collector.spider.header.failed_attempts") %></th>
   </tr>
   <% @unscrapable_feeds.each do |feed| -%>
     <tr class="<%= cycle('odd', 'even') %>">

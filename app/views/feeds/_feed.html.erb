@@ -3,30 +3,30 @@
     <div class="info">
       <div class="details">
         <p>&nbsp;</p>
-        <strong><%= active_check_box(feed) %> Active</strong>
+        <strong><%= active_check_box(feed) %> <%= t("collector.feeds.active") %></strong>
       </div>
       <div class="count">
-        <p>Items</p>
-        <strong><%= link_to feed.feed_items_count, "", :title => "View Items in Winnow" %></strong>
+        <p><%= t("collector.feeds.item_count") %></p>
+        <strong><%= link_to feed.feed_items_count, "", :title => t("collector.feeds.item_count_tooltip") %></strong>
       </div>
       <div class="count">
-        <p>Errors</p>
+        <p><%= t("collector.feeds.error_count") %></p>
         <strong><%= feed.collection_errors_count %></strong>
       </div>
       <div class="count">
-        <p>Last Error</p>
+        <p><%= t("collector.feeds.last_error") %></p>
         <strong><%= format_date(feed.collection_errors.latest ? feed.collection_errors.latest.created_on : nil) %></strong>
       </div>
       <div class="date">
-         <p>Created By</p> 
+         <p><%= t("collector.feeds.created_by") %></p> 
          <strong><%=h feed.created_by %></strong>
       </div>
       <div class="date">
-         <p>Created At</p> 
+         <p><%= t("collector.feeds.created_at") %></p> 
          <strong><%= format_date(feed.created_on) %></strong>
       </div>
       <div class="date">
-         <p>Last Updated</p> 
+         <p><%= t("collector.feeds.last_updated") %></p> 
          <strong><%= format_date(feed.updated_on) %></strong>
       </div>
     </div>    

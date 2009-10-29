@@ -2,14 +2,14 @@
 
 <% form_for @item_cache do |f| %>
   <fieldset>
-    <legend>Enter the base URL for an item cache</legend>
+    <legend><%= t("collector.item_cache.form_explanation") %></legend>
     <p>
-      <%= f.label :base_uri, "Base URI" %>
+      <%= f.label :base_uri, t("collector.item_cache.base_uri") %>
       <%= f.text_field :base_uri, :size => 65 %>
     </p>		
-		<p><%= f.label(:items_only, "Only publish items")%><%= f.check_box(:items_only) %></p>
+		<p><%= f.label(:items_only, t("collector.item_cache.only_publish"))%><%= f.check_box(:items_only) %></p>
     <p>
-      <%= submit_tag "Save" %> or <%= link_to "cancel", item_caches_path %>
+      <%= submit_tag t("collector.general.save") %> or <%= link_to t("collector.general.cancel"), item_caches_path %>
     </p>
   </fieldset>
 <% end %>

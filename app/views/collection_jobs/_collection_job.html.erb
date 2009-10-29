@@ -11,6 +11,6 @@
   <td><%=format_date collection_job.started_at, '-' %></td>
   <td><%=format_date collection_job.completed_at, '-' %></td>
   <td>
-    <%= link_to "Destroy", feed_collection_job_path(collection_job.feed, collection_job), :confirm => 'Are you sure?', :method => :delete, :class => "destroy" %>
+    <%= link_to "Destroy", feed_collection_job_path(collection_job.feed, collection_job), :confirm => t("collector.general.are_you_sure"), :method => :delete, :class => "destroy" %>
   </td>
 </tr>

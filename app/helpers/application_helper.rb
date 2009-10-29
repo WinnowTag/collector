@@ -1,7 +1,7 @@
 # Copyright (c) 2008 The Kaphan Foundation
 #
 # Possession of a copy of this file grants no permission or license
-# to use, modify, or create derivate works.
+# to use, modify, or create derivative works.
 # Please visit http://www.peerworks.org/contact for further information.
 module ApplicationHelper
   def tab_selected(controller, *actions)
@@ -17,7 +17,7 @@ module ApplicationHelper
   
   def search_field_tag(name, value = nil, options = {})
     options[:clear] ||= {}
-    options[:placeholder] ||= "Search..."
+    options[:placeholder] ||= t("collector.general.default_search_placeholder")
     content_tag :div, 
       content_tag(:span, nil, :class => "sbox_l") +      
       tag(:input, :type => "search", :name => name, :id => name, :value =>  value, :results => 5, :placeholder => options[:placeholder], :autosave => name) +
@@ -25,7 +25,7 @@ module ApplicationHelper
       :class => "applesearch clearfix"
   end
   
-  def format_date(date, when_nil = "Never")
+  def format_date(date, when_nil = t("collector.general.never"))
     if date.nil?
       when_nil
     elsif date.is_a?(String)

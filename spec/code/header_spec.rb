@@ -1,7 +1,7 @@
 # Copyright (c) 2008 The Kaphan Foundation
 #
 # Possession of a copy of this file grants no permission or license
-# to use, modify, or create derivate works.
+# to use, modify, or create derivative works.
 # Please visit http://www.peerworks.org/contact for further information.
 require File.dirname(__FILE__) + '/../spec_helper'
 
@@ -23,7 +23,8 @@ describe "headers" do
   it "all javascript files should have the kaphan foundation header" do
     vendor = %w[
       public/javascripts/controls.js public/javascripts/dragdrop.js public/javascripts/effects.js public/javascripts/prototype.js
-      public/javascripts/slider.js public/javascripts/unittest.js public/javascripts/all.js
+      public/javascripts/slider.js public/javascripts/unittest.js public/javascripts/all.js public/javascripts/common.js
+      public/javascripts/locales.js
     ]
     
     (Dir["public/javascripts/**/*.js"] - vendor).each do |filename|

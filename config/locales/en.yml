@@ -2,5 +2,281 @@
 # See http://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
 
 en:
-  # app/views/feeds/index.html.erb
-  total_feeds: "Total Feeds:"
+  winnow:
+    general:
+      loading: "Loading Items..."
+      empty: "No items matched your search criteria."
+    notifications:
+      feed_items_search_too_short: "Search requires a word with at least 4 characters"
+      server_slow_responding: "The server is taking a while to repond. We'll keep trying but you can {{cancel_link_start}}cancel{{cancel_link_end}} if you like."
+    items:
+      main:
+        mark_unread: "Click to mark as unread"
+        mark_read:   "Click to mark as read"
+    javascript:
+      general:
+        and: "and"
+      errors:
+        classifier:
+          timeout: "Timed out trying to start the classifier. Perhaps the server or network are down. You can try again if you like."
+      classifier:
+        confirm_few_positives:
+          one: |-
+            You are about to classify {{tag_names}} which has less than 6 positive examples. This might not work as well as you would expect.
+            Do you want to proceed anyway?
+          other: |-
+            You are about to classify {{tag_names}} which have less than 6 positive examples. This might not work as well as you would expect.
+            Do you want to proceed anyway?
+        progress_bar:
+          start:   "Starting Classifier"
+          cancel:  "Classify changed tags"
+          finish:  "Classification Complete"
+          reload:  "Classification has completed. Do you want to reload the items?"
+          # NOTE: This is never displayed to the user, it is only user as a check against a json response. Do not change this.
+          running: "The classifier is already running."
+  collector:
+    general:
+      title: "Winnow Collector"
+      show_label: "Show"
+      sort_label: "Sort By"
+      cancel: "cancel"
+      destroy: "Destroy"
+      edit: "Edit"
+      are_you_sure: "Are you sure?"
+      save: "Save"
+      yes: "Yes"
+      no: "No"
+      none: "None"
+      default_search_placeholder: "Search..."
+      never: "Never"
+    about:
+      revision: "This is build {{revision}} of Winnow."
+      help:
+        item1: "Open an item, you can create, add and remove tags."
+        item2: "If you've already created a tag, you can add and remove it from an item by clicking it in the panel at the top of the open item."
+        item3: "At any time, you can invoke the autotagger by pushing the \"classify\" button on the left.  Items will incrementally appear in the list as they are processed."
+        item4: "Select a tag in the top pulldown on the left, you will see items with that tag, and classify only by that tag."
+        item5: "Tags added by the classifier show up in italics.  \"Marginal\" tags are orange."
+        item6: "If you want marginal items to have that tag, you probably need to tell the classifier by tagging them manually, or they may disappear later."
+        item7: "To train, tag one or a few examples, classify by that tag, and then \"correct\" the classifier (by adding and removing tags) and reclassify until you're happy or bored."
+        item8: "New items that get collected from feeds will get classified with your tags, and you'll see them marked as new when you check back."
+    notification:
+      deployed: |-
+        Hello Peerworks folk,
+
+        Revision {{revision}} of "{{repository}}" has just be deployed to {{host}} by {{deployer}}.
+
+        Comment: {{comment}}
+
+        Regards,
+
+        Collector Deployment Notifier
+    sort_direction:
+      ascending: "Ascending"
+      ascending_tooltip: ""
+      descending: "Descending"
+      descending_tooltip: ""
+    login:
+      welcome_header: "Welcome to Winnow Collector"
+      welcome_text: |-
+        This version of Winnow Collector is only tested in the <a href="http://www.getfirefox.com" target="_blank">Firefox</a> Web Browser,
+        as such things may not work correctly in other browsers.
+      form_title: "Login"
+      login_label: "Login"
+      password_label: "Password"
+      remember_label: "Remember Me"
+      submit: "Login"
+    profile:
+      title: "Account Details"
+      login_label: "Login"
+      password_label: "Password"
+      password_confirmation_label: "Password Confirmation"
+      email_label: "Email"
+      firstname_label: "First Name"
+      lastname_label: "Last Name"
+      time_zone_label: "Time Zone"
+      submit: "Save"
+      notice:
+        updated: "Information updated"
+        good_login: "Logged in successfully"
+        bad_login: "Invalid credentials. Please try again."
+        logout: "You have been logged out."
+    navigation:
+      about: "About"
+      about_tooltip: ""
+      profile: "Profile"
+      profile_tooltip: ""
+      logged_in_as: "Logged in as"
+      logout: "Logout"
+      logout_tooltip: ""
+      login: "Login"
+      login_tooltip: ""
+      feeds: "Feeds"
+      feeds_tooltip: ""
+      collection_history: "Collection History"
+      collection_history_tooltip: ""
+      item_cache: "Item Cache"
+      item_cache_tooltip: ""
+      spider_results: "Spider Results"
+      spider_results_tooltip: ""
+      scraper_statistics: "Scraper Statistics"
+      scraper_statistics_tooltip: ""
+      spider_testing_tool: "Spider Testing Tool"
+      spider_testing_tool_tooltip: ""
+      help: "Help"
+      help_tooltip: ""
+    feeds:
+      header:
+        search_placeholder: "Search Feeds..."
+        show_all: "All"
+        show_duplicates: "Duplicates"
+        sort:
+          title: "Title"
+          active: "Active"
+          feed_items_count: "Feed Items Count"
+          collection_errors_count: "Errors"
+          collection_errors_created_on: "Last Error"
+          created_by: "Created By"
+          created_on: "Created At"
+          updated_on: "Last Updated"
+      footer:
+        total_feeds: "Total Feeds:"
+        add_import: "Add / Import Feeds"
+        add_import_explanation: |-
+          This form allows you to import multiple feeds. 
+          The feeds will not be collected, you can either wait until the nightly collection does it, 
+          or manually collect the feeds from the {{url}} page. 
+          Sorting by time updated is a good way to find feeds that need collecting.
+        export: "Export Feeds"
+        add: "Add Feeds"
+      active: "Active"
+      item_count: "Items"
+      item_count_tooltip: "View Items in Winnow"
+      error_count: "Errors"
+      last_error: "Last Error"
+      created_by: "Created By"
+      created_at: "Created At"
+      last_updated: "Last Updated"
+      collect: "Collect"
+      scheduled_collection_jobs: "Scheduled Collection Jobs"
+      scheduled_collection_jobs_explanation: "These are collection jobs requested by users. They happen in addition to the regular collection cycle."
+      collection_errors: "Collection Errors"
+      collection_errors_explanation: "These are errors from the automated collection process."
+      notice:
+        feed_url_required: "You must enter at least one feed url"
+        new_feed_added:
+          one: "1 new feed added"
+          other: "{{count}} new feeds added"
+        removed: "{{feed_url}} has been removed"
+      link_name: "Feed"
+      home_link_name: "Feed Home"
+    collection_error:
+      error_type: "Error type"
+      message: "Message"
+      created_on: "Created on"
+    collection_job:
+      feed: "Feed"
+      items: "Items"
+      response_code: "Response Code"
+      etag: "Etag"
+      last_modified: "Last Modified"
+      user: "User"
+      system: "System"
+      real: "Real"
+      started: "Started"
+      completed: "Completed"
+      created_by: "Created by"
+      created: "Created"
+      started_collection: "Started collection for '{{feed_url}}', we'll let you know when it's done."
+      collection_failed: "Something went wrong creating a collection job"
+    failed_operation:
+      action: "Action"
+      item_type: "Item Type"
+      item_id: "Item Id"
+      error_code: "Error Code"
+      message: "Message"
+    collection_summary:
+      header:
+        started_at: "Started At"
+        completed_at: "Completed At"
+        duration: "Duration"
+        items: "Items"
+        errors: "Errors"
+        completed: "Completed"
+        pending: "Pending"
+      collection_history_feed: "Collection History Feed"
+      fatal_error: "Fatal Error"
+      fatal_error_explanation: "A fatal error of type: \"{{error_type}}\" occurred. This caused the collection to abort."
+      collection_errors: "Collection Errors"
+      collection_jobs: "Collection Jobs"
+      atom:
+        feed_title: "Winnow Collection History"
+        entry_title: "Collection for {{when}}"
+        failed: "{{image}} Collection aborted at {{when}} due to {{error_type}}."
+        completed: "{{image}} Collection completed at {{when}}."
+        started: "{{image}} Collection started at {{when}}."
+        items:
+          one: "{{image}} 1 new item"
+          other: "{{image}} {{count}} new items"
+        collected: " collected in {{duration}} with "
+        errors:
+          one: "1 collection error."
+          other: "{{count}} collection errors."
+    item_cache:
+      failed_operations: "Failed Operations"
+      new: "New Item Cache"
+      errors: "Errors"
+      form_explanation: "Enter the base URL for an item cache"
+      base_uri: "Base URI"
+      only_publish: "Only publish items"
+      notice:
+        created: "ItemCache was successfully created."
+        updated: "ItemCache was successfully updated."
+    service:
+      atom:
+        title: "Peerworks Collector"
+    spider:
+      header:
+        feed: "Feed"
+        url: "URL"
+        successful: "Successful?"
+        collected: "Collected?"
+        scraper_used: "Scraper Used"
+        fetched_at: "Fetched At"
+        spidered_at: "Spidered at"
+        scraper: "Scraper"
+        scraper_statistics: "Scraper Statistics"
+        scraper_statistics_explanation: |-
+          <p>
+            This table shows how many items have been scraped by each scraper.
+          </p>
+          <p>
+            The row for "Not Scraped" shows how many items have been spidered without a scraper that knows how to handle the content.
+          </p>
+        scraper: "Scraper"
+        items_scraped: "Items scraped"
+        failed_spidering_statistics: "Failed Spidering Statistics"
+        failed_spidering_statistics_explanation: |-
+          This table shows the feeds with the most number of failed spidering attempts.
+          These feeds are candidates for prompting a new type of scraper.
+        failed_attempts: "Failed attempts"
+        testing: "Spider Testing"
+        testing_explanation: |-
+          <p>This tool lets you enter a URL to see how the spider will handle it.</p>
+          <p>
+            The Spider currently supports these site formats: {{formats}}
+          </p>
+      not_scraped: "Not Scraped"
+      test_submit: "Spider It!"
+      results_explanation: |-
+        <p>
+          This table shows the spidering attempts performed by the collector.
+          Spidering is triggered when there are less than 60 tokens in a collected item.
+        </p>
+        <p>
+          Each entry shows the feed the item was from and the URL that was spidered.
+          It also shows if the spidering was successful and if the item was collected as a result of the spidering.
+          You can click on the magnifying glass to see the actual results of the spidering.
+        </p>
+      result_positive: "Site was spidered using the \"{{scraper}}\" scraper."
+      result_negative: "Could not spider content. Probably don't have a scraper for that site type."

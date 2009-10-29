@@ -2,7 +2,7 @@ xml.instruct!
 
 xml.feed "xmlns" => "http://www.w3.org/2005/Atom" do
 
-  xml.title   "Winnow Collection History"
+  xml.title   I18n.t("collector.collection_summary.atom.feed_title")
   xml.link    "rel" => "self", "href" => formatted_collection_summaries_url(:atom)
   xml.link    "rel" => "alternate", "href" => collection_summaries_url
   xml.id      collection_summaries_url
@@ -11,7 +11,7 @@ xml.feed "xmlns" => "http://www.w3.org/2005/Atom" do
 
   @collection_summaries.each do |collection_summary|
     xml.entry do
-      xml.title   "Collection for #{collection_summary.created_on.to_formatted_s('%d %b')}"
+      xml.title   I18n.t("collector.collection_summary.atom.entry_title", :when => collection_summary.created_on.to_formatted_s('%d %b'))
       xml.link    "rel" => "alternate", "href" => collection_summary_url(collection_summary)
       xml.id      collection_summary_url(collection_summary)
       xml.updated collection_summary.updated_on.strftime("%Y-%m-%dT%H:%M:%SZ")

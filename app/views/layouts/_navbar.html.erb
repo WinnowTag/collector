@@ -1,20 +1,20 @@
 <% if current_user -%>
   <div id="navigation" class="navigation clearfix">
     <ul class="extra">
-      <li>Logged in as <%= current_user.login %></li>
-      <li><%= link_to("Profile", edit_account_path(current_user)) %></li>
-      <li><%= link_to("Logout", logout_path) %></li>
-      <li><%= link_to("About", about_path) %></li>
+      <li><%= t("collector.navigation.logged_in_as") %> <%= current_user.login %></li>
+      <li><%= link_to(t("collector.navigation.profile"), edit_account_path(current_user), :title => t("collector.navigation.profile_tooltip")) %></li>
+      <li><%= link_to(t("collector.navigation.logout"), logout_path, :title => t("collector.navigation.logout_tooltip")) %></li>
+      <li><%= link_to(t("collector.navigation.about"), about_path, :title => t("collector.navigation.about_tooltip")) %></li>
     </ul>
 
     <ul class="main clearfix">
-      <li><%= link_to("Feeds", feeds_path, :class => tab_selected('feeds', 'index', 'show')) %></li>
-      <li><%= link_to("Collection History", collection_summaries_path, :class => tab_selected('collection_summaries')) %></li>
-      <li><%= link_to("Item Cache", item_caches_path, :class => tab_selected('item_caches')) %></li>
-      <li><%= link_to("Spider Results", spiders_path, :class => tab_selected('spiders', 'index')) %></li>
-      <li><%= link_to("Scraper Statistics", stats_spiders_path, :class => tab_selected('spiders', 'stats')) %></li>
-      <li><%= link_to("Spider Testing Tool", test_spiders_path, :class => tab_selected('spiders', 'test')) %></li>
-      <li><%= link_to("Help", help_path, :target => "_blank", :class => "help") %></li>
+      <li><%= link_to(t("collector.navigation.feeds"), feeds_path, :class => tab_selected('feeds', 'index', 'show'), :title => t("collector.navigation.feeds_tooltip")) %></li>
+      <li><%= link_to(t("collector.navigation.collection_history"), collection_summaries_path, :class => tab_selected('collection_summaries'), :title => t("collector.navigation.collection_history_tooltip")) %></li>
+      <li><%= link_to(t("collector.navigation.item_cache"), item_caches_path, :class => tab_selected('item_caches'), :title => t("collector.navigation.item_cache_tooltip")) %></li>
+      <li><%= link_to(t("collector.navigation.spider_results"), spiders_path, :class => tab_selected('spiders', 'index'), :title => t("collector.navigation.spider_results_tooltip")) %></li>
+      <li><%= link_to(t("collector.navigation.scraper_statistics"), stats_spiders_path, :class => tab_selected('spiders', 'stats'), :title => t("collector.navigation.scraper_statistics_tooltip")) %></li>
+      <li><%= link_to(t("collector.navigation.spider_testing_tool"), test_spiders_path, :class => tab_selected('spiders', 'test'), :title => t("collector.navigation.spider_testing_tool_tooltip")) %></li>
+      <li><%= link_to(t("collector.navigation.help"), help_path, :target => "_blank", :class => "help", :title => t("collector.navigation.help_tooltip")) %></li>
     </ul>
   </div>
 <% end -%>

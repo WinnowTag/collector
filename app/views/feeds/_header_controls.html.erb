@@ -1,26 +1,26 @@
 <% form_tag feeds_path, :id => "text_filter_form", :onsubmit => "return false" do -%>
-  <%= search_field_tag "text_filter", params[:text_filter], :placeholder => "Seach Feeds..." %>
+  <%= search_field_tag "text_filter", params[:text_filter], :placeholder => t("collector.feeds.header.search_placeholder") %>
 <% end -%>
 
 <div class="order clearfix">
-  <label>Sort By</label>
+  <label><%= t("collector.general.sort_label") %></label>
   <select id="order">
-    <option value="title">Title</option>
-    <option value="active">Active</option>
-    <option value="feed_items_count">Feed Items Count</option>
-    <option value="collection_errors_count">Errors</option>
-    <option value="collection_errors_created_on">Last Error</option>
-    <option value="created_by">Created By</option>
-    <option value="created_on">Created At</option>
-    <option value="updated_on">Last Updated</option>
+    <option value="title"><%= t("collector.feeds.header.sort.title") %></option>
+    <option value="active"><%= t("collector.feeds.header.sort.active") %></option>
+    <option value="feed_items_count"><%= t("collector.feeds.header.sort.feed_items_count") %></option>
+    <option value="collection_errors_count"><%= t("collector.feeds.header.sort.collection_errors_count") %></option>
+    <option value="collection_errors_created_on"><%= t("collector.feeds.header.sort.collection_errors_created_on") %></option>
+    <option value="created_by"><%= t("collector.feeds.header.sort.created_by") %></option>
+    <option value="created_on"><%= t("collector.feeds.header.sort.created_on") %></option>
+    <option value="updated_on"><%= t("collector.feeds.header.sort.updated_on") %></option>
   </select>
-  <%= link_to_function "<span class='asc'>Ascending</span><span class='desc'>Descending</span>", "", :id => "direction" %>
+  <%= link_to_function "<span class='asc'>#{I18n.t("collector.sort_direction.ascending")}</span><span class='desc'>#{I18n.t("collector.sort_direction.descending")}</span>", "", :id => "direction" %>
 </div>
 
 <div class="toolbar right">
   <div class="group">
-    <label>Show</label>
-    <%= rounded_button_function "All",        "", :icon => "all",        :id => "mode_all", :class => "first" %>
-    <%= rounded_button_function "Duplicates", "", :icon => "duplicates", :id => "mode_duplicates" %>
+    <label><%= t("collector.general.show_label") %></label>
+    <%= rounded_button_function t("collector.feeds.header.show_all"),        "", :icon => "all",        :id => "mode_all", :class => "first" %>
+    <%= rounded_button_function t("collector.feeds.header.show_duplicates"), "", :icon => "duplicates", :id => "mode_duplicates" %>
   </div>
 </div>
