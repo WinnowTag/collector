@@ -20,7 +20,6 @@ Rails::Initializer.run do |config|
   # config.gem "sqlite3-ruby", :lib => "sqlite3"
   # config.gem "aws-s3", :lib => "aws/s3"
   config.gem "auth-hmac"
-  config.gem "fiveruns_manage"
   config.gem "ratom", :lib => "atom/pub"
   config.gem "rfeedparser"
   config.gem "uuidtools"
