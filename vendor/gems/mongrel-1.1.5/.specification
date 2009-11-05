@@ -52,7 +52,7 @@ cert_chain:
   ALN3mi/9z0Mf1YroliUgF0v5Yw==
   -----END CERTIFICATE-----
 
-date: 2008-05-22 00:00:00 -04:00
+date: 2008-05-22 00:00:00 +09:30
 default_executable: mongrel_rails
 dependencies: 
 - !ruby/object:Gem::Dependency 
@@ -195,8 +195,6 @@ files:
 - tools/trickletest.rb
 has_rdoc: true
 homepage: http://mongrel.rubyforge.org
-licenses: []
-
 post_install_message: 
 rdoc_options: 
 - --line-numbers
@@ -223,7 +221,7 @@ required_rubygems_version: !ruby/object:Gem::Requirement
 requirements: []
 
 rubyforge_project: mongrel
-rubygems_version: 1.3.2
+rubygems_version: 1.3.1
 signing_key: 
 specification_version: 2
 summary: A small fast HTTP library and server that runs Rails, Camping, Nitro and Iowa apps.

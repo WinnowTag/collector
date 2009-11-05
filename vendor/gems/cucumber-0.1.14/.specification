@@ -9,7 +9,7 @@ autorequire:
 bindir: bin
 cert_chain: []
 
-date: 2009-01-03 00:00:00 -05:00
+date: 2009-01-03 15:30:00 +10:30
 default_executable: cucumber
 dependencies: 
 - !ruby/object:Gem::Dependency 
