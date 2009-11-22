@@ -301,7 +301,7 @@ class Feed < ActiveRecord::Base
         self.url = url.to_s
       end
 
-      if url.scheme != "http"
+      unless url.scheme =~ /^https?$/
         self.errors.add(:url, 'is not http')
       end
     rescue URI::Error

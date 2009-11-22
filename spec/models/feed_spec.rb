@@ -27,6 +27,12 @@ describe Feed do
       feed.should have(0).errors
       feed.url.should == "http://google.com/feed"
     end
+    
+    it "should allow https urls" do
+      feed = Feed.create(:url => "https://example.com")
+      feed.should have(0).errors
+      feed.url.should == "https://example.com"
+    end
   end
   
   describe 'collection' do  
