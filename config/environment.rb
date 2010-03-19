@@ -21,7 +21,7 @@ Rails::Initializer.run do |config|
   # config.gem "aws-s3", :lib => "aws/s3"
   config.gem "auth-hmac"
   config.gem "ratom", :lib => "atom/pub"
-  config.gem 'hpricot', :version => "0.6"
+  config.gem 'hpricot', :version => "0.6.164"
   config.gem "rfeedparser"
   config.gem "uuidtools"
 

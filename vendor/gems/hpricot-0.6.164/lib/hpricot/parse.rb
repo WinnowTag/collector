@@ -12,13 +12,14 @@ module Hpricot
   # Hpricot.parse parses <i>input</i> and return a document tree.
   # represented by Hpricot::Doc.
   def Hpricot.parse(input = nil, opts = {}, &blk)
-    Doc.new(make(input, opts, &blk))
+    Doc.new(make(input, opts, &blk), opts)
   end
 
   # Hpricot::XML parses <i>input</i>, disregarding all the HTML rules
   # and returning a document tree.
-  def Hpricot.XML(input, opts = {})
-    Doc.new(make(input, opts.merge(:xml => true)))
+  def Hpricot.XML(input = nil, opts = {}, &blk)
+    opts.merge! :xml => true
+    Doc.new(make(input, opts, &blk), opts)
   end
 
   # :stopdoc:
@@ -137,7 +138,7 @@ module Hpricot
               matched_elem = stack[i]
               stack[i][1] += token
               eles = stack.slice!((i+1)..-1)
-              stack.last[2] += eles
+              stack.last[2] += eles if eles
               break
             end
           end
@@ -208,7 +209,7 @@ module Hpricot
     when :cdata
       Text.parse_cdata_section(structure[1])
     else
-      raise Exception, "[bug] unknown structure: #{structure.inspect}"
+      raise "[bug] unknown structure: #{structure.inspect}"
     end
   end
 

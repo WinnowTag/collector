@@ -8,6 +8,12 @@
  */
 #include <ruby.h>
 
+#ifndef RARRAY_LEN
+#define RARRAY_LEN(arr)  RARRAY(arr)->len
+#define RSTRING_LEN(str) RSTRING(str)->len
+#define RSTRING_PTR(str) RSTRING(str)->ptr
+#endif
+
 #define NO_WAY_SERIOUSLY "*** This should not happen, please send a bug report with the HTML you're parsing to why@whytheluckystiff.net.  So sorry!"
 
 static VALUE sym_xmldecl, sym_doctype, sym_procins, sym_stag, sym_etag, sym_emptytag, sym_comment,
@@ -16,11 +22,11 @@ static VALUE rb_eHpricotParseError;
 static ID s_read, s_to_str;
 
 #define ELE(N) \
-  if (tokend > tokstart || text == 1) { \
+  if (te > ts || text == 1) { \
     VALUE raw_string = Qnil; \
     ele_open = 0; text = 0; \
-    if (tokstart != 0 && sym_##N != sym_cdata && sym_##N != sym_text && sym_##N != sym_procins && sym_##N != sym_comment) { \
-      raw_string = rb_str_new(tokstart, tokend-tokstart); \
+    if (ts != 0 && sym_##N != sym_cdata && sym_##N != sym_text && sym_##N != sym_procins && sym_##N != sym_comment) { \
+      raw_string = rb_str_new(ts, te-ts); \
     } \
     rb_yield_tokens(sym_##N, tag, attr, raw_string, taint); \
   }
@@ -33,7 +39,7 @@ static ID s_read, s_to_str;
 
 #define CAT(N, E) if (NIL_P(N)) { SET(N, E); } else { rb_str_cat(N, mark_##N, E - mark_##N); }
 
-#define SLIDE(N) if ( mark_##N > tokstart ) mark_##N = buf + (mark_##N - tokstart);
+#define SLIDE(N) if ( mark_##N > ts ) mark_##N = buf + (mark_##N - ts);
 
 #define ATTR(K, V) \
     if (!NIL_P(K)) { \
@@ -46,8 +52,8 @@ static ID s_read, s_to_str;
     { \
       if (ele_open == 1) { \
         ele_open = 0; \
-        if (tokstart > 0) { \
-          mark_tag = tokstart; \
+        if (ts > 0) { \
+          mark_tag = ts; \
         } \
       } else { \
         mark_tag = p; \
@@ -102,7 +108,7 @@ static ID s_read, s_to_str;
     ATTR(akey, aval);
   }
 
-  include hpricot_common "ext/hpricot_scan/hpricot_common.rl";
+  include hpricot_common "hpricot_common.rl";
 
 }%%
 
@@ -129,7 +135,7 @@ void rb_yield_tokens(VALUE sym, VALUE tag, VALUE attr, VALUE raw, int taint)
 VALUE hpricot_scan(VALUE self, VALUE port)
 {
   int cs, act, have = 0, nread = 0, curline = 1, text = 0;
-  char *tokstart = 0, *tokend = 0, *buf = NULL;
+  char *ts = 0, *te = 0, *buf = NULL, *eof = NULL;
 
   VALUE attr = Qnil, tag = Qnil, akey = Qnil, aval = Qnil, bufsize = Qnil;
   char *mark_tag = 0, *mark_akey = 0, *mark_aval = 0;
@@ -169,7 +175,7 @@ VALUE hpricot_scan(VALUE self, VALUE port)
       /* We've used up the entire buffer storing an already-parsed token
        * prefix that must be preserved.  Likely caused by super-long attributes.
        * See ticket #13. */
-      rb_raise(rb_eHpricotParseError, "ran out of buffer space on element <%s>, starting on line %d.", RSTRING(tag)->ptr, curline);
+      rb_raise(rb_eHpricotParseError, "ran out of buffer space on element <%s>, starting on line %d.", RSTRING_PTR(tag), curline);
     }
 
     if ( rb_respond_to( port, s_read ) )
@@ -182,8 +188,8 @@ VALUE hpricot_scan(VALUE self, VALUE port)
     }
 
     StringValue(str);
-    memcpy( p, RSTRING(str)->ptr, RSTRING(str)->len );
-    len = RSTRING(str)->len;
+    memcpy( p, RSTRING_PTR(str), RSTRING_LEN(str) );
+    len = RSTRING_LEN(str);
     nread += len;
 
     /* If this is the last buffer, tack on an EOF. */
@@ -199,7 +205,7 @@ VALUE hpricot_scan(VALUE self, VALUE port)
       free(buf);
       if ( !NIL_P(tag) )
       {
-        rb_raise(rb_eHpricotParseError, "parse error on element <%s>, starting on line %d.\n" NO_WAY_SERIOUSLY, RSTRING(tag)->ptr, curline);
+        rb_raise(rb_eHpricotParseError, "parse error on element <%s>, starting on line %d.\n" NO_WAY_SERIOUSLY, RSTRING_PTR(tag), curline);
       }
       else
       {
@@ -210,17 +216,17 @@ VALUE hpricot_scan(VALUE self, VALUE port)
     if ( done && ele_open )
     {
       ele_open = 0;
-      if (tokstart > 0) {
-        mark_tag = tokstart;
-        tokstart = 0;
+      if (ts > 0) {
+        mark_tag = ts;
+        ts = 0;
         text = 1;
       }
     }
 
-    if ( tokstart == 0 )
+    if ( ts == 0 )
     {
       have = 0;
-      /* text nodes have no tokstart because each byte is parsed alone */
+      /* text nodes have no ts because each byte is parsed alone */
       if ( mark_tag != NULL && text == 1 )
       {
         if (done)
@@ -240,13 +246,13 @@ VALUE hpricot_scan(VALUE self, VALUE port)
     }
     else
     {
-      have = pe - tokstart;
-      memmove( buf, tokstart, have );
+      have = pe - ts;
+      memmove( buf, ts, have );
       SLIDE(tag);
       SLIDE(akey);
       SLIDE(aval);
-      tokend = buf + (tokend - tokstart);
-      tokstart = buf;
+      te = buf + (te - ts);
+      ts = buf;
     }
   }
   free(buf);
@@ -257,7 +263,7 @@ void Init_hpricot_scan()
   VALUE mHpricot = rb_define_module("Hpricot");
   rb_define_attr(rb_singleton_class(mHpricot), "buffer_size", 1, 1);
   rb_define_singleton_method(mHpricot, "scan", hpricot_scan, 1);
-  rb_eHpricotParseError = rb_define_class_under(mHpricot, "ParseError", rb_eException);
+  rb_eHpricotParseError = rb_define_class_under(mHpricot, "ParseError", rb_eStandardError);
 
   s_read = rb_intern("read");
   s_to_str = rb_intern("to_str");

@@ -20,6 +20,16 @@ module Hpricot
     # Is this object a stranded end tag?
     def bogusetag?() BogusETag::Trav === self end
 
+    # Parses an HTML string, making an HTML fragment based on
+    # the options used to create the container document.
+    def make(input = nil, &blk)
+      if parent and parent.respond_to? :make
+        parent.make(input, &blk)
+      else
+        Hpricot.make(input, &blk)
+      end
+    end
+
     # Builds an HTML string from this node and its contents.
     # If you need to write to a stream, try calling <tt>output(io)</tt>
     # as a method on this object.
@@ -109,12 +119,12 @@ module Hpricot
 
     # Adds elements immediately after this element, contained in the +html+ string.
     def after(html = nil, &blk)
-      parent.insert_after(Hpricot.make(html, &blk), self)
+      parent.insert_after(make(html, &blk), self)
     end
 
     # Adds elements immediately before this element, contained in the +html+ string.
     def before(html = nil, &blk)
-      parent.insert_before(Hpricot.make(html, &blk), self)
+      parent.insert_before(make(html, &blk), self)
     end
 
 
@@ -122,7 +132,7 @@ module Hpricot
     # in the +html+ string.
     def swap(html = nil, &blk)
       parent.altered!
-      parent.replace_child(self, Hpricot.make(html, &blk))
+      parent.replace_child(self, make(html, &blk))
     end
 
     def get_subnode(*indexes)
@@ -158,7 +168,7 @@ module Hpricot
         when Array
           self.children = inner
         else
-          self.children = Hpricot.make(inner, &blk)
+          self.children = make(inner, &blk)
         end
         reparent self.children
       else
@@ -513,8 +523,9 @@ module Hpricot
 
     def get_elements_by_tag_name(*a)
       list = Elements[]
+      a.delete("*")
       traverse_element(*a.map { |tag| [tag, "{http://www.w3.org/1999/xhtml}#{tag}"] }.flatten) do |e|
-          list << e
+        list << e if e.elem?
       end
       list
     end
@@ -806,7 +817,7 @@ module Hpricot
     def set_attribute(name, val)
       altered!
       self.raw_attributes ||= {}
-      self.raw_attributes[name.to_s] = Hpricot.xs(val)
+      self.raw_attributes[name.to_s] = val.fast_xs
     end
     alias_method :[]=, :set_attribute
     def remove_attribute(name)

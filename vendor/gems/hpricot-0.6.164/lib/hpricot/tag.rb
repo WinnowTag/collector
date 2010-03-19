@@ -3,14 +3,18 @@ module Hpricot
 
   class Doc
     attr_accessor :children
-    def initialize(children = [])
+    def initialize(children = [], options = {})
       @children = children ? children.each { |c| c.parent = self }  : []
+      @options = options
     end
     def output(out, opts = {})
       @children.each do |n|
         n.output(out, opts)
       end
       out
+    end
+    def make(input = nil, &blk)
+      Hpricot.make(input, @options, &blk)
     end
     def altered!; end
   end
@@ -100,7 +104,7 @@ module Hpricot
       if @raw_attributes
         @raw_attributes.map do |aname, aval|
           " #{aname}" +
-            (aval ? "=\"#{aval}\"" : "")
+            (aval ? "=#{html_quote aval}" : "")
         end.join
       end
     end

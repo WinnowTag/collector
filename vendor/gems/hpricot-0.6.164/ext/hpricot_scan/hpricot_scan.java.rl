@@ -6,7 +6,9 @@ import org.jruby.RubyClass;
 import org.jruby.RubyHash;
 import org.jruby.RubyModule;
 import org.jruby.RubyNumeric;
+import org.jruby.RubyObjectAdapter;
 import org.jruby.RubyString;
+import org.jruby.javasupport.JavaEmbedUtils;
 import org.jruby.runtime.Block;
 import org.jruby.runtime.CallbackFactory;
 import org.jruby.runtime.builtin.IRubyObject;
@@ -15,13 +17,14 @@ import org.jruby.runtime.load.BasicLibraryService;
 
 public class HpricotScanService implements BasicLibraryService {
        public static String NO_WAY_SERIOUSLY="*** This should not happen, please send a bug report with the HTML you're parsing to why@whytheluckystiff.net.  So sorry!";
+       private static RubyObjectAdapter rubyApi;
 
        public void ELE(IRubyObject N) {
-         if (tokend > tokstart || text) {
+         if (te > ts || text) {
            IRubyObject raw_string = runtime.getNil();
            ele_open = false; text = false;
-           if (tokstart != -1 && N != cdata && N != sym_text && N != procins && N != comment) { 
-             raw_string = runtime.newString(new String(buf,tokstart,tokend-tokstart));
+           if (ts != -1 && N != cdata && N != sym_text && N != procins && N != comment) { 
+             raw_string = runtime.newString(new String(buf,ts,te-ts));
            } 
            rb_yield_tokens(N, tag[0], attr, raw_string, taint);
          }
@@ -75,13 +78,13 @@ public class HpricotScanService implements BasicLibraryService {
            } else if(N == aval) {
              mark = mark_aval;
            }
-           if(mark > tokstart) {
+           if(mark > ts) {
              if(N == tag) {
-               mark_tag  -= tokstart;
+               mark_tag  -= ts;
              } else if(N == akey) {
-               mark_akey -= tokstart;
+               mark_akey -= ts;
              } else if(N == aval) {
-               mark_aval -= tokstart;
+               mark_aval -= ts;
              }
            }
        }
@@ -91,7 +94,8 @@ public class HpricotScanService implements BasicLibraryService {
            if(attr.isNil()) {
              attr = RubyHash.newHash(runtime);
            }
-           ((RubyHash)attr).aset(K,V);
+           ((RubyHash)attr).op_aset(runtime.getCurrentContext(),K,V);
+           // ((RubyHash)attr).aset(K,V);
          }
        }
 
@@ -111,8 +115,8 @@ public class HpricotScanService implements BasicLibraryService {
          if(!text) { 
            if(ele_open) { 
              ele_open = false; 
-             if(tokstart > -1) { 
-               mark_tag = tokstart; 
+             if(ts > -1) { 
+               mark_tag = ts; 
              } 
            } else {
              mark_tag = p; 
@@ -180,7 +184,7 @@ public class HpricotScanService implements BasicLibraryService {
     ATTR(akey, aval);
   }
 
-  include hpricot_common "ext/hpricot_scan/hpricot_common.rl";
+  include hpricot_common "hpricot_common.rl";
 
 }%%
 
@@ -206,7 +210,8 @@ private void rb_yield_tokens(IRubyObject sym, IRubyObject tag, IRubyObject attr,
 
 int cs, act, have = 0, nread = 0, curline = 1, p=-1;
 boolean text = false;
-int tokstart=-1, tokend;
+int ts=-1, te;
+int eof=-1;
 char[] buf;
 Ruby runtime;
 IRubyObject attr, bufsize;
@@ -239,8 +244,8 @@ IRubyObject hpricot_scan(IRubyObject recv, IRubyObject port) {
   }
 
   buffer_size = BUFSIZE;
-  if (recv.getInstanceVariable("@buffer_size") != null) {
-    bufsize = recv.getInstanceVariable("@buffer_size");
+  if (rubyApi.getInstanceVariable(recv, "@buffer_size") != null) {
+    bufsize = rubyApi.getInstanceVariable(recv, "@buffer_size");
     if (!bufsize.isNil()) {
       buffer_size = RubyNumeric.fix2int(bufsize);
     }
@@ -296,16 +301,16 @@ IRubyObject hpricot_scan(IRubyObject recv, IRubyObject port) {
     
     if ( done && ele_open ) {
       ele_open = false;
-      if(tokstart > -1) {
-        mark_tag = tokstart;
-        tokstart = -1;
+      if(ts > -1) {
+        mark_tag = ts;
+        ts = -1;
         text = true;
       }
     }
 
-    if(tokstart == -1) {
+    if(ts == -1) {
       have = 0;
-      /* text nodes have no tokstart because each byte is parsed alone */
+      /* text nodes have no ts because each byte is parsed alone */
       if(mark_tag != -1 && text) {
         if (done) {
           if(mark_tag < p-1) {
@@ -318,13 +323,13 @@ IRubyObject hpricot_scan(IRubyObject recv, IRubyObject port) {
       }
       mark_tag = 0;
     } else {
-      have = pe - tokstart;
-      System.arraycopy(buf,tokstart,buf,0,have);
+      have = pe - ts;
+      System.arraycopy(buf,ts,buf,0,have);
       SLIDE(tag);
       SLIDE(akey);
       SLIDE(aval);
-      tokend = (tokend - tokstart);
-      tokstart = 0;
+      te = (te - ts);
+      ts = 0;
     }
   }
   return runtime.getNil();
@@ -355,9 +360,10 @@ public boolean basicLoad(final Ruby runtime) throws IOException {
 
 public static void Init_hpricot_scan(Ruby runtime) {
   RubyModule mHpricot = runtime.defineModule("Hpricot");
-  mHpricot.getMetaClass().attr_accessor(new IRubyObject[]{runtime.newSymbol("buffer_size")});
+  mHpricot.getMetaClass().attr_accessor(runtime.getCurrentContext(),new IRubyObject[]{runtime.newSymbol("buffer_size")});
   CallbackFactory fact = runtime.callbackFactory(HpricotScanService.class);
   mHpricot.getMetaClass().defineMethod("scan",fact.getSingletonMethod("__hpricot_scan",IRubyObject.class));
-  mHpricot.defineClassUnder("ParseError",runtime.getClass("Exception"),runtime.getClass("Exception").getAllocator());
+  mHpricot.defineClassUnder("ParseError",runtime.getClass("StandardError"),runtime.getClass("StandardError").getAllocator());
+  rubyApi = JavaEmbedUtils.newObjectAdapter();
 }
 }
