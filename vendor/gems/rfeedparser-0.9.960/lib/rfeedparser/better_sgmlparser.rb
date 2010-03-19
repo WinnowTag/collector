@@ -224,7 +224,7 @@ class BetterSGMLParser < HTML::SGMLParser
       elsif [?',?'] == [attrvalue[0..0], attrvalue[-1..-1]] || [?",?"] == [attrvalue[0],attrvalue[-1]]
         attrvalue = attrvalue[1...-1]
       end
-      attrsd << [attrname.downcase, attrvalue]
+      attrsd << [attrname.downcase, attrvalue.gsub("'", '')]
       k += matched_length
     end
     if rawdata[j..j] == ">"
