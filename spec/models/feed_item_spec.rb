@@ -108,7 +108,7 @@ describe FeedItem do
     
     assert_equal ft_item.title, feed_item.atom.title
     assert_equal ft_item.summary, feed_item.atom.summary
-    assert_equal ft_item.content.first.value.gsub(/\t+/, ''), feed_item.atom.content    
+    assert_equal ft_item.content.first.value, feed_item.atom.content    
   end
   
   it "extract_feed_item_title_out_of_strong_heading" do
