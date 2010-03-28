@@ -31,8 +31,8 @@ class FeedItemAtomDocument < ActiveRecord::Base
       atom_entry.links << Atom::Link.new(:rel => 'http://peerworks.org/rel/spider', :href => "#{options[:base]}/feed_items/#{feed_item.id}/spider")
       atom_entry.links << Atom::Link.new(:rel => 'http://peerworks.org/rel/feed', :href => feed.uri) if feed
       
-      atom_entry.summary = item.summary unless item.summary == item.content        
       atom_entry.content = get_content(item)      
+      atom_entry.summary = clean(item.summary) unless item.summary == item.content     
           
       new(:atom_document => atom_entry.to_xml, :feed_item => feed_item, :atom => atom_entry)
     end
@@ -40,15 +40,19 @@ class FeedItemAtomDocument < ActiveRecord::Base
     def get_content(item)    
       content = item.content ? (item.content.first ? item.content.first.value : item.summary) : item.summary
       if content
-      # Content could be non-utf8 or contain non-printable characters due to a FeedTools pre 0.2.29 bug.
-      # LibXML chokes on this so try and fix it.
-        begin
-          Atom::Content::Html.new(Iconv.iconv('utf-8', 'utf-8', content).first.tr("\000-\010\016", ""))
-        rescue Iconv::IllegalSequence
-          # LATIN1 is the most likely, try that or fail
-          Atom::Content::Html.new(Iconv.iconv('utf-8', 'LATIN1', content).first.tr("\000-\011\016", ""))
-        end
+        Atom::Content::Html.new(clean(content))
       end
+    end
+    
+    def clean(txt) 
+       # Content could be non-utf8 or contain non-printable characters due to a FeedTools pre 0.2.29 bug.
+        # LibXML chokes on this so try and fix it.
+      begin
+        Iconv.iconv('utf-8', 'utf-8', txt)
+      rescue Iconv::IllegalSequence
+        # LATIN1 is the most likely, try that or fail
+        Iconv.iconv('utf-8', 'LATIN1', txt)
+      end.first.tr("\000-\010\013-\031", "") # Allow carriage return and tab so that pre formatted text is intact
     end
   
   
