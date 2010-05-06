@@ -23,7 +23,7 @@ set :use_sudo, false
 # :primary => true.
 
 default_run_options[:pty] = true
-set :repository, "git@github.com:seangeo/collector.git"
+set :repository, "git@github.com:WinnowTag/collector.git"
 set :branch, "deploy"
 set :scm, "git"
 set :scm_verbose, true
