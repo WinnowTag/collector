@@ -96,10 +96,9 @@ class FeedsController < ApplicationController
         if params[:opml]
           @feeds = params[:opml].feeds.map do |f|
             feed = Feed.find_or_create_by_url(f.xmlUrl)
-            if f.title and feed.title.nil?
-              feed.title = f.title
-              feed.save
-            end
+            feed.created_by = params[:created_by] if !params[:created_by].nil?
+            feed.title = f.title if f.title and feed.title.nil?
+            feed.save
             feed
           end
         else
