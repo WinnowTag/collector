@@ -24,19 +24,17 @@ set :use_sudo, false
 
 default_run_options[:pty] = true
 set :repository, "git@github.com:WinnowTag/collector.git"
-set :branch, "deploy"
+set :branch, "columbia"
 set :scm, "git"
 set :scm_verbose, true
-set :user, "peerworks"
-set :deploy_to, "/home/peerworks/collector.deploy"
+set :user, "rails"
+set :deploy_to, "/srv/collector"
 set :deploy_via, :remote_cache
 set :group, "collector"
 
-role :web, "collector01.mindloom.org"
-role :web, "collector02.mindloom.org"
-role :app, "collector01.mindloom.org"
-role :app, "collector02.mindloom.org"
-role :db,  "db01.c43900.blueboxgrid.com", :primary => true
+role :web, "collector.columbia.stonecutter.com"
+role :app, "collector.columbia.stonecutter.com"
+role :db,  "db.columbia.stonecutter.com", :primary => true
 
 # =============================================================================
 # OPTIONAL VARIABLES
@@ -102,7 +100,7 @@ task :send_nofication do
 end
 
 after :'deploy:update_code', :copy_config
-after :deploy, :send_nofication
+#after :deploy, :send_nofication
 
 namespace :gems do
   task :build do  
@@ -116,7 +114,7 @@ after "deploy:update_code", "gems:build"
 namespace :deploy do
   [:start, :stop, :restart, :status].each do |t|
     task t, :roles => :app do
-      sudo "god #{t.to_s} #{group}"
+#      sudo "god #{t.to_s} #{group}"
     end
   end
 end
