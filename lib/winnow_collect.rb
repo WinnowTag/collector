@@ -12,7 +12,7 @@
 # Retrieves new feed distribution files and saves new items.
 
 ENV['RAILS_ENV'] ||= 'production'
-require File.join(File.dirname(__FILE__), '/config/environment')
+require File.join(File.dirname(__FILE__), '/../config/environment')
 Spider.logger = Logger.new(File.join(RAILS_ROOT, "log", "winnow_collect-spider.log"), 'daily')
 
 Feed.collect_all
