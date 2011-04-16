@@ -1,4 +1,4 @@
-# Copyright (c) 2008 The Kaphan Foundation
+#/ Copyright (c) 2008 The Kaphan Foundation
 #
 # Possession of a copy of this file grants no permission or license
 # to use, modify, or create derivative works.
@@ -13,6 +13,9 @@
 class Feed < ActiveRecord::Base  
   cattr_accessor :base_uri
   @@base_uri = "http://collector.mindloom.org"
+  cattr_accessor :possible_winnowtags
+  @@possible_winnowtags = File.read(File.join(RAILS_ROOT, 'config', 'possible_winnowtags.conf'))
+
 
   attr_accessor :just_published
   attr_readonly :uri
@@ -320,7 +323,7 @@ class Feed < ActiveRecord::Base
   
   def url_is_not_from_winnow
     begin
-      if URI.parse(url).host =~ /(winnow|trunk).mindloom.org/
+      if URI.parse(url).host =~ Regexp.new(@@possible_winnowtags)
         errors.add(:base, "Winnow generated feeds cannot be added to Winnow")
       end
     rescue URI::Error
